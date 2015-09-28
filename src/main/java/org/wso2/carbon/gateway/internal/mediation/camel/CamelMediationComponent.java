@@ -18,8 +18,25 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
+import org.apache.camel.Endpoint;
+import org.apache.camel.impl.DefaultComponent;
+
+import java.util.Map;
+
 /**
- * Created by madhuranga on 9/28/15.
+ * Represents the component that manages {@link CamelMediationEndpoint}.
  */
-public class test {
+public class CamelMediationComponent extends DefaultComponent {
+
+    CamelMediationEngine engine;
+
+    public CamelMediationComponent(CamelMediationEngine engine) {
+        this.engine = engine;
+    }
+
+    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
+        Endpoint endpoint = new CamelMediationEndpoint(uri, this, engine);
+        setProperties(endpoint, parameters);
+        return endpoint;
+    }
 }
