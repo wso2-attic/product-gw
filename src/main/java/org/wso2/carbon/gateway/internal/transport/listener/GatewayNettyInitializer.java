@@ -19,13 +19,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.model.RoutesDefinition;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.TransportSender;
-import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
-import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorFactory;
@@ -35,9 +29,6 @@ import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.Connection
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfiguration;
 import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -49,15 +40,11 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
     private int queueSize = 32544;
     private ConnectionManager connectionManager;
 
-    public static final String CAMEL_ROUTING_CONFIG_FILE = "repository" + File.separator + "conf" + File.separator +
-                                                           "camel" + File.separator + "camel-routing.xml";
-
     public GatewayNettyInitializer() {
 
     }
 
-    @Override
-    public void setup(Map<String, String> parameters) {
+    @Override public void setup(Map<String, String> parameters) {
 
         NettySender.Config config = new NettySender.Config("netty-gw-sender").setQueueSize(this.queueSize);
         BootstrapConfiguration.createBootStrapConfiguration(parameters);
@@ -65,38 +52,13 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
 
         connectionManager = ConnectionManager.getInstance();
 
-        TransportSender sender = new NettySender(config, connectionManager);
-        CamelContext context = new DefaultCamelContext();
-        context.disableJMX();
-        CamelMediationEngine engine = new CamelMediationEngine(sender);
-        context.addComponent("wso2-gw", new CamelMediationComponent(engine));
-
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(CAMEL_ROUTING_CONFIG_FILE);
-            RoutesDefinition routes = context.loadRoutesDefinition(fis);
-            context.addRouteDefinitions(routes.getRoutes());
-            context.start();
-        } catch (Exception e) {
-            String msg = "Error while loading " + CAMEL_ROUTING_CONFIG_FILE + " configuration file";
-            throw new RuntimeException(msg, e);
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    log.error("No Connection to close", e);
-                }
-            }
-        }
-
         if (parameters != null) {
-            DisruptorConfig disruptorConfig =
-                       new DisruptorConfig(parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
-                                           parameters.get(Constants.DISRUPTOR_COUNT),
-                                           parameters.get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
-                                           parameters.get(Constants.WAIT_STRATEGY),
-                                           Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
+            DisruptorConfig disruptorConfig = new DisruptorConfig(parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
+                                                                  parameters.get(Constants.DISRUPTOR_COUNT), parameters
+                                                                          .get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
+                                                                  parameters.get(Constants.WAIT_STRATEGY),
+                                                                  Boolean.parseBoolean(
+                                                                          Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
             DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND, disruptorConfig, engine);
             String queueSize = parameters.get(Constants.CONTENT_QUEUE_SIZE);
             if (queueSize != null) {
@@ -108,11 +70,9 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND, disruptorConfig, engine);
         }
 
-
     }
 
-    @Override
-    public void initChannel(SocketChannel ch) {
+    @Override public void initChannel(SocketChannel ch) {
         if (log.isDebugEnabled()) {
             log.info("Initializing source channel pipeline");
         }
@@ -125,6 +85,5 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             log.error("Cannot Create SourceHandler ", e);
         }
     }
-
 
 }
