@@ -65,30 +65,7 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
 
         connectionManager = ConnectionManager.getInstance();
 
-        TransportSender sender = new NettySender(config, connectionManager);
-        CamelContext context = new DefaultCamelContext();
-        context.disableJMX();
-        CamelMediationEngine engine = new CamelMediationEngine(sender);
-        context.addComponent("wso2-gw", new CamelMediationComponent(engine));
 
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(CAMEL_ROUTING_CONFIG_FILE);
-            RoutesDefinition routes = context.loadRoutesDefinition(fis);
-            context.addRouteDefinitions(routes.getRoutes());
-            context.start();
-        } catch (Exception e) {
-            String msg = "Error while loading " + CAMEL_ROUTING_CONFIG_FILE + " configuration file";
-            throw new RuntimeException(msg, e);
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    log.error("No Connection to close", e);
-                }
-            }
-        }
 
         if (parameters != null) {
             DisruptorConfig disruptorConfig =
