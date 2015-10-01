@@ -90,15 +90,19 @@ import java.util.Map;
         /**
          * Invoked when the backend response arrived
          *
-         * @param cMsg response carbon message
+         * @param responseCmsg response carbon message
          */
-        @Override public void done(CarbonMessage cMsg) {
-            if (cMsg != null) {
+        @Override public void done(CarbonMessage responseCmsg) {
+            if (responseCmsg != null) {
                 Map<String, Object> transportHeaders =
-                        (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
+                        (Map<String, Object>) responseCmsg.getProperty(Constants.TRANSPORT_HEADERS);
                 if (transportHeaders != null) {
+                    CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
+                    responseCmsg.setProperty(Constants.SRC_HNDLR, request.getProperty(Constants.SRC_HNDLR));
+                    responseCmsg.setProperty(Constants.DISRUPTOR, request.getProperty(Constants.DISRUPTOR));
+                    responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX, request.getProperty(Constants.CHNL_HNDLR_CTX));
                     carbonCamelMessageUtil.setCamelHeadersToBackendResponse(exchange, transportHeaders);
-                    exchange.getOut().setBody(cMsg);
+                    exchange.getOut().setBody(responseCmsg);
                 } else {
                     log.warn("Backend response : Received empty headers in carbon message...");
                 }

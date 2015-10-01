@@ -36,6 +36,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class Util {
 
+    private static final String HTTP_METHOD = "POST";
+    private static final String HTTP_VERSION = "HTTP/1.1";
     public static Map<String, String> getHeaders(HttpMessage message) {
         Map<String, String> headers = new HashMap<>();
         if (message.headers() != null) {
@@ -94,18 +96,21 @@ public class Util {
 
     @SuppressWarnings("unchecked")
     public static HttpRequest createHttpRequest(CarbonMessage msg) {
-
-        HttpMethod httpMethod = new HttpMethod((String) msg.getProperty(Constants.HTTP_METHOD));
-
-        HttpVersion httpVersion = new HttpVersion((String) msg.getProperty(Constants.HTTP_VERSION), true);
-
-        HttpRequest outgoingRequest =
-                new DefaultHttpRequest(httpVersion, httpMethod, msg.getURI(), false);
-
+        HttpMethod httpMethod;
+        if (null != msg.getProperty(Constants.HTTP_METHOD)) {
+            httpMethod = new HttpMethod((String) msg.getProperty(Constants.HTTP_METHOD));
+        } else {
+            httpMethod = new HttpMethod(HTTP_METHOD);
+        }
+        HttpVersion httpVersion;
+        if (null != msg.getProperty(Constants.HTTP_VERSION)) {
+            httpVersion = new HttpVersion((String) msg.getProperty(Constants.HTTP_VERSION), true);
+        } else {
+            httpVersion = new HttpVersion(HTTP_VERSION, true);
+        }
+        HttpRequest outgoingRequest = new DefaultHttpRequest(httpVersion, httpMethod, msg.getURI(), false);
         Map headers = (Map) msg.getProperty(Constants.TRANSPORT_HEADERS);
-
         Util.setHeaders(outgoingRequest, headers);
-
         return outgoingRequest;
     }
 }

@@ -49,8 +49,11 @@ public class CarbonCamelMessageUtil {
                                                CarbonMessage request) {
         ConcurrentHashMap<String, Object> headers = new ConcurrentHashMap<>();
 
-        if (request.getProperty("HTTP_METHOD") != null) {
-            headers.put(Exchange.HTTP_METHOD, request.getProperty("HTTP_METHOD"));
+        if (request.getProperty(Constants.HTTP_METHOD) != null) {
+            headers.put(Exchange.HTTP_METHOD, request.getProperty(Constants.HTTP_METHOD));
+        }
+        if (request.getProperty(Constants.HTTP_VERSION) != null) {
+            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(Constants.HTTP_VERSION));
         }
 
         // strip query parameters from the uri
@@ -98,12 +101,16 @@ public class CarbonCamelMessageUtil {
         if (transportHeaders.get("SOAPAction") != null) {
             headers.put(Exchange.SOAP_ACTION, transportHeaders.get("SOAPAction"));
         }
+        if (transportHeaders.get("Accept-Encoding") != null) {
+            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get("Accept-Encoding"));
+        }
 
         Iterator it = transportHeaders.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            if (!"Content-Type".equals(pair.getKey()) && !"SOAPAction".equals(pair.getKey())) {
+            if (!"Content-Type".equals(pair.getKey()) && !"SOAPAction".equals(pair.getKey()) &&
+                !"Accept-Encoding".equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -141,6 +148,12 @@ public class CarbonCamelMessageUtil {
                     carbonBackEndRequestHeaders.put("Content-Type", pair.getValue());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
                     carbonBackEndRequestHeaders.put("SOAPAction", pair.getValue());
+                } else if (key.equals(Exchange.CONTENT_ENCODING)) {
+                    carbonBackEndRequestHeaders.put("Accept-Encoding", pair.getValue());
+                } else if (key.equals(Exchange.HTTP_METHOD)) {
+                    request.setProperty(Constants.HTTP_METHOD, pair.getValue());
+                } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
+                    request.setProperty(Constants.HTTP_VERSION, pair.getValue());
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue());
                 }

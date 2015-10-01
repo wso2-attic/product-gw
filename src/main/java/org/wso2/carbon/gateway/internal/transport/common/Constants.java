@@ -25,6 +25,8 @@ public class Constants {
 
     public static final String HTTP_METHOD = "HTTP_METHOD";
 
+    public static final String HTTP_HOST = "Host";
+
     public static final String TRANSPORT_HEADERS = "TRANSPORT_HEADERS";
 
     public static final String HTTP_STATUS_CODE = "HTTP_STATUS_CODE";
