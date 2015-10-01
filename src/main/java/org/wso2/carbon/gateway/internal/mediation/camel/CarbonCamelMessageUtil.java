@@ -68,7 +68,7 @@ public class CarbonCamelMessageUtil {
         //   http://servername/foo
         String http = request.getProtocol() + "://";
         if (!s.startsWith(http)) {
-            s = http + transportHeaders.get("Host") + s;
+            s = http + transportHeaders.get(Constants.HTTP_HOST) + s;
         }
 
         headers.put(Exchange.HTTP_URL, s);
@@ -95,22 +95,23 @@ public class CarbonCamelMessageUtil {
             }
         }
 
-        if (transportHeaders.get("Content-Type") != null) {
-            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get("Content-Type"));
+        if (transportHeaders.get(Constants.HTTP_CONTENT_TYPE) != null) {
+            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(Constants.HTTP_CONTENT_TYPE));
         }
-        if (transportHeaders.get("SOAPAction") != null) {
-            headers.put(Exchange.SOAP_ACTION, transportHeaders.get("SOAPAction"));
+        if (transportHeaders.get(Constants.HTTP_SOAP_ACTION) != null) {
+            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(Constants.HTTP_SOAP_ACTION));
         }
-        if (transportHeaders.get("Accept-Encoding") != null) {
-            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get("Accept-Encoding"));
+        if (transportHeaders.get(Constants.HTTP_CONTENT_ENCODING) != null) {
+            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(Constants.HTTP_CONTENT_ENCODING));
         }
 
         Iterator it = transportHeaders.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            if (!"Content-Type".equals(pair.getKey()) && !"SOAPAction".equals(pair.getKey()) &&
-                !"Accept-Encoding".equals(pair.getKey())) {
+            if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
+                !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -145,11 +146,11 @@ public class CarbonCamelMessageUtil {
                 Map.Entry pair = (Map.Entry) it.next();
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
-                    carbonBackEndRequestHeaders.put("Content-Type", pair.getValue());
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_TYPE, pair.getValue());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
-                    carbonBackEndRequestHeaders.put("SOAPAction", pair.getValue());
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_SOAP_ACTION, pair.getValue());
                 } else if (key.equals(Exchange.CONTENT_ENCODING)) {
-                    carbonBackEndRequestHeaders.put("Accept-Encoding", pair.getValue());
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_ENCODING, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_METHOD)) {
                     request.setProperty(Constants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
@@ -161,9 +162,9 @@ public class CarbonCamelMessageUtil {
             }
 
             if (port != 80) {
-                carbonBackEndRequestHeaders.put("Host", host + ":" + port);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host + ":" + port);
             } else {
-                carbonBackEndRequestHeaders.put("Host", host);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host);
             }
 
             request.setProperty(Constants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);

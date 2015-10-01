@@ -25,6 +25,12 @@ public class Constants {
 
     public static final String HTTP_METHOD = "HTTP_METHOD";
 
+    public static final String HTTP_CONTENT_TYPE = "Content-Type";
+
+    public static final String HTTP_SOAP_ACTION = "SOAPAction";
+
+    public static final String HTTP_CONTENT_ENCODING = "Accept-Encoding";
+
     public static final String HTTP_HOST = "Host";
 
     public static final String TRANSPORT_HEADERS = "TRANSPORT_HEADERS";
@@ -53,7 +59,6 @@ public class Constants {
 
     public static final String SLEEP_WAITING = "SLEEP_WAITING";
 
-
     public static final String WAIT_STRATEGY = "disruptor.wait.strategy";
 
     public static final String DISRUPTOR_BUFFER_SIZE = "disruptor.buffer.size";
@@ -65,7 +70,6 @@ public class Constants {
     public static final String CONTENT_QUEUE_SIZE = "content.queue.size";
 
     public static final String SHARE_DISRUPTOR_WITH_OUTBOUND = "share.disruptor.with.outbound";
-
 
     // Bootstrap related
     public static final String CLINET_BOOTSTRAP_TCP_NO_DELY = "client.bootstrap.nodelay";
@@ -80,7 +84,6 @@ public class Constants {
 
     public static final String CLINET_BOOTSTRAP_SO_REUSE = "client.bootstrap.socket.reuse";
 
-
     // Connection Pool parameters
 
     public static final String NUMBER_OF_POOLS = "connection.pool.count";
@@ -94,7 +97,6 @@ public class Constants {
     public static final String MIN_EVICTION_IDLE_TIME = "min.eviction.idle.time";
 
     public static final String ENABLE_GLOBAL_CONNECTION_POOLING = "enable.global.client.connection.pooling";
-
 
 }
 
