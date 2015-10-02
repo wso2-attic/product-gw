@@ -36,7 +36,8 @@ import java.util.Map;
 /**
  * The CamelMediation producer handle the request and response with the backend.
  */
-@SuppressWarnings("unchecked") public class CamelMediationProducer extends DefaultAsyncProducer {
+@SuppressWarnings("unchecked")
+public class CamelMediationProducer extends DefaultAsyncProducer {
 
     private static Logger log = LoggerFactory.getLogger(CamelMediationProducer.class);
 
@@ -74,7 +75,8 @@ import java.util.Map;
         return false;
     }
 
-    @Override public Endpoint getEndpoint() {
+    @Override
+    public Endpoint getEndpoint() {
         return super.getEndpoint();
     }
 
@@ -92,7 +94,8 @@ import java.util.Map;
          *
          * @param responseCmsg response carbon message
          */
-        @Override public void done(CarbonMessage responseCmsg) {
+        @Override
+        public void done(CarbonMessage responseCmsg) {
             if (responseCmsg != null) {
                 Map<String, Object> transportHeaders =
                         (Map<String, Object>) responseCmsg.getProperty(Constants.TRANSPORT_HEADERS);

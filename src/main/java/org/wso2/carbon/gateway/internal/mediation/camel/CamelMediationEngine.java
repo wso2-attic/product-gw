@@ -35,7 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
  */
-@SuppressWarnings("unchecked") public class CamelMediationEngine implements CarbonMessageProcessor {
+@SuppressWarnings("unchecked")
+public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();

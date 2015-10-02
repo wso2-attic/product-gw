@@ -36,8 +36,9 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class Util {
 
-    private static final String HTTP_METHOD = "POST";
-    private static final String HTTP_VERSION = "HTTP/1.1";
+    private static final String DEFAULT_HTTP_METHOD_POST = "POST";
+    private static final String DEFAULT_VERSION_HTTP_1_1 = "HTTP/1.1";
+
     public static Map<String, String> getHeaders(HttpMessage message) {
         Map<String, String> headers = new HashMap<>();
         if (message.headers() != null) {
@@ -100,13 +101,13 @@ public class Util {
         if (null != msg.getProperty(Constants.HTTP_METHOD)) {
             httpMethod = new HttpMethod((String) msg.getProperty(Constants.HTTP_METHOD));
         } else {
-            httpMethod = new HttpMethod(HTTP_METHOD);
+            httpMethod = new HttpMethod(DEFAULT_HTTP_METHOD_POST);
         }
         HttpVersion httpVersion;
         if (null != msg.getProperty(Constants.HTTP_VERSION)) {
             httpVersion = new HttpVersion((String) msg.getProperty(Constants.HTTP_VERSION), true);
         } else {
-            httpVersion = new HttpVersion(HTTP_VERSION, true);
+            httpVersion = new HttpVersion(DEFAULT_VERSION_HTTP_1_1, true);
         }
         HttpRequest outgoingRequest = new DefaultHttpRequest(httpVersion, httpMethod, msg.getURI(), false);
         Map headers = (Map) msg.getProperty(Constants.TRANSPORT_HEADERS);
