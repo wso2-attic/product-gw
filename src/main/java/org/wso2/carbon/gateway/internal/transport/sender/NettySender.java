@@ -20,6 +20,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,6 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setQueuesize(config.queueSize);
             targetChannel.getTargetHandler().setTargetChannel(targetChannel);
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
-            targetChannel.getTargetHandler().setContinueCallback(continueCallback);
 
             outChannel = outboundChannel;
 
@@ -92,14 +92,19 @@ public class NettySender implements TransportSender {
                 continueCallback = new CarbonCallback() {
                     @Override
                     public void done(CarbonMessage cMsg) {
-                        writeChunks(outChannel, msg);
+
+                        int statusCode = (int) cMsg.getProperty(Constants.HTTP_STATUS_CODE);
+
+                        if (statusCode == HttpResponseStatus.CONTINUE.code()) {
+                            writeChunks(outChannel, msg);
+                        }
                     }
                 };
             } else {
 
                 writeContent(outboundChannel, httpRequest, msg);
             }
-
+            targetChannel.getTargetHandler().setContinueCallback(continueCallback);
 
 
 

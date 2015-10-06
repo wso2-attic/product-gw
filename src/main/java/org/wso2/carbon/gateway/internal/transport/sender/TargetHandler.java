@@ -19,7 +19,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +74,7 @@ public class TargetHandler extends ChannelInboundHandlerAdapter {
             cMsg.setProperty(Constants.HTTP_STATUS_CODE, httpResponse.getStatus().code());
             cMsg.setProperty(Constants.TRANSPORT_HEADERS, Util.getHeaders(httpResponse));
 
-            if (HttpResponseStatus.CONTINUE.equals(httpResponse.getStatus())) {
+            if (continueCallback != null) {
                 continueCallback.done(cMsg);
             }
             ringBuffer.publishEvent(new CarbonEventPublisher(cMsg));
