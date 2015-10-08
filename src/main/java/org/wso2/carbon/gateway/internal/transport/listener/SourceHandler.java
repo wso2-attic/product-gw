@@ -19,8 +19,12 @@ package org.wso2.carbon.gateway.internal.transport.listener;
 import com.lmax.disruptor.RingBuffer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
@@ -74,12 +78,19 @@ public class SourceHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
+            HttpRequest httpRequest = (HttpRequest) msg;
+
+            if (HttpHeaders.is100ContinueExpected(httpRequest)) {
+                DefaultHttpResponse statusCode100 =
+                        new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
+                ctx.writeAndFlush(statusCode100);
+            }
+
             cMsg = new CarbonMessage(Constants.PROTOCOL_NAME);
             cMsg.setPort(((InetSocketAddress) ctx.channel().remoteAddress()).getPort());
             cMsg.setHost(((InetSocketAddress) ctx.channel().remoteAddress()).getHostName());
             ResponseCallback responseCallback = new ResponseCallback(this.ctx);
             cMsg.setCarbonCallback(responseCallback);
-            HttpRequest httpRequest = (HttpRequest) msg;
             cMsg.setURI(httpRequest.getUri());
             Pipe pipe = new PipeImpl(queueSize);
             cMsg.setPipe(pipe);

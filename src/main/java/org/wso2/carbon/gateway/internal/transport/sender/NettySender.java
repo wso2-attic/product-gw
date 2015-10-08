@@ -18,7 +18,9 @@ package org.wso2.carbon.gateway.internal.transport.sender;
 import com.lmax.disruptor.RingBuffer;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,8 @@ public class NettySender implements TransportSender {
 
     private static final Logger log = LoggerFactory.getLogger(NettySender.class);
     private Config config;
+    private Channel outChannel;
+    private CarbonCallback continueCallback;
 
     private ConnectionManager connectionManager;
 
@@ -80,8 +84,27 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setTargetChannel(targetChannel);
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
 
+            outChannel = outboundChannel;
 
-             writeContent(outboundChannel, httpRequest, msg);
+            if (HttpHeaders.is100ContinueExpected(httpRequest)) {
+                outboundChannel.writeAndFlush(httpRequest);
+
+                continueCallback = new CarbonCallback() {
+                    @Override
+                    public void done(CarbonMessage cMsg) {
+
+                        int statusCode = (int) cMsg.getProperty(Constants.HTTP_STATUS_CODE);
+
+                        if (statusCode == HttpResponseStatus.CONTINUE.code()) {
+                            writeChunks(outChannel, msg);
+                        }
+                    }
+                };
+            } else {
+
+                writeContent(outboundChannel, httpRequest, msg);
+            }
+            targetChannel.getTargetHandler().setContinueCallback(continueCallback);
 
 
 
@@ -95,6 +118,11 @@ public class NettySender implements TransportSender {
 
     private boolean writeContent(Channel channel, HttpRequest httpRequest, CarbonMessage carbonMessage) {
         channel.write(httpRequest);
+        writeChunks(channel, carbonMessage);
+        return true;
+    }
+
+    private void writeChunks(Channel channel, CarbonMessage carbonMessage) {
         while (true) {
             HTTPContentChunk chunk = (HTTPContentChunk) carbonMessage.getPipe().getContent();
             HttpContent httpContent = chunk.getHttpContent();
@@ -106,7 +134,6 @@ public class NettySender implements TransportSender {
                 channel.write(httpContent);
             }
         }
-        return true;
     }
 
 

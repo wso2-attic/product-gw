@@ -42,6 +42,7 @@ public class TargetHandler extends ChannelInboundHandlerAdapter {
     private static Logger log = LoggerFactory.getLogger(TargetHandler.class);
 
     private CarbonCallback callback;
+    private CarbonCallback continueCallback;
     private RingBuffer ringBuffer;
     private CarbonMessage cMsg;
     private int queuesize;
@@ -58,20 +59,24 @@ public class TargetHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpResponse) {
+            HttpResponse httpResponse = (HttpResponse) msg;
+
             cMsg = new CarbonMessage(Constants.PROTOCOL_NAME);
             cMsg.setPort(((InetSocketAddress) ctx.channel().remoteAddress()).getPort());
             cMsg.setHost(((InetSocketAddress) ctx.channel().remoteAddress()).getHostName());
             cMsg.setDirection(CarbonMessage.RESPONSE);
             cMsg.setCarbonCallback(callback);
+
             Pipe pipe = new PipeImpl(queuesize);
+
             cMsg.setPipe(pipe);
-            HttpResponse httpResponse = (HttpResponse) msg;
             cMsg.setDirection(CarbonMessage.RESPONSE);
-
-
             cMsg.setProperty(Constants.HTTP_STATUS_CODE, httpResponse.getStatus().code());
             cMsg.setProperty(Constants.TRANSPORT_HEADERS, Util.getHeaders(httpResponse));
 
+            if (continueCallback != null) {
+                continueCallback.done(cMsg);
+            }
             ringBuffer.publishEvent(new CarbonEventPublisher(cMsg));
         } else {
             HTTPContentChunk chunk;
@@ -112,5 +117,9 @@ public class TargetHandler extends ChannelInboundHandlerAdapter {
 
     public void setTargetChannel(TargetChannel targetChannel) {
         this.targetChannel = targetChannel;
+    }
+
+    public void setContinueCallback(CarbonCallback continueCallback) {
+        this.continueCallback = continueCallback;
     }
 }
