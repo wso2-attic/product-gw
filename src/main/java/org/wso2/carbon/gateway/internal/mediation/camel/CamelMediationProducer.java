@@ -61,12 +61,17 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         }
     }
 
+    /**
+     * send request to backend. when response in received callback done method will be invoked
+     *
+     * @param exchange camel message exchange
+     * @param callback when the response is received from backend callback done method will be invoked
+     */
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
         carbonCamelMessageUtil.setCarbonHeadersToBackendRequest(exchange, host, port, uri);
-        //setCarbonHeaders(exchange);
-        engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
-                new NettyHttpBackEndCallback(exchange, callback));
+        engine.getSender()
+              .send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         return false;
     }
 
@@ -84,16 +89,23 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
             this.callback = callback;
         }
 
-        //This will be called when the backend response arrived
+        /**
+         * Invoked when the backend response arrived
+         *
+         * @param responseCmsg response carbon message
+         */
         @Override
-        public void done(CarbonMessage cMsg) {
-            if (cMsg != null) {
+        public void done(CarbonMessage responseCmsg) {
+            if (responseCmsg != null) {
                 Map<String, Object> transportHeaders =
-                        (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
+                        (Map<String, Object>) responseCmsg.getProperty(Constants.TRANSPORT_HEADERS);
                 if (transportHeaders != null) {
+                    CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
+                    responseCmsg.setProperty(Constants.SRC_HNDLR, request.getProperty(Constants.SRC_HNDLR));
+                    responseCmsg.setProperty(Constants.DISRUPTOR, request.getProperty(Constants.DISRUPTOR));
+                    responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX, request.getProperty(Constants.CHNL_HNDLR_CTX));
                     carbonCamelMessageUtil.setCamelHeadersToBackendResponse(exchange, transportHeaders);
-                    //exchange.getOut().setHeaders(transportHeaders);
-                    exchange.getOut().setBody(cMsg);
+                    exchange.getOut().setBody(responseCmsg);
                 } else {
                     log.warn("Backend response : Received empty headers in carbon message...");
                 }
