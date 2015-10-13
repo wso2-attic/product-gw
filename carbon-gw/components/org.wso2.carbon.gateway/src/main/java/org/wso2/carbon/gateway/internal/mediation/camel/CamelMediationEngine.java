@@ -35,19 +35,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
  */
-@SuppressWarnings("unchecked") public class CamelMediationEngine implements CarbonMessageProcessor {
+@SuppressWarnings("unchecked")
+public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
-    private CamelMediationConsumer consumer = null;
     private TransportSender sender;
 
     public CamelMediationEngine(TransportSender sender) {
         this.sender = sender;
-        // this.sender.setCarbonMessageProcessor(this);
     }
 
-    //Client messages will receive here
+    /**
+     * Client messages will receive here
+     *
+     * @param cMsg            carbon message implementation
+     * @param requestCallback callback object to notify response is ready
+     */
     public boolean receive(CarbonMessage cMsg, CarbonCallback requestCallback) {
         //start mediation
         if (log.isDebugEnabled()) {
@@ -58,14 +62,13 @@ import java.util.concurrent.ConcurrentHashMap;
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
-            // we want to handle the UoW
+            //need to close the unit of work finally
             try {
                 consumer.createUoW(exchange);
             } catch (Exception e) {
                 log.error("Unit of Work creation failed");
             }
             processAsynchronously(exchange, consumer, requestCallback);
-
         }
         return true;
     }
@@ -76,12 +79,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
     private void processAsynchronously(final Exchange exchange, final CamelMediationConsumer consumer,
                                        final CarbonCallback requestCallback) {
-        consumer.getAsyncProcessor().process(exchange, done -> {
 
+        consumer.getAsyncProcessor().process(exchange, done -> {
             CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
             Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
             mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
-
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
@@ -91,14 +93,11 @@ import java.util.concurrent.ConcurrentHashMap;
     }
 
     private CamelMediationConsumer decideConsumer(String uri) {
-        if (consumer != null) {
-            return consumer;
-        }
+
         if (consumers.size() == 1) {
             String key = consumers.keySet().iterator().next();
             if (uri.contains(key)) {
-                consumer = consumers.get(key);
-                return consumer;
+                return consumers.get(key);
             }
         }
         for (String key : consumers.keySet()) {
@@ -106,7 +105,7 @@ import java.util.concurrent.ConcurrentHashMap;
                 return consumers.get(key);
             }
         }
-        log.info("No route found for the message URI : " + uri);
+        log.warn("No route found for the message URI : " + uri);
         return null;
     }
 

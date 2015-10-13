@@ -38,15 +38,22 @@ public class CarbonCamelMessageUtil {
 
     private static Logger log = LoggerFactory.getLogger(CarbonCamelMessageUtil.class);
 
-    //get carbon headers from client request and set in the camel exchange in message
+    /**
+     * Get carbon headers from client request and set in the camel exchange in message
+     *
+     * @param exchange         camel exchange
+     * @param transportHeaders http headers
+     * @param request          http request carbon message
+     */
     public void setCamelHeadersToClientRequest(Exchange exchange, Map<String, Object> transportHeaders,
                                                CarbonMessage request) {
-        //exchange.getIn().setHeaders(transportHeaders);
-
         ConcurrentHashMap<String, Object> headers = new ConcurrentHashMap<>();
 
-        if (request.getProperty("HTTP_METHOD") != null) {
-            headers.put(Exchange.HTTP_METHOD, request.getProperty("HTTP_METHOD"));
+        if (request.getProperty(Constants.HTTP_METHOD) != null) {
+            headers.put(Exchange.HTTP_METHOD, request.getProperty(Constants.HTTP_METHOD));
+        }
+        if (request.getProperty(Constants.HTTP_VERSION) != null) {
+            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(Constants.HTTP_VERSION));
         }
 
         // strip query parameters from the uri
@@ -61,7 +68,7 @@ public class CarbonCamelMessageUtil {
         //   http://servername/foo
         String http = request.getProtocol() + "://";
         if (!s.startsWith(http)) {
-            s = http + transportHeaders.get("Host") + s;
+            s = http + transportHeaders.get(Constants.HTTP_HOST) + s;
         }
 
         headers.put(Exchange.HTTP_URL, s);
@@ -78,7 +85,6 @@ public class CarbonCamelMessageUtil {
             if (path != null) {
                 // uri is path and query parameters
                 headers.put(Exchange.HTTP_URI, path);
-                //HTTP_PATH vs HTTP_URI ?
                 headers.put(Exchange.HTTP_PATH, path);
             }
             if (uri.getQuery() != null) {
@@ -89,18 +95,23 @@ public class CarbonCamelMessageUtil {
             }
         }
 
-        if (transportHeaders.get("Content-Type") != null) {
-            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get("Content-Type"));
+        if (transportHeaders.get(Constants.HTTP_CONTENT_TYPE) != null) {
+            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(Constants.HTTP_CONTENT_TYPE));
         }
-        if (transportHeaders.get("SOAPAction") != null) {
-            headers.put(Exchange.SOAP_ACTION, transportHeaders.get("SOAPAction"));
+        if (transportHeaders.get(Constants.HTTP_SOAP_ACTION) != null) {
+            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(Constants.HTTP_SOAP_ACTION));
+        }
+        if (transportHeaders.get(Constants.HTTP_CONTENT_ENCODING) != null) {
+            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(Constants.HTTP_CONTENT_ENCODING));
         }
 
         Iterator it = transportHeaders.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            if (!"Content-Type".equals(pair.getKey()) && !"SOAPAction".equals(pair.getKey())) {
+            if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
+                !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -109,7 +120,14 @@ public class CarbonCamelMessageUtil {
         exchange.getIn().setHeaders(headers);
     }
 
-    //get camel headers from mediated request and set in carbon message
+    /**
+     * Get camel headers from mediated request and set in carbon message
+     *
+     * @param exchange camel exchange
+     * @param host     endpoint host address
+     * @param port     endpoint port
+     * @param uri      endpoint uri
+     */
     public void setCarbonHeadersToBackendRequest(Exchange exchange, String host, int port, String uri) {
 
         CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
@@ -128,9 +146,15 @@ public class CarbonCamelMessageUtil {
                 Map.Entry pair = (Map.Entry) it.next();
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
-                    carbonBackEndRequestHeaders.put("Content-Type", pair.getValue());
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_TYPE, pair.getValue());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
-                    carbonBackEndRequestHeaders.put("SOAPAction", pair.getValue());
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_SOAP_ACTION, pair.getValue());
+                } else if (key.equals(Exchange.CONTENT_ENCODING)) {
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_ENCODING, pair.getValue());
+                } else if (key.equals(Exchange.HTTP_METHOD)) {
+                    request.setProperty(Constants.HTTP_METHOD, pair.getValue());
+                } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
+                    request.setProperty(Constants.HTTP_VERSION, pair.getValue());
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue());
                 }
@@ -138,16 +162,21 @@ public class CarbonCamelMessageUtil {
             }
 
             if (port != 80) {
-                carbonBackEndRequestHeaders.put("Host", host + ":" + port);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host + ":" + port);
             } else {
-                carbonBackEndRequestHeaders.put("Host", host);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host);
             }
 
             request.setProperty(Constants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
         }
     }
 
-    //get carbon headers from backend response and set in camel exchange out message
+    /**
+     * Get carbon headers from backend response and set in camel exchange out message
+     *
+     * @param exchange         camel exchange
+     * @param transportHeaders backend response http headers
+     */
     public void setCamelHeadersToBackendResponse(Exchange exchange, Map<String, Object> transportHeaders) {
         exchange.getOut().setHeaders(transportHeaders);
     }

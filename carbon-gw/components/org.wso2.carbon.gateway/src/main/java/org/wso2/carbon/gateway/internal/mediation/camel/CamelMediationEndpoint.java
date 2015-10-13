@@ -32,8 +32,6 @@ import java.util.Map;
  */
 public class CamelMediationEndpoint extends DefaultEndpoint {
 
-    //private static Logger LOG = LoggerFactory.getLogger(CamelMediationEndpoint.class);
-
     private CamelMediationEngine engine;
     private CarbonCamelMessageUtil carbonCamelMessageUtil;
 
@@ -44,12 +42,10 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     }
 
     public Producer createProducer() throws Exception {
-        //CamelMediationProducer producer = new CamelMediationProducer(this, engine);
         return new CamelMediationProducer(this, engine);
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        //CamelMediationConsumer consumer = new CamelMediationConsumer(this, processor, engine);
         return new CamelMediationConsumer(this, processor, engine);
     }
 
@@ -60,8 +56,6 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     public Exchange createExchange(Map<String, Object> headers, CarbonMessage cmsg) {
         Exchange exchange = createExchange();
         carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
-        //carbonCamelMessageUtil.setCamelRequestBody(exchange, cmsg);
-        //addHeadersToExchange(exchange.getIn(), headers);
         exchange.getIn().setBody(cmsg);
         return exchange;
     }
