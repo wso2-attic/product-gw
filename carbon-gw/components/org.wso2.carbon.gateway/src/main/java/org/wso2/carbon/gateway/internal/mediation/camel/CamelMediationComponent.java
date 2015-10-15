@@ -18,15 +18,19 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
+import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.spi.RestConsumerFactory;
 
 import java.util.Map;
 
 /**
  * Represents the component that manages {@link CamelMediationEndpoint}.
  */
-public class CamelMediationComponent extends DefaultComponent {
+public class CamelMediationComponent extends DefaultComponent implements RestConsumerFactory {
 
     CamelMediationEngine engine;
 
@@ -38,5 +42,14 @@ public class CamelMediationComponent extends DefaultComponent {
         Endpoint endpoint = new CamelMediationEndpoint(uri, this, engine);
         setProperties(endpoint, parameters);
         return endpoint;
+    }
+
+    public Consumer createConsumer(CamelContext camelContext, Processor processor,
+                                   String verb, String basePath, String uriTemplate,
+                                   String consumes, String produces, Map<String,
+            Object> parameters) throws Exception {
+
+        parameters.put(verb, basePath);
+        return null;
     }
 }

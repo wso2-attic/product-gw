@@ -20,9 +20,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.model.RoutesDefinition;
+import org.apache.camel.spring.SpringCamelContext;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
@@ -36,8 +37,6 @@ import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfig
 import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -49,8 +48,14 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
     private int queueSize = 32544;
     private ConnectionManager connectionManager;
 
-    public static final String CAMEL_ROUTING_CONFIG_FILE = "repository" + File.separator + "conf" + File.separator +
-                                                           "camel" + File.separator + "camel-routing.xml";
+    public static final String CAMEL_CONTEXT_CONFIG_FILE = "repository" + File.separator + "conf" +
+                                                           File.separator +
+                                                           "camel" + File.separator
+                                                           + "camel-context.xml";
+    public static final String CAMEL_ROUTING_CONFIG_FILE = "repository" + File.separator + "conf" +
+                                                           File.separator +
+                                                           "camel" + File.separator
+                                                           + "camel-routing.xml";
 
     public GatewayNettyInitializer() {
 
@@ -59,56 +64,52 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
     @Override
     public void setup(Map<String, String> parameters) {
 
-        NettySender.Config config = new NettySender.Config("netty-gw-sender").setQueueSize(this.queueSize);
+        NettySender.Config config = new NettySender.Config("netty-gw-sender").
+                setQueueSize(this.queueSize);
         BootstrapConfiguration.createBootStrapConfiguration(parameters);
         PoolConfiguration.createPoolConfiguration(parameters);
 
         connectionManager = ConnectionManager.getInstance();
 
         TransportSender sender = new NettySender(config, connectionManager);
-        CamelContext context = new DefaultCamelContext();
-        context.disableJMX();
-        CamelMediationEngine engine = new CamelMediationEngine(sender);
-        context.addComponent("wso2-gw", new CamelMediationComponent(engine));
 
-        FileInputStream fis = null;
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+                new String[]{CAMEL_CONTEXT_CONFIG_FILE});
         try {
-            fis = new FileInputStream(CAMEL_ROUTING_CONFIG_FILE);
-            RoutesDefinition routes = context.loadRoutesDefinition(fis);
-            context.addRouteDefinitions(routes.getRoutes());
-            context.start();
+            CamelContext camelContext = SpringCamelContext.springCamelContext(applicationContext);
+
+            CamelMediationEngine engine = new CamelMediationEngine(sender);
+            camelContext.addComponent("wso2-gw", new CamelMediationComponent(engine));
+
+
+
+
+            camelContext.start();
+            if (parameters != null) {
+                DisruptorConfig disruptorConfig =
+                        new DisruptorConfig(
+                                parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
+                                parameters.get(Constants.DISRUPTOR_COUNT),
+                                parameters.get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
+                                parameters.get(Constants.WAIT_STRATEGY),
+                                Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
+                        DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND,
+                                                  disruptorConfig, engine);
+                String queueSize = parameters.get(Constants.CONTENT_QUEUE_SIZE);
+                if (queueSize != null) {
+                    this.queueSize = Integer.parseInt(queueSize);
+                }
+            } else {
+                log.warn("Disruptor specific parameters are not specified in " +
+                         "configuration hence using default configs");
+                DisruptorConfig disruptorConfig = new DisruptorConfig();
+                DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND,
+                                                  disruptorConfig, engine);
+            }
         } catch (Exception e) {
             String msg = "Error while loading " + CAMEL_ROUTING_CONFIG_FILE + " configuration file";
             throw new RuntimeException(msg, e);
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    log.error("No Connection to close", e);
-                }
-            }
         }
-
-        if (parameters != null) {
-            DisruptorConfig disruptorConfig =
-                       new DisruptorConfig(parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
-                                           parameters.get(Constants.DISRUPTOR_COUNT),
-                                           parameters.get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
-                                           parameters.get(Constants.WAIT_STRATEGY),
-                                           Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
-            DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND, disruptorConfig, engine);
-            String queueSize = parameters.get(Constants.CONTENT_QUEUE_SIZE);
-            if (queueSize != null) {
-                this.queueSize = Integer.parseInt(queueSize);
-            }
-        } else {
-            log.warn("Disruptor specific parameters are not specified in configuration hence using default configs");
-            DisruptorConfig disruptorConfig = new DisruptorConfig();
-            DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND, disruptorConfig, engine);
-        }
-
-
     }
 
     @Override
