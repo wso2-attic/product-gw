@@ -23,13 +23,11 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorFactory;
-import org.wso2.carbon.gateway.internal.transport.sender.NettySender;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.BootstrapConfiguration;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfiguration;
@@ -59,17 +57,13 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
     @Override
     public void setup(Map<String, String> parameters) {
 
-        NettySender.Config config = new NettySender.Config("netty-gw-sender").setQueueSize(this.queueSize);
         BootstrapConfiguration.createBootStrapConfiguration(parameters);
         PoolConfiguration.createPoolConfiguration(parameters);
 
-        connectionManager = ConnectionManager.getInstance();
-
-        TransportSender sender = new NettySender(config, connectionManager);
         CamelContext context = new DefaultCamelContext();
         context.disableJMX();
-        CamelMediationEngine engine = new CamelMediationEngine(sender);
-        context.addComponent("wso2-gw", new CamelMediationComponent(engine));
+        context.addComponent("wso2-gw", new CamelMediationComponent());
+        log.info("This is working :D");
 
         FileInputStream fis = null;
         try {
@@ -90,13 +84,17 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             }
         }
 
+        CamelMediationComponent component = (CamelMediationComponent) context.getComponent("wso2-gw");
+        CamelMediationEngine engine = component.getEngine();
+        connectionManager = component.getConnectionManager();
+
         if (parameters != null) {
             DisruptorConfig disruptorConfig =
-                       new DisruptorConfig(parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
-                                           parameters.get(Constants.DISRUPTOR_COUNT),
-                                           parameters.get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
-                                           parameters.get(Constants.WAIT_STRATEGY),
-                                           Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
+                    new DisruptorConfig(parameters.get(Constants.DISRUPTOR_BUFFER_SIZE),
+                                        parameters.get(Constants.DISRUPTOR_COUNT),
+                                        parameters.get(Constants.DISRUPTOR_EVENT_HANDLER_COUNT),
+                                        parameters.get(Constants.WAIT_STRATEGY),
+                                        Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
             DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND, disruptorConfig, engine);
             String queueSize = parameters.get(Constants.CONTENT_QUEUE_SIZE);
             if (queueSize != null) {
