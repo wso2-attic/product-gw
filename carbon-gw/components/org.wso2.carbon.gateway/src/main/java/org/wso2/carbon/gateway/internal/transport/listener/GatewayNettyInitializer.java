@@ -63,7 +63,6 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
         CamelContext context = new DefaultCamelContext();
         context.disableJMX();
         context.addComponent("wso2-gw", new CamelMediationComponent());
-        log.info("This is working :D");
 
         FileInputStream fis = null;
         try {
