@@ -16,8 +16,7 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +28,7 @@
     </parent>
 
     <artifactId>org.wso2.carbon.gateway.feature</artifactId>
-    <packaging>pom</packaging>
+    <packaging>carbon-feature</packaging>
     <name>WSO2 Carbon - Gateway Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the Gateway feature</description>
@@ -95,56 +94,99 @@
             <groupId>commons-pool.wso2</groupId>
             <artifactId>commons-pool</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.gateway</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.wso2.maven</groupId>
-                <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
+                <groupId>org.wso2.carbon.maven</groupId>
+                <artifactId>carbon-feature-plugin</artifactId>
+                <version>${carbon.feature.plugin.version}</version>
+                <extensions>true</extensions>
                 <executions>
                     <execution>
                         <id>1-p2-feature-generation</id>
                         <goals>
-                            <goal>p2-feature-gen</goal>
+                            <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.gateway</id>
-                            <propertiesFile>../etc/feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>
-                                        org.wso2.carbon.p2.category.type:server
-                                    </propertyDef>
-                                    <propertyDef>
-                                        org.eclipse.equinox.p2.type.group:false
-                                    </propertyDef>
-                                </properties>
-                            </adviceFile>
+
+                            <propertyFile>../etc/feature.properties</propertyFile>
+                            <adviceFileContents>
+                                <advice>
+                                    <name>org.wso2.carbon.p2.category.type</name>
+                                    <value>server</value>
+                                </advice>
+                                <advice>
+                                    <name>org.eclipse.equinox.p2.type.group</name>
+                                    <value>false</value>
+                                </advice>
+                            </adviceFileContents>
                             <bundles>
-
-                                <bundleDef>org.wso2.eclipse.osgi:org.eclipse.osgi</bundleDef>
-                                <bundleDef>org.wso2.eclipse.osgi:org.eclipse.osgi.services</bundleDef>
-
-                                <bundleDef>io.netty:netty-common</bundleDef>
-                                <bundleDef>io.netty:netty-transport</bundleDef>
-                                <bundleDef>io.netty:netty-codec</bundleDef>
-                                <bundleDef>io.netty:netty-codec-http</bundleDef>
-                                <bundleDef>io.netty:netty-handler</bundleDef>
-                                <bundleDef>io.netty:netty-buffer</bundleDef>
-
-                                <bundleDef>org.wso2.orbit.com.lmax:disruptor</bundleDef>
-                                <bundleDef>org.apache.camel:camel-core</bundleDef>
-
-                                <bundleDef>org.slf4j:slf4j-api</bundleDef>
-                                <bundleDef>org.slf4j:slf4j-log4j12</bundleDef>
-
-                                <bundleDef>commons-pool.wso2:commons-pool</bundleDef>
-
-                                <bundleDef>org.wso2.carbon.transport:org.wso2.carbon.transport.http.netty</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.gateway</bundleDef>
-
+                                <bundle>
+                                    <symbolicName>org.eclipse.osgi</symbolicName>
+                                    <version>${equinox.osgi.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.eclipse.osgi.services</symbolicName>
+                                    <version>${equinox.osgi.services.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.common</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.transport</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.codec</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.codec-http</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.handler</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>io.netty.buffer</symbolicName>
+                                    <version>${netty.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>disruptor</symbolicName>
+                                    <version>${disruptor.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.apache.camel.camel-core</symbolicName>
+                                    <version>${camel.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>slf4j.api</symbolicName>
+                                    <version>${slf4j.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>slf4j.log4j12</symbolicName>
+                                    <version>${slf4j.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-pool</symbolicName>
+                                    <version>${commons.pool.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.transport.http.netty</symbolicName>
+                                    <version>${org.wso2.carbon.transport.http.netty.osgi.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.gateway</symbolicName>
+                                    <version>${carbon.gateway.osgi.version}</version>
+                                </bundle>
                             </bundles>
                         </configuration>
                     </execution>
