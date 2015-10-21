@@ -38,15 +38,15 @@
     <dependencies>
         <!-- Netty transport should be a feature of its own -->
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.transport</groupId>
             <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
+            <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
+            <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
@@ -131,8 +131,8 @@
                             </adviceFile>
                             <bundles>
 
-                                <bundleDef>org.eclipse.osgi:org.eclipse.osgi</bundleDef>
-                                <bundleDef>org.eclipse.osgi:org.eclipse.osgi.services</bundleDef>
+                                <bundleDef>org.wso2.eclipse.osgi:org.eclipse.osgi</bundleDef>
+                                <bundleDef>org.wso2.eclipse.osgi:org.eclipse.osgi.services</bundleDef>
 
                                 <bundleDef>io.netty:netty-common</bundleDef>
                                 <bundleDef>io.netty:netty-transport</bundleDef>
@@ -151,7 +151,7 @@
 
                                 <bundleDef>commons-pool.wso2:commons-pool</bundleDef>
 
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.transport.http.netty</bundleDef>
+                                <bundleDef>org.wso2.carbon.transport:org.wso2.carbon.transport.http.netty</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.gateway</bundleDef>
 
                             </bundles>
