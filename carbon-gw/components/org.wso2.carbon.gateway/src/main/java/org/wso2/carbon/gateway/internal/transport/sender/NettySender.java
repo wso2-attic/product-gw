@@ -31,6 +31,7 @@ import org.wso2.carbon.gateway.internal.transport.common.HttpRoute;
 import org.wso2.carbon.gateway.internal.transport.common.Util;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorFactory;
+import org.wso2.carbon.gateway.internal.transport.common.disruptor.publisher.CarbonEventPublisher;
 import org.wso2.carbon.gateway.internal.transport.listener.SourceHandler;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
@@ -80,13 +81,28 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setTargetChannel(targetChannel);
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
 
-
-             writeContent(outboundChannel, httpRequest, msg);
-
-
-
+            writeContent(outboundChannel, httpRequest, msg);
         } catch (Exception e) {
             log.error("Cannot processed Request to host " + route.toString(), e);
+
+            CarbonMessage cMsg = new CarbonMessage(Constants.PROTOCOL_NAME);
+
+            cMsg.setHost(msg.getHost());
+            cMsg.setPort(msg.getPort());
+
+            cMsg.setDirection(CarbonMessage.RESPONSE);
+            cMsg.setCarbonCallback(callback);
+            //Pipe pipe = new PipeImpl(config.queueSize);
+            //cMsg.setPipe(pipe);
+            cMsg.setPipe(msg.getPipe());
+
+            //Map<String, Object> transportHeaders = new HashMap<>();
+            //transportHeaders.put("Connection", "keep-alive");
+
+            cMsg.setProperty(Constants.TRANSPORT_HEADERS, msg.getProperty(Constants.TRANSPORT_HEADERS));
+            cMsg.setProperty(Constants.HTTP_STATUS_CODE, 408);
+
+            ringBuffer.publishEvent(new CarbonEventPublisher(cMsg));
         }
 
         return true;
