@@ -20,6 +20,9 @@ package org.wso2.carbon.gateway.internal.mediation.camel;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
+import org.wso2.carbon.gateway.internal.common.TransportSender;
+import org.wso2.carbon.gateway.internal.transport.sender.NettySender;
+import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 
 import java.util.Map;
 
@@ -28,15 +31,28 @@ import java.util.Map;
  */
 public class CamelMediationComponent extends DefaultComponent {
 
-    CamelMediationEngine engine;
+    private CamelMediationEngine engine;
+    private ConnectionManager connectionManager;
+    private int queueSize = 32544;
 
-    public CamelMediationComponent(CamelMediationEngine engine) {
-        this.engine = engine;
+    public CamelMediationComponent() {
+        NettySender.Config config = new NettySender.Config("netty-gw-sender").setQueueSize(this.queueSize);
+        connectionManager = ConnectionManager.getInstance();
+        TransportSender sender = new NettySender(config, connectionManager);
+        engine = new CamelMediationEngine(sender);
     }
 
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
         Endpoint endpoint = new CamelMediationEndpoint(uri, this, engine);
         setProperties(endpoint, parameters);
         return endpoint;
+    }
+
+    public CamelMediationEngine getEngine() {
+        return engine;
+    }
+
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 }

@@ -148,8 +148,8 @@ public class ConnectionManager {
                     channel = ChannelUtils.openChannel(future, httpRoute);
                 } catch (Exception e) {
                     log.error("Cannot establish connection with " + httpRoute.toString(), e);
-                    log.info("Reconnecting to " + httpRoute.toString());
-                    channel = ChannelUtils.openChannel(future, httpRoute);
+                    //log.info("Reconnecting to " + httpRoute.toString());
+                    //channel = ChannelUtils.openChannel(future, httpRoute);
                 } finally {
                     if (channel != null) {
                         targetChannel.setChannel(channel);
