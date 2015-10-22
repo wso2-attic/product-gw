@@ -3,53 +3,56 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <sourceFolder url="file://$MODULE_DIR$/target/maven-shared-archive-resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/target/maven-shared-archive-resources" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/dependency-maven-plugin-markers" />
+      <excludeFolder url="file://$MODULE_DIR$/target/findbugs" />
+      <excludeFolder url="file://$MODULE_DIR$/target/p2-repo" />
+      <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1444738101727" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1444890768454" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1444907043371" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1444985849997" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1444986740251" />
+      <excludeFolder url="file://$MODULE_DIR$/target/tmp.1445406788614" />
+      <excludeFolder url="file://$MODULE_DIR$/target/wso2carbon-kernel-5.0.0-SNAPSHOT" />
+      <excludeFolder url="file://$MODULE_DIR$/target/wso2gw-1.0.0-SNAPSHOT" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/osgi/org.osgi.core/5.0.0/org.osgi.core-5.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/wso2/carbon/org.wso2.carbon.launcher/5.0.0-SNAPSHOT/org.wso2.carbon.launcher-5.0.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/ops4j/pax/logging/pax-logging-api/1.7.2/pax-logging-api-1.7.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:6.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.wso2.carbon:org.wso2.carbon.launcher:5.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.ops4j.pax.logging:pax-logging-api:1.8.4" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.carbon:org.wso2.carbon.core:5.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.osgi:org.eclipse.osgi:3.10.2.v20150203-1939" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.osgi:org.eclipse.osgi.services:3.4.0.v20140312-2051" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.launcher.gtk.linux.x86:1.1.200.v20150204-1316" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.common:3.6.200.v20130402-1505" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.simpleconfigurator:1.1.0.v20131217-1203" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.util:1.0.500.v20130404-1337" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.ds:1.4.200.v20131126-2331" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.launcher:1.3.0.v20140415-2008" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.app:1.3.200.v20130910-1609" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.concurrent:1.1.0.v20130327-1442" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.frameworkadmin:2.0.100.v20131209-2144" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.frameworkadmin.equinox:1.0.500.v20131211-1531" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.console:1.1.0.v20140131-1639" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.gogo.command:0.10.0.v201209301215" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.gogo.shell:0.10.0.v201212101605" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.gogo.runtime:0.10.0.v201209301036" level="project" />
-    <orderEntry type="library" name="Maven: org.ops4j.pax.logging:pax-logging-service:1.8.4" level="project" />
-    <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
-    <orderEntry type="library" name="Maven: org.ops4j.pax.logging:pax-logging-log4j2:1.8.4" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.cm:1.1.0.v20131021-1936" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.preferences:3.5.200.v20140224-1527" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.registry:3.5.400.v20140428-1507" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.security:1.2.0.v20130424-1801" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.simpleconfigurator.manipulator:2.0.0.v20131217-1203" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.equinox:org.eclipse.equinox.p2.publisher:1.3.0.v20140911-0143" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.core:org.eclipse.core.contenttype:3.4.200.v20140207-1251" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.core:org.eclipse.core.expressions:3.4.600.v20140128-0851" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.core:org.eclipse.core.jobs:3.6.1.v20141014-1248" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.core:org.eclipse.core.runtime:3.10.0.v20140318-2214" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.ecf:org.eclipse.ecf:3.4.0.v20141221-2352" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.ecf:org.eclipse.ecf.filetransfer:5.0.0.v20141221-2352" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.ecf:org.eclipse.ecf.identity:3.4.0.v20141221-2352" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.ecf:org.eclipse.ecf.provider.filetransfer:3.2.200.v20141221-2352" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse:org.sat4j.core:2.3.5.v201308161310" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse:org.sat4j.pb:2.3.5.v201404071733" level="project" />
-    <orderEntry type="library" name="Maven: org.wso2.eclipse.osgi:org.eclipse.osgi.compatibility.state:1.0.1.v20140709-1414" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
