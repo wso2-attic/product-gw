@@ -152,7 +152,7 @@
                 <version>${camel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.ws.wso2</groupId>
+                <groupId>org.wso2.orbit.org.springframework.ws</groupId>
                 <artifactId>spring.framework</artifactId>
                 <version>${spring.orbit.version}</version>
             </dependency>

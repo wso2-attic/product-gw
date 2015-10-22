@@ -87,7 +87,7 @@
             <artifactId>camel-spring</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.ws.wso2</groupId>
+            <groupId>org.wso2.orbit.org.springframework.ws</groupId>
             <artifactId>spring.framework</artifactId>
         </dependency>
         <dependency>
@@ -144,7 +144,7 @@
                                 <bundleDef>org.wso2.orbit.com.lmax:disruptor</bundleDef>
                                 <bundleDef>org.apache.camel:camel-core</bundleDef>
                                 <bundleDef>org.apache.camel:camel-spring</bundleDef>
-                                <bundleDef>org.springframework.ws.wso2:spring.framework</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.springframework.ws:spring.framework</bundleDef>
 
                                 <bundleDef>org.slf4j:slf4j-api</bundleDef>
                                 <bundleDef>org.slf4j:slf4j-log4j12</bundleDef>
