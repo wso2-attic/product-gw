@@ -114,6 +114,14 @@
             <artifactId>camel-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.springframework.ws</groupId>
+            <artifactId>spring.framework</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -225,6 +233,7 @@
                                 org.apache.camel.*,
                                 org.apache.commons.pool.*,
                                 com.lmax.disruptor.*,
+                                org.springframework.context.*,
                                 org.slf4j.*
                             </Import-Package>
                             <_dsannotations>*</_dsannotations>

@@ -16,7 +16,8 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -83,6 +84,14 @@
             <artifactId>camel-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.springframework.ws</groupId>
+            <artifactId>spring.framework</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -93,10 +102,6 @@
         <dependency>
             <groupId>commons-pool.wso2</groupId>
             <artifactId>commons-pool</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.gateway</artifactId>
         </dependency>
     </dependencies>
 
@@ -135,6 +140,7 @@
                                     <symbolicName>org.eclipse.osgi.services</symbolicName>
                                     <version>${equinox.osgi.services.version}</version>
                                 </bundle>
+                                
                                 <bundle>
                                     <symbolicName>io.netty.common</symbolicName>
                                     <version>${netty.version}</version>
@@ -159,6 +165,7 @@
                                     <symbolicName>io.netty.buffer</symbolicName>
                                     <version>${netty.version}</version>
                                 </bundle>
+                                
                                 <bundle>
                                     <symbolicName>disruptor</symbolicName>
                                     <version>${disruptor.version}</version>
@@ -168,6 +175,15 @@
                                     <version>${camel.version}</version>
                                 </bundle>
                                 <bundle>
+                                    <symbolicName>org.apache.camel.camel-spring</symbolicName>
+                                    <version>${camel.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>spring.framework</symbolicName>
+                                    <version>${spring.orbit.version}</version>
+                                </bundle>
+                                
+                                <bundle>
                                     <symbolicName>slf4j.api</symbolicName>
                                     <version>${slf4j.version}</version>
                                 </bundle>
@@ -175,6 +191,7 @@
                                     <symbolicName>slf4j.log4j12</symbolicName>
                                     <version>${slf4j.version}</version>
                                 </bundle>
+                                
                                 <bundle>
                                     <symbolicName>commons-pool</symbolicName>
                                     <version>${commons.pool.version}</version>

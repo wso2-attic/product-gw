@@ -39,7 +39,7 @@
             <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
+                <updatePolicy>always</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
@@ -55,6 +55,7 @@
             <url>http://dist.wso2.org/snapshots/maven2</url>
         </pluginRepository>
     </pluginRepositories>
+
 
     <dependencyManagement>
         <dependencies>
@@ -143,6 +144,17 @@
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-core</artifactId>
                 <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-spring</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.springframework.ws</groupId>
+                <artifactId>spring.framework</artifactId>
+                <version>${spring.orbit.version}</version>
             </dependency>
 
             <dependency>
@@ -252,6 +264,7 @@
         <netty.version>4.0.30.Final</netty.version>
         <disruptor.version>3.3.2.wso2v2</disruptor.version>
         <camel.version>2.15.2</camel.version>
+        <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
         <slf4j.version>1.7.5</slf4j.version>
         <org.wso2.carbon.transport.http.netty.version>1.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
         <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT</org.wso2.carbon.transport.http.netty.osgi.version>
