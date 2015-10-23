@@ -53,7 +53,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         try {
             URL url = new URL(ObjectHelper.after(getEndpoint().getEndpointKey(), "://"));
             host = url.getHost();
-            port = url.getPort();
+            port = (url.getPort() == -1) ? 80 : url.getPort();
             uri = url.getPath();
             carbonCamelMessageUtil = endpoint.getCarbonCamelMessageUtil();
         } catch (MalformedURLException e) {
