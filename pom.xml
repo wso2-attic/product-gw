@@ -67,7 +67,8 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>wso2carbon-kernel</artifactId>
-                <version>${carbon.kernel.version}</version>
+				<version>${carbon.kernel.version}</version>
+				 <type>zip</type>
             </dependency>
 
             <dependency>
@@ -78,7 +79,8 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.gateway.feature</artifactId>
-                <version>${carbon.gateway.version}</version>
+				<version>${carbon.gateway.version}</version>
+				 <type>zip</type>
             </dependency>
 
             <dependency>
