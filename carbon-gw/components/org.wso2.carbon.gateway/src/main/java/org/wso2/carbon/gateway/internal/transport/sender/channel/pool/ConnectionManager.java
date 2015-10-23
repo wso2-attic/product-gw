@@ -84,7 +84,7 @@ public class ConnectionManager {
         config.minEvictableIdleTimeMillis = poolConfiguration.getMinEvictableIdleTime();
         config.whenExhaustedAction = poolConfiguration.getExhaustedAction();
         return new GenericObjectPool(new PoolableTargetChannelFactory(httpRoute, eventLoopGroup, eventLoopClass),
-                                     config);
+                config);
 
 
     }
@@ -112,7 +112,7 @@ public class ConnectionManager {
      * @throws Exception
      */
     public TargetChannel getTargetChannel(HttpRoute httpRoute, SourceHandler sourceHandler)
-               throws Exception {
+            throws Exception {
         Channel channel = null;
         TargetChannel targetChannel = null;
         ChannelHandlerContext ctx = sourceHandler.getInboundChannelContext();
@@ -211,7 +211,7 @@ public class ConnectionManager {
     public Map<String, GenericObjectPool> getTargetChannelPool() {
         if (poolManagementPolicy == PoolManagementPolicy.GLOBAL_ENDPOINT_CONNECTION_CACHING) {
             int ind = index.getAndIncrement() % poolCount;
-                return mapList.get(ind);
+            return mapList.get(ind);
         }
         return null;
     }

@@ -51,16 +51,16 @@ public class PoolConfiguration {
 
         if (parameters != null) {
             numberOfPools = parameters.get(Constants.NUMBER_OF_POOLS) != null ?
-                            Integer.parseInt(parameters.get(Constants.NUMBER_OF_POOLS)) : 0;
+                    Integer.parseInt(parameters.get(Constants.NUMBER_OF_POOLS)) : 0;
             maxActivePerPool = parameters.get(Constants.MAX_ACTIVE_CONNECTIONS_PER_POOL) != null ?
-                               Integer.parseInt(parameters.get(Constants.MAX_ACTIVE_CONNECTIONS_PER_POOL)) : -1;
+                    Integer.parseInt(parameters.get(Constants.MAX_ACTIVE_CONNECTIONS_PER_POOL)) : -1;
             minIdlePerPool = parameters.get(Constants.MIN_IDLE_CONNECTIONS_PER_POOL) != null ?
-                             Integer.parseInt
-                                        (parameters.get(Constants.MIN_IDLE_CONNECTIONS_PER_POOL)) : 0;
+                    Integer.parseInt
+                            (parameters.get(Constants.MIN_IDLE_CONNECTIONS_PER_POOL)) : 0;
             maxIdlePerPool = parameters.get(Constants.MAX_IDLE_CONNECTIONS_PER_POOL) != null ?
-                             Integer.parseInt(parameters.get(Constants.MAX_IDLE_CONNECTIONS_PER_POOL)) : 100;
+                    Integer.parseInt(parameters.get(Constants.MAX_IDLE_CONNECTIONS_PER_POOL)) : 100;
             minEvictableIdleTime = parameters.get(Constants.MIN_EVICTION_IDLE_TIME) != null ?
-                                   Integer.parseInt(parameters.get(Constants.MIN_EVICTION_IDLE_TIME)) : 5 * 60 * 1000L;
+                    Integer.parseInt(parameters.get(Constants.MIN_EVICTION_IDLE_TIME)) : 5 * 60 * 1000L;
 
         }
 

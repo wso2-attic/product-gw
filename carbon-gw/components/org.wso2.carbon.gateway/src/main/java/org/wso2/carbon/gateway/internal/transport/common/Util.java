@@ -24,6 +24,8 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+
+
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 
 import java.util.HashMap;
@@ -91,6 +93,27 @@ public class Util {
         Map<String, String> headerMap = (Map) msg.getProperty(Constants.TRANSPORT_HEADERS);
 
         Util.setHeaders(outgoingResponse, headerMap);
+
+        return outgoingResponse;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public static HttpResponse createHttp202Response() {
+        HttpVersion httpVersion = new HttpVersion(HTTP_1_1.text(), true);
+
+        int statusCode = 202;
+
+        HttpResponseStatus httpResponseStatus = new HttpResponseStatus(statusCode,
+                HttpResponseStatus.valueOf(statusCode).reasonPhrase());
+
+        DefaultHttpResponse outgoingResponse = new DefaultHttpResponse(httpVersion,
+                httpResponseStatus, false);
+
+
+        //Map<String, String> headerMap = (Map) msg.getProperty(Constants.TRANSPORT_HEADERS);
+
+        //Util.setHeaders(outgoingResponse, headerMap);
 
         return outgoingResponse;
     }

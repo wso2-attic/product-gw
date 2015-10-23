@@ -78,7 +78,7 @@ public class DisruptorConfig {
 
     public RingBuffer getDisruptor() {
         int ind = index.getAndIncrement() % noDisruptors;
-            return disruptorMap.get(ind);
+        return disruptorMap.get(ind);
     }
 
     public void addDisruptor(RingBuffer ringBuffer) {

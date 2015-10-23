@@ -18,12 +18,12 @@ package org.wso2.carbon.gateway.internal.common;
 /**
  * Callbacks are created in request path for execute in response path.
  * When response arrives callback methods should execute
- *
- * */
+ */
 public interface CarbonCallback {
 
     /**
      * Calls in response path   to do work for response
+     *
      * @param cMsg CarbonMessage to be processed
      */
     void done(CarbonMessage cMsg);

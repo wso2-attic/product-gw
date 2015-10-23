@@ -81,7 +81,18 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                                        final CarbonCallback requestCallback) {
 
         consumer.getAsyncProcessor().process(exchange, done -> {
-            CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
+            //CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
+            //Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
+            //mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
+            CarbonMessage mediatedResponse = null;
+            Object outMesgBody = exchange.getOut().getBody();
+            if (outMesgBody instanceof CarbonMessage) {
+                mediatedResponse = (CarbonMessage) exchange.getOut().getBody();
+            } else if (outMesgBody instanceof String) {
+                mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
+                mediatedResponse.setSimplePayload((String) outMesgBody);
+                //mediatedResponse.setContentStream(outMessage);
+            }
             Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
             mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
             try {

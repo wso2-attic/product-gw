@@ -68,6 +68,7 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>wso2carbon-kernel</artifactId>
                 <version>${carbon.kernel.version}</version>
+                <type>zip</type>
             </dependency>
 
             <dependency>
@@ -79,6 +80,7 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.gateway.feature</artifactId>
                 <version>${carbon.gateway.version}</version>
+                <type>zip</type>
             </dependency>
 
             <dependency>
@@ -171,6 +173,11 @@
                 <groupId>commons-pool.wso2</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons.pool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>${xml-apis-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -267,8 +274,9 @@
         <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
         <slf4j.version>1.7.5</slf4j.version>
         <org.wso2.carbon.transport.http.netty.version>1.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
-        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT</org.wso2.carbon.transport.http.netty.osgi.version>
-
+        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT
+        </org.wso2.carbon.transport.http.netty.osgi.version>
+        <xml-apis-version>1.4.01</xml-apis-version>
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
         <commons.pool.version>1.5.6.wso2v1</commons.pool.version>

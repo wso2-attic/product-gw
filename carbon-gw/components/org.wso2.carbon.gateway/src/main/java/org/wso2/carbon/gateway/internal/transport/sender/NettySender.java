@@ -65,7 +65,7 @@ public class NettySender implements TransportSender {
         RingBuffer ringBuffer = (RingBuffer) msg.getProperty(Constants.DISRUPTOR);
         if (ringBuffer == null) {
             DisruptorConfig disruptorConfig = DisruptorFactory.
-                       getDisruptorConfig(DisruptorFactory.DisruptorType.OUTBOUND);
+                    getDisruptorConfig(DisruptorFactory.DisruptorType.OUTBOUND);
             ringBuffer = disruptorConfig.getDisruptor();
         }
 
@@ -81,8 +81,7 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
 
 
-             writeContent(outboundChannel, httpRequest, msg);
-
+            writeContent(outboundChannel, httpRequest, msg);
 
 
         } catch (Exception e) {

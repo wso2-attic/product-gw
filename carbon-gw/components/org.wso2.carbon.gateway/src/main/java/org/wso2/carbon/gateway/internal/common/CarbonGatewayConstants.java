@@ -12,22 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-
-
 package org.wso2.carbon.gateway.internal.common;
 
-
 /**
- * Interface for Message Sender to the BE
+ * Class to keep the contants required for gateway implementation
  */
-public interface TransportSender {
-    /**
-     * Should include the logic for handover messages to BE
-     *
-     * @param msg      Mediated Request
-     * @param callback Carbon callback created by engine
-     * @return void
-     */
-    public boolean send(CarbonMessage msg, CarbonCallback callback);
-
+public class CarbonGatewayConstants {
+    public static final String ORIGINAL_MESSAGE = "ORIGINAL_MESSAGE";
+    public static final int AGGREGATED_HTTP_MESSAGE_MAX_SIZE = 1048576;
 }

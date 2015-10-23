@@ -21,8 +21,7 @@ package org.wso2.carbon.gateway.internal.common;
 public interface CarbonMessageProcessor {
 
     /**
-     *
-     * @param msg CarbopnMessage received for processing
+     * @param msg      CarbopnMessage received for processing
      * @param callback Callback recived from transport layer to the engine.
      * @return void
      * @throws Exception

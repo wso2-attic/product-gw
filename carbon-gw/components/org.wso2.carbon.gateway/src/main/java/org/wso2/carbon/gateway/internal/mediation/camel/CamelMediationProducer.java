@@ -70,8 +70,10 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
         carbonCamelMessageUtil.setCarbonHeadersToBackendRequest(exchange, host, port, uri);
-        engine.getSender()
-              .send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
+        engine.getSender().send(((CamelHttp4Message) exchange.getIn()).getCarbonMessage(),
+                new NettyHttpBackEndCallback(exchange, callback));
+        //engine.getSender()
+        //.send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         return false;
     }
 

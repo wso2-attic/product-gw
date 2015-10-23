@@ -26,6 +26,7 @@ import com.lmax.disruptor.TimeoutBlockingWaitStrategy;
 import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
+
 import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.event.CarbonDisruptorEvent;
@@ -50,13 +51,13 @@ public class DisruptorFactory {
         WaitStrategy inbounsWaitStrategy = getWaitStrategy(disruptorConfig.getDisruptorWaitStrategy());
         for (int i = 0; i < disruptorConfig.getNoDisruptors(); i++) {
             ExecutorService executorService =
-                       Executors.newFixedThreadPool(disruptorConfig.getNoOfEventHandlersPerDisruptor());
+                    Executors.newFixedThreadPool(disruptorConfig.getNoOfEventHandlersPerDisruptor());
             Disruptor disruptor =
-                       new Disruptor<>(CarbonDisruptorEvent.EVENT_FACTORY,
-                                       disruptorConfig.getBufferSize(),
-                                       executorService,
-                                       ProducerType.MULTI,
-                                       inbounsWaitStrategy);
+                    new Disruptor<>(CarbonDisruptorEvent.EVENT_FACTORY,
+                            disruptorConfig.getBufferSize(),
+                            executorService,
+                            ProducerType.MULTI,
+                            inbounsWaitStrategy);
             ExceptionHandler exh = new GenericExceptionHandler();
             EventHandler[] eventHandlers = new EventHandler[disruptorConfig.getNoOfEventHandlersPerDisruptor()];
             for (int j = 0; j < disruptorConfig.getNoOfEventHandlersPerDisruptor(); j++) {

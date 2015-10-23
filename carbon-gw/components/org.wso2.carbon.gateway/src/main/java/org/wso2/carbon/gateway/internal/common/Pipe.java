@@ -15,6 +15,8 @@
 
 package org.wso2.carbon.gateway.internal.common;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
  * Interface for create Content Holders.
  */
@@ -23,5 +25,7 @@ public interface Pipe {
     ContentChunk getContent();
 
     void addContentChunk(ContentChunk chunk);
+
+    BlockingQueue<ContentChunk> getClonedContentQueue();
 
 }

@@ -33,9 +33,12 @@ public class PipeImpl implements Pipe {
 
     private BlockingQueue<ContentChunk> contentQueue;
 
+    private BlockingQueue<ContentChunk> clonedContentQueue;
+
 
     public PipeImpl(int blockingQueueSize) {
         this.contentQueue = new LinkedBlockingQueue<>(blockingQueueSize);
+        this.clonedContentQueue = new LinkedBlockingQueue<>(blockingQueueSize);
     }
 
 
@@ -52,5 +55,20 @@ public class PipeImpl implements Pipe {
         contentQueue.add(contentChunk);
     }
 
+    @Override
+    public BlockingQueue<ContentChunk> getClonedContentQueue() {
+        if (!this.contentQueue.isEmpty()) {
+            if (!clonedContentQueue.isEmpty()) {
+                clonedContentQueue.clear();
+            }
+            this.clonedContentQueue.addAll(this.contentQueue);
+        }
+        return this.clonedContentQueue;
+    }
 
+
+    public void clearContent() {
+        this.contentQueue.clear();
+        this.clonedContentQueue.clear();
+    }
 }
