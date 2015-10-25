@@ -23,28 +23,48 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://camel.apache.org/schema/spring
 http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="wso2-gw" class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
+    <bean id="wso2-gw"
+          class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
 
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
 
         <restConfiguration bindingMode="auto" component="wso2-gw" port="9090"/>
-        <rest path="/AccountManagement">
-            <post uri="/account">
-                <to uri="direct:addAccount"/>
-            </post>
-            <get uri="/customers">
-                <to uri="direct:getCustomer"/>
+        <rest path="/gw">
+            <get uri="/news">
+                <to uri="direct:getNews"/>
             </get>
+            <post uri="/news">
+                <to uri="direct:postNews"/>
+            </post>
         </rest>
 
+        <route id="http-routes">
+            <from uri="wso2-gw:/default"/>
+            <choice>
+                <when>
+                    <simple>${header.routeId} regex 'r1'</simple>
+                    <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+                </when>
+                <when>
+                    <simple>${header.routeId} regex 'r2'</simple>
+                    <to uri="wso2-gw:http://localhost:9000/service/Foo"/>
+                </when>
+                <otherwise>
+                    <to uri="wso2-gw:http://localhost:9000/noservice"/>
+                </otherwise>
+            </choice>
+        </route>
+
         <route>
-            <from uri="direct:addAccount"/>
-            <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+            <from uri="direct:getNews"/>
+            <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts/1"/>
         </route>
         <route>
-            <from uri="direct:getCustomer"/>
+            <from uri="direct:postNews"/>
             <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
         </route>
+
+
     </camelContext>
 
 </beans>
