@@ -31,6 +31,7 @@ import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.sender.NettySender;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,7 +62,7 @@ public class CamelMediationComponent extends DefaultComponent implements RestCon
             Object> parameters) throws Exception {
         String scheme = "http";
 
-        String url = "wso2-gw:%s://%s:%s/%s";
+        String url = "wso2-gw:%s://%s:%s/%s?httpMethodRestrict=%s";
         String host = HostUtils.getLocalHostName();
         int port = 0;
 
@@ -91,7 +92,9 @@ public class CamelMediationComponent extends DefaultComponent implements RestCon
         }
         path = FileUtil.stripLeadingSeparator(path);
 
-        url = String.format(url, scheme, host, port, path);
+        String restrict = verb.toUpperCase(Locale.US);
+
+        url = String.format(url, scheme, host, port, path, restrict);
 
         CamelMediationEndpoint camelMediationEndpoint = camelContext.getEndpoint(url, CamelMediationEndpoint.class);
         Consumer consumer = camelMediationEndpoint.createConsumer(processor);

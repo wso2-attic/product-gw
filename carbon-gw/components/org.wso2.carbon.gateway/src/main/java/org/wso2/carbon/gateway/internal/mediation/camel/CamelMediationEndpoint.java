@@ -34,6 +34,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
 
     private CamelMediationEngine engine;
     private CarbonCamelMessageUtil carbonCamelMessageUtil;
+    private String httpMethodRestrict;
 
     public CamelMediationEndpoint(String uri, CamelMediationComponent component, CamelMediationEngine engine) {
         super(uri, component);
@@ -48,6 +49,15 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     public Consumer createConsumer(Processor processor) throws Exception {
         return new CamelMediationConsumer(this, processor, engine);
     }
+
+    public String getHttpMethodRestrict() {
+        return httpMethodRestrict;
+    }
+
+    public void setHttpMethodRestrict(String httpMethodRestrict) {
+        this.httpMethodRestrict = httpMethodRestrict;
+    }
+
 
     public boolean isSingleton() {
         return true;

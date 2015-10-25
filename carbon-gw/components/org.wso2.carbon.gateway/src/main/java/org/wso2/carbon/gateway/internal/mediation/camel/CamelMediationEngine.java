@@ -58,7 +58,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.debug("Channel: {} received body: {}");
         }
         Map<String, Object> transportHeaders = (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
-        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI());
+
+        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(), cMsg.getProperty("HTTP_METHOD").toString());
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
@@ -69,6 +70,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 log.error("Unit of Work creation failed");
             }
             processAsynchronously(exchange, consumer, requestCallback);
+        } else {
+            log.error("Message consumer not found.");
         }
         return true;
     }
@@ -92,21 +95,22 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         });
     }
 
-    private CamelMediationConsumer decideConsumer(String uri) {
+    private CamelMediationConsumer decideConsumer(String uri, String httpMethod) {
 
-        if (consumers.size() == 1) {
-            String key = consumers.keySet().iterator().next();
-            if (uri.contains(key)) {
-                return consumers.get(key);
-            }
-        }
+        String defaultConsumer = "";
+        uri = uri.concat("?httpMethodRestrict=").concat(httpMethod);
+
         for (String key : consumers.keySet()) {
             if (key.contains(uri)) {
+                /* REST DSL consumer found */
                 return consumers.get(key);
             }
+            if (!key.contains("?httpMethodRestrict=")) {
+                defaultConsumer = key;
+            }
         }
-        log.warn("No route found for the message URI : " + uri);
-        return null;
+        /* No REST DSL. Return the default consumer.*/
+        return consumers.get(defaultConsumer);
     }
 
     public void addConsumer(String key, CamelMediationConsumer consumer) {
