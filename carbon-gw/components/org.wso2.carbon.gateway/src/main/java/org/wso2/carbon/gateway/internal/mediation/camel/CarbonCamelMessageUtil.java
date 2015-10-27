@@ -130,8 +130,8 @@ public class CarbonCamelMessageUtil {
      */
     public void setCarbonHeadersToBackendRequest(Exchange exchange, String host, int port, String uri) {
 
-        //CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
-        CarbonMessage request = ((CamelHttp4Message) exchange.getIn()).getCarbonMessage();
+        CarbonMessage request = (CarbonMessage) exchange.getIn().getBody(CarbonMessage.class);
+        //CarbonMessage request = ((CamelHttp4Message) exchange.getIn()).getCarbonMessage();
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
         if (request != null) {

@@ -92,6 +92,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
                 mediatedResponse.setSimplePayload((String) outMesgBody);
                 //mediatedResponse.setContentStream(outMessage);
+            } else {
+                mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
+                mediatedResponse.setSimplePayload("Error occurred");
             }
             Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
             mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
