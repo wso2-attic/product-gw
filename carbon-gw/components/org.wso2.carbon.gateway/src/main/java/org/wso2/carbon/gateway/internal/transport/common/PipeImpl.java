@@ -52,9 +52,4 @@ public class PipeImpl implements Pipe {
     public void addContentChunk(ContentChunk contentChunk) {
         contentQueue.add(contentChunk);
     }
-
-    @Override
-    public boolean hasContent() {
-        return (contentQueue.size() > 0);
-    }
 }

@@ -24,5 +24,4 @@ public interface Pipe {
 
     void addContentChunk(ContentChunk chunk);
 
-    boolean hasContent();
 }
