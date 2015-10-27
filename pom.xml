@@ -256,7 +256,7 @@
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!-- Dependencies -->
-        <carbon.kernel.version>5.0.0-m5</carbon.kernel.version>
+        <carbon.kernel.version>5.0.0-SNAPSHOT</carbon.kernel.version>
         <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
 
