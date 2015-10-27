@@ -16,18 +16,24 @@
 package org.wso2.carbon.gateway.internal.transport.sender;
 
 import com.lmax.disruptor.RingBuffer;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
+import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.HttpRoute;
+import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
 import org.wso2.carbon.gateway.internal.transport.common.Util;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorFactory;
@@ -36,6 +42,10 @@ import org.wso2.carbon.gateway.internal.transport.listener.SourceHandler;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 import org.wso2.carbon.transport.http.netty.listener.ssl.SSLConfig;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class creates connections with BE and send messages.
@@ -46,7 +56,6 @@ public class NettySender implements TransportSender {
     private Config config;
 
     private ConnectionManager connectionManager;
-
 
     public NettySender(Config conf, ConnectionManager connectionManager) {
         this.config = conf;
@@ -82,32 +91,36 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
 
             writeContent(outboundChannel, httpRequest, msg);
-        } catch (Exception e) {
-            log.error("Cannot processed Request to host " + route.toString(), e);
+        } catch (Exception failedCause) {
+            log.error("Cannot send Request to host " + route.toString(), failedCause);
 
             CarbonMessage cMsg = new CarbonMessage(Constants.PROTOCOL_NAME);
 
-            cMsg.setHost(msg.getHost());
-            cMsg.setPort(msg.getPort());
+            String cause = failedCause.getMessage();
+            ByteBuf bbuf = Unpooled.copiedBuffer(cause, StandardCharsets.UTF_8);
+            DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
+            HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
+            Pipe pipe = new PipeImpl(config.queueSize);
+            pipe.addContentChunk(contentChunk);
+            cMsg.setPipe(pipe);
 
             cMsg.setDirection(CarbonMessage.RESPONSE);
             cMsg.setCarbonCallback(callback);
-            //Pipe pipe = new PipeImpl(config.queueSize);
-            //cMsg.setPipe(pipe);
-            cMsg.setPipe(msg.getPipe());
 
-            //Map<String, Object> transportHeaders = new HashMap<>();
-            //transportHeaders.put("Connection", "keep-alive");
+            Map<String, Object> transportHeaders = new HashMap<>();
+            transportHeaders.put(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
+            transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
+            transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+            cMsg.setProperty(Constants.TRANSPORT_HEADERS, transportHeaders);
 
-            cMsg.setProperty(Constants.TRANSPORT_HEADERS, msg.getProperty(Constants.TRANSPORT_HEADERS));
-            cMsg.setProperty(Constants.HTTP_STATUS_CODE, 408);
+            cMsg.setProperty(Constants.HTTP_STATUS_CODE, 500);
 
             ringBuffer.publishEvent(new CarbonEventPublisher(cMsg));
         }
 
         return true;
     }
-
 
     private boolean writeContent(Channel channel, HttpRequest httpRequest, CarbonMessage carbonMessage) {
         channel.write(httpRequest);
@@ -125,7 +138,6 @@ public class NettySender implements TransportSender {
         return true;
     }
 
-
     /**
      * Class representing configs related to Transport Sender.
      */
@@ -136,7 +148,6 @@ public class NettySender implements TransportSender {
         private SSLConfig sslConfig;
 
         private int queueSize;
-
 
         public Config(String id) {
             if (id == null) {
@@ -149,7 +160,6 @@ public class NettySender implements TransportSender {
             return id;
         }
 
-
         public Config enableSsl(SSLConfig sslConfig) {
             this.sslConfig = sslConfig;
             return this;
@@ -159,7 +169,6 @@ public class NettySender implements TransportSender {
             return sslConfig;
         }
 
-
         public int getQueueSize() {
             return queueSize;
         }
@@ -168,7 +177,6 @@ public class NettySender implements TransportSender {
             this.queueSize = queuesize;
             return this;
         }
-
 
     }
 

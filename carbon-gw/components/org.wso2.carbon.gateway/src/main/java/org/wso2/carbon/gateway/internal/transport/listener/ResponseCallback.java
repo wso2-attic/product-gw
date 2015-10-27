@@ -40,16 +40,14 @@ public class ResponseCallback implements CarbonCallback {
         final Pipe pipe = cMsg.getPipe();
         final HttpResponse response = Util.createHttpResponse(cMsg);
         ctx.write(response);
-        if (pipe.hasContent()) {
-            while (true) {
-                HTTPContentChunk chunk = (HTTPContentChunk) pipe.getContent();
-                HttpContent httpContent = chunk.getHttpContent();
-                if (httpContent instanceof LastHttpContent) {
-                    ctx.writeAndFlush(httpContent);
-                    break;
-                }
-                ctx.write(httpContent);
+        while (true) {
+            HTTPContentChunk chunk = (HTTPContentChunk) pipe.getContent();
+            HttpContent httpContent = chunk.getHttpContent();
+            if (httpContent instanceof LastHttpContent) {
+                ctx.writeAndFlush(httpContent);
+                break;
             }
+            ctx.write(httpContent);
         }
     }
 }
