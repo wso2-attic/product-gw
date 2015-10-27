@@ -98,6 +98,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod) {
 
         String defaultConsumer = "";
+        //Keep the original URI to fallback when there is no REST DSL involved
+        String originalUri = uri;
         uri = uri.concat("?httpMethodRestrict=").concat(httpMethod);
 
         for (String key : consumers.keySet()) {
@@ -106,7 +108,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 return consumers.get(key);
             }
             if (!key.contains("?httpMethodRestrict=")) {
-                defaultConsumer = key;
+                //Set the default consumer only if key contains the original uri
+                if (key.contains(originalUri)) {
+                    defaultConsumer = key;
+                }
             }
         }
         /* No REST DSL. Return the default consumer.*/
