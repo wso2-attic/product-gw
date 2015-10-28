@@ -49,9 +49,9 @@
                 workerThreadPoolSize="8"
                 execHandlerThreadPoolSize="60">
             <parameters>
-                <parameter name="disruptor.wait.strategy">BLOCKING_WAIT</parameter>
+                <parameter name="disruptor.wait.strategy">BUSY_SPIN</parameter>
                 <parameter name="disruptor.buffer.size">1024</parameter>
-                <parameter name="disruptor.count">2</parameter>
+                <parameter name="disruptor.count">1</parameter>
                 <parameter name="disruptor.eventhandler.count">1</parameter>
             </parameters>
         </listener>

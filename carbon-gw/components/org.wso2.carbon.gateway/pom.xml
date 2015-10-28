@@ -114,6 +114,14 @@
             <artifactId>camel-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.springframework.ws</groupId>
+            <artifactId>spring.framework</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -218,13 +226,14 @@
                                 org.osgi.framework.*;version="${osgi.framework.import.version.range}",
                                 org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
                                 io.netty.*,
-                                org.wso2.carbon.transports.*,
+                                org.wso2.carbon.kernel.transports.*,
                                 org.wso2.carbon.transport.http.netty.*,
                                 org.apache.log4j.*,
                                 org.apache.commons.logging.*,
                                 org.apache.camel.*,
                                 org.apache.commons.pool.*,
                                 com.lmax.disruptor.*,
+                                org.springframework.context.*,
                                 org.slf4j.*
                             </Import-Package>
                             <_dsannotations>*</_dsannotations>

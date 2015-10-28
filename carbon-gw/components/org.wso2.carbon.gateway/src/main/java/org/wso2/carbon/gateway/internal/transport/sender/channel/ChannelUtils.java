@@ -37,10 +37,11 @@ public class ChannelUtils {
 
     private static final Logger log = LoggerFactory.getLogger(ChannelUtils.class);
 
+
     /**
      * Provides incomplete Netty channel future
      *
-     * @param targetChannel  Target channel which has channel specific parameters such as handler
+     * @param targetChannel   Target channel which has channel specific parameters such as handler
      * @param eventLoopGroup Event loop group of inbound IO workers
      * @param eventLoopClass Event loop class if Inbound IO Workers
      * @param httpRoute      Http Route which represents BE connections
@@ -58,6 +59,7 @@ public class ChannelUtils {
         clientBootstrap.option(ChannelOption.SO_REUSEADDR, bootstrapConfiguration.isSocketReuse());
         clientBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, bootstrapConfiguration.getConnectTimeOut());
 
+
         // set the pipeline factory, which creates the pipeline for each newly created channels
         TargetInitializer targetInitializer = new TargetInitializer();
         targetChannel.setTargetInitializer(targetInitializer);
@@ -69,6 +71,7 @@ public class ChannelUtils {
 
         return clientBootstrap.connect(new InetSocketAddress(httpRoute.getHost(), httpRoute.getPort()));
     }
+
 
     /**
      * Open Channel for BE
@@ -97,29 +100,21 @@ public class ChannelUtils {
             throw new Exception("Interrupted while waiting for " + "connection to " + httpRoute.toString());
         }
 
-        Channel channel = null;
 
-        if (channelFuture.isDone() && channelFuture.isSuccess()) {
-            channel = channelFuture.channel();
-            if (log.isDebugEnabled()) {
-                log.debug("Creating connector to address: {}", httpRoute.toString());
-            }
-        } else if (channelFuture.isDone() && channelFuture.isCancelled()) {
-            ConnectException cause = new ConnectException("Request Cancelled, " + httpRoute.toString());
-            if (channelFuture.cause() != null) {
-                cause.initCause(channelFuture.cause());
-            }
-            throw cause;
-        } else if (!channelFuture.isDone() && !channelFuture.isSuccess() &&
-                   !channelFuture.isCancelled() && (channelFuture.cause() == null)) {
-            throw new ConnectException("Connection timeout, " + httpRoute.toString());
-        } else {
-            ConnectException cause = new ConnectException("Connection refused, " + httpRoute.toString());
+        if (!channelFuture.isDone() || !channelFuture.isSuccess()) {
+            ConnectException cause = new ConnectException("Cannot connect to " + httpRoute.toString());
             if (channelFuture.cause() != null) {
                 cause.initCause(channelFuture.cause());
             }
             throw cause;
         }
+
+        Channel channel = channelFuture.channel();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Creating connector to address: {}", httpRoute.toString());
+        }
         return channel;
     }
+
 }

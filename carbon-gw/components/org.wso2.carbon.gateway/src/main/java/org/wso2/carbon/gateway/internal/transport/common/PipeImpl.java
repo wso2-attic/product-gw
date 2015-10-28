@@ -38,7 +38,7 @@ public class PipeImpl implements Pipe {
         this.contentQueue = new LinkedBlockingQueue<>(blockingQueueSize);
     }
 
-    @Override
+
     public ContentChunk getContent() {
         try {
             return contentQueue.take();
@@ -48,8 +48,9 @@ public class PipeImpl implements Pipe {
         }
     }
 
-    @Override
     public void addContentChunk(ContentChunk contentChunk) {
         contentQueue.add(contentChunk);
     }
+
+
 }
