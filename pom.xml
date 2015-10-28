@@ -256,7 +256,7 @@
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!-- Dependencies -->
-        <carbon.kernel.version>5.0.0-m5</carbon.kernel.version>
+        <carbon.kernel.version>5.0.0-m7</carbon.kernel.version>
         <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
 
@@ -275,7 +275,7 @@
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
         <commons.pool.version>1.5.6.wso2v1</commons.pool.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-        <carbon.feature.plugin.version>2.0.0-m1</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.0-alpha</carbon.feature.plugin.version>
     </properties>
 
     <modules>
