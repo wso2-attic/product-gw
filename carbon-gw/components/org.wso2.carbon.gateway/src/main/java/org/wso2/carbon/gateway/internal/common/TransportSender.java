@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+
 package org.wso2.carbon.gateway.internal.common;
+
 
 /**
  * Interface for Message Sender to the BE
@@ -21,11 +23,10 @@ package org.wso2.carbon.gateway.internal.common;
 public interface TransportSender {
     /**
      * Should include the logic for handover messages to BE
-     *
-     * @param msg      Mediated Request
+     * @param msg Mediated Request
      * @param callback Carbon callback created by engine
      * @return void
      */
-    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException;
+    public boolean send(CarbonMessage msg, CarbonCallback callback);
 
 }

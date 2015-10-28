@@ -27,7 +27,12 @@ import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
+import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
+import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,7 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
  */
-@SuppressWarnings("unchecked") public class CamelMediationEngine implements CarbonMessageProcessor {
+@SuppressWarnings("unchecked")
+public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
@@ -58,7 +64,9 @@ import java.util.concurrent.ConcurrentHashMap;
         }
         Map<String, Object> transportHeaders = (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
 
-        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(), cMsg.getProperty("HTTP_METHOD").toString());
+        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(),
+                                                         cMsg.getProperty("HTTP_METHOD").toString(),
+                                                         transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
@@ -94,27 +102,48 @@ import java.util.concurrent.ConcurrentHashMap;
         });
     }
 
-    private CamelMediationConsumer decideConsumer(String uri, String httpMethod) {
+    private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
+                                                  Map<String, Object> transportHeaders) {
 
-        String defaultConsumer = "";
-        //Keep the original URI to fallback when there is no REST DSL involved
-        String originalUri = uri;
-        uri = uri.concat("?httpMethodRestrict=").concat(httpMethod);
 
-        for (String key : consumers.keySet()) {
-            if (key.contains(uri)) {
-                /* REST DSL consumer found */
-                return consumers.get(key);
-            }
-            if (!key.contains("?httpMethodRestrict=")) {
-                //Set the default consumer only if key contains the original uri
-                if (key.contains(originalUri)) {
-                    defaultConsumer = key;
+        for (String consumerKey : consumers.keySet()) {
+            if (!consumerKey.contains("?httpMethodRestrict=")) {
+                if (uri.contains(consumerKey)) {
+                    return consumers.get(consumerKey);
                 }
             }
         }
-        /* No REST DSL. Return the default consumer.*/
-        return consumers.get(defaultConsumer);
+
+        /*Processing requests to REST interfaces */
+        for (String consumerKey : consumers.keySet()) {
+            if (consumerKey.contains("?httpMethodRestrict=")) {
+                Map<String, String> variables = new HashMap<String, String>();
+                URITemplate uriTemplate = null;
+                try {
+                    String[] urlTokens = consumerKey.split(":\\d\\d\\d\\d");
+                    if (urlTokens.length > 0) {
+                        String consumerContextPath = urlTokens[1];
+                        String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
+                        uriTemplate = new URITemplate(decodeConsumerURI);
+                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod , variables);
+                        if (variables.size() != 0) {
+                            for (Map.Entry<String, String> entry : variables.entrySet()) {
+                                transportHeaders.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                        if (isMatch) {
+                            return consumers.get(consumerKey);
+                        }
+                    }
+                } catch (URITemplateException e) {
+                    log.error("URI Template " + consumerKey + " is invalid. " + e);
+                } catch (UnsupportedEncodingException e) {
+                    log.error("URI Template " + consumerKey + " encoding error. " + e);
+                }
+            }
+        }
+
+        return null;
     }
 
     public void addConsumer(String key, CamelMediationConsumer consumer) {
@@ -124,4 +153,5 @@ import java.util.concurrent.ConcurrentHashMap;
     public void removeConsumer(String endpointKey) {
         consumers.remove(endpointKey);
     }
+
 }
