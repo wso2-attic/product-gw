@@ -23,6 +23,7 @@ import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
+import org.wso2.carbon.gateway.internal.common.CarbonException;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
@@ -54,7 +55,7 @@ public class NettySender implements TransportSender {
 
 
     @Override
-    public boolean send(CarbonMessage msg, CarbonCallback callback) {
+    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException {
 
         final HttpRequest httpRequest = Util.createHttpRequest(msg);
 
@@ -86,10 +87,11 @@ public class NettySender implements TransportSender {
 
 
         } catch (Exception e) {
-            log.error("Cannot processed Request to host " + route.toString(), e);
+            //log.error("Cannot processed Request to host " + route.toString(), e);
+            throw new CarbonException("Endpoint failed", e);
         }
 
-        return true;
+        return false;
     }
 
 
