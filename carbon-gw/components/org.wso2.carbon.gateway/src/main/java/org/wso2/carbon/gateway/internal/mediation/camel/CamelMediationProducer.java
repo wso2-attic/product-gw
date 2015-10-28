@@ -26,6 +26,7 @@ import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
+import org.wso2.carbon.gateway.internal.common.CarbonException;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 
@@ -36,8 +37,7 @@ import java.util.Map;
 /**
  * The CamelMediation producer handle the request and response with the backend.
  */
-@SuppressWarnings("unchecked")
-public class CamelMediationProducer extends DefaultAsyncProducer {
+@SuppressWarnings("unchecked") public class CamelMediationProducer extends DefaultAsyncProducer {
 
     private static Logger log = LoggerFactory.getLogger(CamelMediationProducer.class);
 
@@ -70,13 +70,19 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
         carbonCamelMessageUtil.setCarbonHeadersToBackendRequest(exchange, host, port, uri);
-        engine.getSender()
-              .send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
-        return false;
+        //This parameter is used to decide whether we need to continue processing in case of a failure (FO endpoint)
+        boolean syncNeeded = true;
+        try {
+            syncNeeded = engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
+                                                 new NettyHttpBackEndCallback(exchange, callback));
+        } catch (CarbonException cexp) {
+            //Set the exception to the exchange such that camel can decide on failover
+            exchange.setException(cexp);
+        }
+        return syncNeeded;
     }
 
-    @Override
-    public Endpoint getEndpoint() {
+    @Override public Endpoint getEndpoint() {
         return super.getEndpoint();
     }
 
@@ -94,8 +100,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
          *
          * @param responseCmsg response carbon message
          */
-        @Override
-        public void done(CarbonMessage responseCmsg) {
+        @Override public void done(CarbonMessage responseCmsg) {
             if (responseCmsg != null) {
                 Map<String, Object> transportHeaders =
                         (Map<String, Object>) responseCmsg.getProperty(Constants.TRANSPORT_HEADERS);

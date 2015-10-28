@@ -16,16 +16,23 @@
 package org.wso2.carbon.gateway.internal.common;
 
 /**
- * Interface for Message Sender to the BE
+ * Custom exception class for gateway specific exceptions
  */
-public interface TransportSender {
-    /**
-     * Should include the logic for handover messages to BE
-     *
-     * @param msg      Mediated Request
-     * @param callback Carbon callback created by engine
-     * @return void
-     */
-    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException;
+public class CarbonException extends Exception {
+
+    public CarbonException() {
+    }
+
+    public CarbonException(String message) {
+        super(message);
+    }
+
+    public CarbonException(Throwable cause) {
+        super(cause);
+    }
+
+    public CarbonException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

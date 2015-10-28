@@ -35,8 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
  */
-@SuppressWarnings("unchecked")
-public class CamelMediationEngine implements CarbonMessageProcessor {
+@SuppressWarnings("unchecked") public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
@@ -98,6 +97,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod) {
 
         String defaultConsumer = "";
+        //Keep the original URI to fallback when there is no REST DSL involved
+        String originalUri = uri;
         uri = uri.concat("?httpMethodRestrict=").concat(httpMethod);
 
         for (String key : consumers.keySet()) {
@@ -106,7 +107,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 return consumers.get(key);
             }
             if (!key.contains("?httpMethodRestrict=")) {
-                defaultConsumer = key;
+                //Set the default consumer only if key contains the original uri
+                if (key.contains(originalUri)) {
+                    defaultConsumer = key;
+                }
             }
         }
         /* No REST DSL. Return the default consumer.*/
