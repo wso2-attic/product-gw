@@ -23,6 +23,7 @@ import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
+import org.wso2.carbon.gateway.internal.common.CarbonException;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
@@ -46,15 +47,13 @@ public class NettySender implements TransportSender {
 
     private ConnectionManager connectionManager;
 
-
     public NettySender(Config conf, ConnectionManager connectionManager) {
         this.config = conf;
         this.connectionManager = connectionManager;
     }
 
-
     @Override
-    public boolean send(CarbonMessage msg, CarbonCallback callback) {
+    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException {
 
         final HttpRequest httpRequest = Util.createHttpRequest(msg);
 
@@ -80,18 +79,13 @@ public class NettySender implements TransportSender {
             targetChannel.getTargetHandler().setTargetChannel(targetChannel);
             targetChannel.getTargetHandler().setConnectionManager(connectionManager);
 
-
-             writeContent(outboundChannel, httpRequest, msg);
-
-
-
-        } catch (Exception e) {
-            log.error("Cannot processed Request to host " + route.toString(), e);
+            writeContent(outboundChannel, httpRequest, msg);
+        } catch (Exception failedCause) {
+            throw new CarbonException(failedCause.getMessage(), failedCause);
         }
 
-        return true;
+        return false;
     }
-
 
     private boolean writeContent(Channel channel, HttpRequest httpRequest, CarbonMessage carbonMessage) {
         channel.write(httpRequest);
@@ -109,7 +103,6 @@ public class NettySender implements TransportSender {
         return true;
     }
 
-
     /**
      * Class representing configs related to Transport Sender.
      */
@@ -120,7 +113,6 @@ public class NettySender implements TransportSender {
         private SSLConfig sslConfig;
 
         private int queueSize;
-
 
         public Config(String id) {
             if (id == null) {
@@ -133,7 +125,6 @@ public class NettySender implements TransportSender {
             return id;
         }
 
-
         public Config enableSsl(SSLConfig sslConfig) {
             this.sslConfig = sslConfig;
             return this;
@@ -143,7 +134,6 @@ public class NettySender implements TransportSender {
             return sslConfig;
         }
 
-
         public int getQueueSize() {
             return queueSize;
         }
@@ -152,7 +142,6 @@ public class NettySender implements TransportSender {
             this.queueSize = queuesize;
             return this;
         }
-
 
     }
 
