@@ -71,8 +71,10 @@ import java.util.concurrent.ConcurrentHashMap;
         }
         Map<String, Object> transportHeaders = (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
 
-        CamelMediationConsumer consumer =
-                decideConsumer(cMsg.getURI(), cMsg.getProperty("HTTP_METHOD").toString(), transportHeaders);
+
+        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(),
+                                                         cMsg.getProperty("HTTP_METHOD").toString(),
+                                                         transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
@@ -134,7 +136,8 @@ import java.util.concurrent.ConcurrentHashMap;
         });
     }
 
-    private CamelMediationConsumer decideConsumer(String uri, String httpMethod, Map<String, Object> transportHeaders) {
+    private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
+                                                  Map<String, Object> transportHeaders) {
 
         for (String consumerKey : consumers.keySet()) {
             if (!consumerKey.contains("?httpMethodRestrict=")) {
@@ -155,7 +158,7 @@ import java.util.concurrent.ConcurrentHashMap;
                         String consumerContextPath = urlTokens[1];
                         String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
                         uriTemplate = new URITemplate(decodeConsumerURI);
-                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod, variables);
+                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod , variables);
                         if (variables.size() != 0) {
                             for (Map.Entry<String, String> entry : variables.entrySet()) {
                                 transportHeaders.put(entry.getKey(), entry.getValue());

@@ -64,16 +64,6 @@
             <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
         </route>
 
-        <route id="failover">
-            <from uri="wso2-gw:/failover"/>
-            <loadBalance>
-                <failover roundRobin="false"/>
-                <to uri="wso2-gw:http://localhost:8280/services/echoproxy"/>
-                <to uri="wso2-gw:http://localhost:8080/services/echo"/>
-            </loadBalance>
-        </route>
-
-
     </camelContext>
 
 </beans>
