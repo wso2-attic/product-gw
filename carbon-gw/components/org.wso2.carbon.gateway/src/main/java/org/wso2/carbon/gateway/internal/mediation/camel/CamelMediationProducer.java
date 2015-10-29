@@ -70,9 +70,16 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
         carbonCamelMessageUtil.setCarbonHeadersToBackendRequest(exchange, host, port, uri);
-        engine.getSender()
-              .send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
-        return false;
+        //This parameter is used to decide whether we need to continue processing in case of a failure (FO endpoint)
+        boolean syncNeeded = true;
+        try {
+            syncNeeded = engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
+                                                 new NettyHttpBackEndCallback(exchange, callback));
+        } catch (Exception exp) {
+            //Set the exception to the exchange such that camel can decide on failover
+            exchange.setException(exp);
+        }
+        return syncNeeded;
     }
 
     @Override
