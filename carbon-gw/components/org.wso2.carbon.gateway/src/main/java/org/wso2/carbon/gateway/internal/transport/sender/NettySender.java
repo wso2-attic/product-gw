@@ -23,7 +23,7 @@ import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonException;
+import org.wso2.carbon.gateway.internal.common.GWException;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
@@ -53,7 +53,7 @@ public class NettySender implements TransportSender {
     }
 
     @Override
-    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException {
+    public boolean send(CarbonMessage msg, CarbonCallback callback) throws GWException {
 
         final HttpRequest httpRequest = Util.createHttpRequest(msg);
 
@@ -81,7 +81,7 @@ public class NettySender implements TransportSender {
 
             writeContent(outboundChannel, httpRequest, msg);
         } catch (Exception failedCause) {
-            throw new CarbonException(failedCause.getMessage(), failedCause);
+            throw new GWException(failedCause.getMessage(), failedCause);
         }
 
         return false;

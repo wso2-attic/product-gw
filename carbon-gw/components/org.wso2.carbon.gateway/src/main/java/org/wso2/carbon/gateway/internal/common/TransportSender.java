@@ -25,6 +25,6 @@ public interface TransportSender {
      * @param callback Carbon callback created by engine
      * @return void
      */
-    public boolean send(CarbonMessage msg, CarbonCallback callback) throws CarbonException;
+    public boolean send(CarbonMessage msg, CarbonCallback callback) throws GWException;
 
 }

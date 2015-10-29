@@ -18,20 +18,20 @@ package org.wso2.carbon.gateway.internal.common;
 /**
  * Custom exception class for gateway specific exceptions
  */
-public class CarbonException extends Exception {
+public class GWException extends Exception {
 
-    public CarbonException() {
+    public GWException() {
     }
 
-    public CarbonException(String message) {
+    public GWException(String message) {
         super(message);
     }
 
-    public CarbonException(Throwable cause) {
+    public GWException(Throwable cause) {
         super(cause);
     }
 
-    public CarbonException(String message, Throwable cause) {
+    public GWException(String message, Throwable cause) {
         super(message, cause);
     }
 
