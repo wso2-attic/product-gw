@@ -48,7 +48,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
  */
-@SuppressWarnings("unchecked") public class CamelMediationEngine implements CarbonMessageProcessor {
+@SuppressWarnings("unchecked")
+public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
@@ -158,7 +159,7 @@ import java.util.concurrent.ConcurrentHashMap;
                         String consumerContextPath = urlTokens[1];
                         String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
                         uriTemplate = new URITemplate(decodeConsumerURI);
-                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod , variables);
+                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod, variables);
                         if (variables.size() != 0) {
                             for (Map.Entry<String, String> entry : variables.entrySet()) {
                                 transportHeaders.put(entry.getKey(), entry.getValue());
