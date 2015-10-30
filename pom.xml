@@ -30,7 +30,7 @@
     <groupId>org.wso2.carbon</groupId>
     <artifactId>org.wso2.carbon.gateway.parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-alpha</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -257,8 +257,8 @@
 
         <!-- Dependencies -->
         <carbon.kernel.version>5.0.0-alpha</carbon.kernel.version>
-        <carbon.gateway.version>1.0.0-alpha</carbon.gateway.version>
-        <carbon.gateway.osgi.version>1.0.0.alpha</carbon.gateway.osgi.version>
+        <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
+        <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
@@ -268,8 +268,8 @@
         <camel.version>2.15.2</camel.version>
         <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <org.wso2.carbon.transport.http.netty.version>1.0.0-alpha</org.wso2.carbon.transport.http.netty.version>
-        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.alpha</org.wso2.carbon.transport.http.netty.osgi.version>
+        <org.wso2.carbon.transport.http.netty.version>1.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
+        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT</org.wso2.carbon.transport.http.netty.osgi.version>
 
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
