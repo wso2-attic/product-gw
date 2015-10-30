@@ -24,6 +24,7 @@ public interface TransportSender {
      * @param msg Mediated Request
      * @param callback Carbon callback created by engine
      * @return void
+     * @throws GWException Gateway exception to singal any failures to upper layers
      */
     public boolean send(CarbonMessage msg, CarbonCallback callback) throws GWException;
 

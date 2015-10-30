@@ -108,8 +108,8 @@ public class ConnectionManager {
      *
      * @param httpRoute     BE address
      * @param sourceHandler Incoming channel
-     * @return
-     * @throws Exception
+     * @return TargetChannel
+     * @throws Exception   Exception to notify any errors occur during retrieving the target channel
      */
     public TargetChannel getTargetChannel(HttpRoute httpRoute, SourceHandler sourceHandler)
                throws Exception {
