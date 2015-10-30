@@ -30,7 +30,8 @@ public class GatewayActivator implements BundleActivator {
 
     public void start(BundleContext bundleContext) throws Exception {
         Hashtable<String, String> httpInitParams = new Hashtable<>();
-        httpInitParams.put(CHANNEL_ID_KEY, "netty-gw");
+        httpInitParams.put(CHANNEL_ID_KEY, "netty-gw-https");
+        httpInitParams.put("channel.id.http", "netty-gw");
         GatewayNettyInitializer gatewayNettyInitializer = new GatewayNettyInitializer();
         bundleContext.registerService(CarbonNettyServerInitializer.class, gatewayNettyInitializer, httpInitParams);
     }

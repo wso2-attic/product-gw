@@ -28,7 +28,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
 
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
 
-        <restConfiguration bindingMode="auto" component="wso2-gw" port="9090"/>
+        <restConfiguration bindingMode="auto" scheme="https" component="wso2-gw" port="9292"/>
         <rest path="/gw">
             <get uri="/news">
                 <to uri="direct:getNews"/>
@@ -36,6 +36,11 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
             <post uri="/news">
                 <to uri="direct:postNews"/>
             </post>
+        </rest>
+        <rest path="/ssltest">
+            <get uri="/hello">
+                <to uri="direct:hello"/>
+            </get>
         </rest>
 
         <route id="http-routes">
@@ -64,6 +69,14 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
             <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
         </route>
 
+        <route>
+            <from uri="direct:hello"/>
+            <to uri="wso2-gw:http://localhost:8280/simple/payload"/>
+        </route>
+
+
+    </camelContext>
+    <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
 
     </camelContext>
 

@@ -44,6 +44,11 @@
             <outputDirectory>repository/conf/osgi</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/repository/resources/security</directory>
+            <outputDirectory>repository/resources/security</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
 
     <files>
