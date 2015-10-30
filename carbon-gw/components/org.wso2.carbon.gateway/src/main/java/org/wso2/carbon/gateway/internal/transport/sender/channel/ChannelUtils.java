@@ -76,7 +76,7 @@ public class ChannelUtils {
      * @param channelFuture ChannelFuture Object
      * @param httpRoute     HttpRoute represents host and port for BE
      * @return Channel
-     * @throws Exception
+     * @throws Exception Exception to notify any errors occur during opening the channel
      */
     public static Channel openChannel(ChannelFuture channelFuture, HttpRoute httpRoute) throws Exception {
 
