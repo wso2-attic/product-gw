@@ -17,27 +17,18 @@ package org.wso2.carbon.gateway.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.wso2.carbon.gateway.internal.transport.listener.GatewayNettyInitializer;
-import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
-
-import java.util.Hashtable;
 
 /**
  * OSGi Bundle Activator of the gateway Carbon component.
  */
 public class GatewayActivator implements BundleActivator {
-    private static final String CHANNEL_ID_KEY = "channel.id";
 
     public void start(BundleContext bundleContext) throws Exception {
-        Hashtable<String, String> httpInitParams = new Hashtable<>();
-        httpInitParams.put(CHANNEL_ID_KEY, "netty-gw");
-        GatewayNettyInitializer gatewayNettyInitializer = new GatewayNettyInitializer();
-        bundleContext.registerService(CarbonNettyServerInitializer.class, gatewayNettyInitializer, httpInitParams);
+        DataHolder.getInstance().setBundleContext(bundleContext);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
 
     }
-
 }
 
