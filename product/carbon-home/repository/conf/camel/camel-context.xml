@@ -30,6 +30,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
 
         <restConfiguration bindingMode="auto" component="wso2-gw" scheme="http" port="9090"/>
 
+        <!--sample rest interfaces -->
         <rest path="/gw">
             <get uri="/news">
                 <to uri="direct:getNews"/>
@@ -39,6 +40,19 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
             </get>
         </rest>
 
+        <!-- sample routes corresponding to the rest interfaces -->
+        <route>
+            <from uri="direct:getNews"/>
+            <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
+        </route>
+        <route>
+            <from uri="direct:getNewsById"/>
+            <recipientList>
+                <simple>wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}</simple>
+            </recipientList>
+        </route>
+
+        <!-- sample routes based on http header (custom header routeId)-->
         <route id="http-routes">
             <from uri="wso2-gw:/default"/>
             <choice>
@@ -55,18 +69,6 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
                 </otherwise>
             </choice>
         </route>
-
-        <route>
-            <from uri="direct:getNews"/>
-            <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
-        </route>
-        <route>
-            <from uri="direct:getNewsById"/>
-            <recipientList>
-                <simple>wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}</simple>
-            </recipientList>
-        </route>
-
 
     </camelContext>
 
