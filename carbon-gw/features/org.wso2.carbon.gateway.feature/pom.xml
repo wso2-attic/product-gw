@@ -38,6 +38,10 @@
     <dependencies>
         <!-- Netty transport should be a feature of its own -->
         <dependency>
+            <groupId>org.wso2.carbon.gateway</groupId>
+            <artifactId>org.wso2.carbon.gateway</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.transport</groupId>
             <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
         </dependency>

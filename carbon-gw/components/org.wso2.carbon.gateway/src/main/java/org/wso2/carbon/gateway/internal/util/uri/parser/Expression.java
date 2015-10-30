@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * URI Template Expression
+ * URI Template Expression.
  */
 public abstract class Expression extends Node {
 

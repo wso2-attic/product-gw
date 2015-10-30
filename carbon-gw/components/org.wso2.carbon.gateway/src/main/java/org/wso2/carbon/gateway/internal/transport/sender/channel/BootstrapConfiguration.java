@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 /**
- * A class represents client bootstrap configurations
+ * A class represents client bootstrap configurations.
  */
 public class BootstrapConfiguration {
 
