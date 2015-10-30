@@ -16,7 +16,7 @@
 package org.wso2.carbon.gateway.internal.common;
 
 /**
- * Custom exception class for gateway specific exceptions
+ * Custom exception class for gateway specific exceptions.
  */
 public class GWException extends Exception {
 

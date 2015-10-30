@@ -24,7 +24,7 @@ import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 import java.util.Map;
 
 /**
- * Literal
+ * Literal.
  */
 public class Literal extends Node {
 

@@ -60,10 +60,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     }
 
     /**
-     * Client messages will receive here
+     * Client messages will receive here.
      *
-     * @param cMsg            carbon message implementation
-     * @param requestCallback callback object to notify response is ready
+     * @param cMsg            carbon message implementation.
+     * @param requestCallback callback object to notify response is ready.
      */
     public boolean receive(CarbonMessage cMsg, CarbonCallback requestCallback) {
         //start mediation

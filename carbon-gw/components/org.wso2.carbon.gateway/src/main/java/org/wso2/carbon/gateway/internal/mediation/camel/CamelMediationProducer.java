@@ -62,10 +62,10 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     }
 
     /**
-     * send request to backend. when response in received callback done method will be invoked
+     * send request to backend. when response in received callback done method will be invoked.
      *
-     * @param exchange camel message exchange
-     * @param callback when the response is received from backend callback done method will be invoked
+     * @param exchange camel message exchange.
+     * @param callback when the response is received from backend callback done method will be invoked.
      */
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
@@ -97,9 +97,9 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         }
 
         /**
-         * Invoked when the backend response arrived
+         * Invoked when the backend response arrived.
          *
-         * @param responseCmsg response carbon message
+         * @param responseCmsg response carbon message.
          */
         @Override
         public void done(CarbonMessage responseCmsg) {

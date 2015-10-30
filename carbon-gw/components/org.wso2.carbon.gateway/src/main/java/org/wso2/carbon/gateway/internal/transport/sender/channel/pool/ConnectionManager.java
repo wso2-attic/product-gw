@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A class which handles connection pool management
+ * A class which handles connection pool management.
  */
 public class ConnectionManager {
 
@@ -104,7 +104,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Provide target channel for given http route
+     * Provide target channel for given http route.
      *
      * @param httpRoute     BE address
      * @param sourceHandler Incoming channel
@@ -202,7 +202,7 @@ public class ConnectionManager {
 
 
     /**
-     * Provide specific target channel map
+     * Provide specific target channel map.
      *
      * @return Map contains pools for each route
      */
@@ -223,7 +223,7 @@ public class ConnectionManager {
 
 
     /**
-     * Connection pool management policies for  target channels
+     * Connection pool management policies for  target channels.
      */
     public enum PoolManagementPolicy {
         PER_SERVER_CHANNEL_ENDPOINT_CONNECTION_CACHING,
