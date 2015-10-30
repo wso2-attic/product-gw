@@ -72,7 +72,7 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway</artifactId>
                 <version>${carbon.gateway.version}</version>
             </dependency>
