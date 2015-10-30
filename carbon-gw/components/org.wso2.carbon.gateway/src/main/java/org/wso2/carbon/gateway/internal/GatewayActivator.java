@@ -31,4 +31,3 @@ public class GatewayActivator implements BundleActivator {
 
     }
 }
-
