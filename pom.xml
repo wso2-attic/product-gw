@@ -257,7 +257,7 @@
 
         <!-- Dependencies -->
         <carbon.kernel.version>5.0.0-alpha</carbon.kernel.version>
-        <carbon.gateway.version>1.0.0-alpha</carbon.gateway.version>
+        <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.alpha</carbon.gateway.osgi.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
