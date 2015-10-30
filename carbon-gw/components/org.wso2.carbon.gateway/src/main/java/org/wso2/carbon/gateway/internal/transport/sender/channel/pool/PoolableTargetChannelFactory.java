@@ -27,7 +27,7 @@ import org.wso2.carbon.gateway.internal.transport.sender.channel.ChannelUtils;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 
 /**
- * A class which creates a TargetChannel pool for each route
+ * A class which creates a TargetChannel pool for each route.
  */
 public class PoolableTargetChannelFactory implements PoolableObjectFactory {
 

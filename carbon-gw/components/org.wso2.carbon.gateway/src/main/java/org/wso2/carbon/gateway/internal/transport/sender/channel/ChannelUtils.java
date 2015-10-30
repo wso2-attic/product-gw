@@ -31,14 +31,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Utility class for Channel handling
+ * Utility class for Channel handling.
  */
 public class ChannelUtils {
 
     private static final Logger log = LoggerFactory.getLogger(ChannelUtils.class);
 
     /**
-     * Provides incomplete Netty channel future
+     * Provides incomplete Netty channel future.
      *
      * @param targetChannel  Target channel which has channel specific parameters such as handler
      * @param eventLoopGroup Event loop group of inbound IO workers
@@ -71,7 +71,7 @@ public class ChannelUtils {
     }
 
     /**
-     * Open Channel for BE
+     * Open Channel for BE.
      *
      * @param channelFuture ChannelFuture Object
      * @param httpRoute     HttpRoute represents host and port for BE

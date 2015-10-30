@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Util Class creates Disruptors for Inbound and Outbound Transports
+ * Util Class creates Disruptors for Inbound and Outbound Transports.
  */
 public class DisruptorFactory {
 
@@ -104,7 +104,7 @@ public class DisruptorFactory {
     }
 
     /**
-     * Describe types of disruptors
+     * Describe types of disruptors.
      */
     public enum DisruptorType {
         INBOUND, OUTBOUND
