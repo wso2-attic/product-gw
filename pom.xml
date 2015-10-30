@@ -32,6 +32,13 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
+    <scm>
+        <url>https://github.com/wso2/product-gw.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/product-gw.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/product-gw.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>wso2-nexus</id>

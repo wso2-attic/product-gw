@@ -51,12 +51,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <connection>scm:git:git@github.com:caskdata/netty-http.git</connection>
-        <url>scm:git:git://github.com/wso2/product-gw.git</url>
-        <developerConnection>scm:git:git@github.com:wso2/product-gw.git</developerConnection>
-    </scm>
-
     <distributionManagement>
         <repository>
             <id>sonatype.release</id>
