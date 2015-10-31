@@ -55,6 +55,7 @@ public class DataHolder {
     public void addCarbonTransport(CarbonTransport carbonTransport) {
         if (bundleContext == null) {
             log.fatal("BundleContext is null. Transport dispatching will fail.");
+            return;
         }
         String channelKey = carbonTransport.getId();
         Hashtable<String, String> httpInitParams = new Hashtable<>();
@@ -67,9 +68,6 @@ public class DataHolder {
     }
 
     public void removeCarbonTransport(CarbonTransport carbonTransport) {
-        if (bundleContext == null) {
-            log.fatal("BundleContext is null. Transport dispatching will fail.");
-        }
         carbonTransports.get(carbonTransport.getId()).unregister();
     }
 }
