@@ -28,13 +28,13 @@
     <groupId>org.wso2.carbon.gateway</groupId>
     <artifactId>org.wso2.carbon.gateway.parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-alpha</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <scm>
         <url>https://github.com/wso2/product-gw.git</url>
         <developerConnection>scm:git:https://github.com/wso2/product-gw.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/product-gw.git</connection>
-        <tag>org.wso2.carbon.gateway.parent-1.0.0-alpha</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
@@ -262,7 +262,7 @@
 
         <!-- Dependencies -->
         <carbon.kernel.version>5.0.0-alpha</carbon.kernel.version>
-        <carbon.gateway.version>1.0.0-alpha</carbon.gateway.version>
+        <carbon.gateway.version>1.0.1-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.alpha</carbon.gateway.osgi.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
