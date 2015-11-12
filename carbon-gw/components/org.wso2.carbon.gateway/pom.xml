@@ -16,13 +16,11 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.gateway</groupId>
         <artifactId>org.wso2.carbon.gateway.parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
@@ -50,12 +48,6 @@
             <organizationUrl>https://github.com/wso2/product-gw</organizationUrl>
         </developer>
     </developers>
-
-    <scm>
-        <connection>scm:git:git@github.com:caskdata/netty-http.git</connection>
-        <url>scm:git:git://github.com/wso2/product-gw.git</url>
-        <developerConnection>scm:git:git@github.com:wso2/product-gw.git</developerConnection>
-    </scm>
 
     <distributionManagement>
         <repository>
@@ -226,7 +218,7 @@
                                 org.osgi.framework.*;version="${osgi.framework.import.version.range}",
                                 org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
                                 io.netty.*,
-                                org.wso2.carbon.transports.*,
+                                org.wso2.carbon.kernel.transports.*,
                                 org.wso2.carbon.transport.http.netty.*,
                                 org.apache.log4j.*,
                                 org.apache.commons.logging.*,
@@ -435,11 +427,6 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.5</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.2</version>
                     </plugin>
                 </plugins>
             </build>

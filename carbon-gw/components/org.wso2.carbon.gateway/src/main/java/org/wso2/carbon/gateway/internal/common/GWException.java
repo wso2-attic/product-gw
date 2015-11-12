@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package org.wso2.carbon.gateway.internal;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+package org.wso2.carbon.gateway.internal.common;
 
 /**
- * OSGi Bundle Activator of the gateway Carbon component.
+ * Custom exception class for gateway specific exceptions.
  */
-public class GatewayActivator implements BundleActivator {
+public class GWException extends Exception {
 
-    public void start(BundleContext bundleContext) throws Exception {
-        DataHolder.getInstance().setBundleContext(bundleContext);
+    public GWException() {
     }
 
-    public void stop(BundleContext bundleContext) throws Exception {
-
+    public GWException(String message) {
+        super(message);
     }
+
+    public GWException(Throwable cause) {
+        super(cause);
+    }
+
+    public GWException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

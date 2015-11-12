@@ -21,7 +21,7 @@ import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import java.util.Map;
 
 /**
- * A class which represents connection pool specific parameters
+ * A class which represents connection pool specific parameters.
  */
 public class PoolConfiguration {
 

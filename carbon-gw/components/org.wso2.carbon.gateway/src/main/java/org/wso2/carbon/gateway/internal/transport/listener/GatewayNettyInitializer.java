@@ -99,6 +99,7 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             }
         } catch (Exception e) {
             String msg = "Error while loading " + CAMEL_CONTEXT_CONFIG_FILE + " configuration file";
+            log.error(msg + e);
             throw new RuntimeException(msg, e);
         }
     }

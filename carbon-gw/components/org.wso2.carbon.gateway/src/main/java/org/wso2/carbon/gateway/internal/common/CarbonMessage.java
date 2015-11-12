@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a  common message for all the transports and message processors. Canonical Format for represent
- * abstract message
+ * abstract message.
  */
 public class CarbonMessage {
     public static final int REQUEST = 0;

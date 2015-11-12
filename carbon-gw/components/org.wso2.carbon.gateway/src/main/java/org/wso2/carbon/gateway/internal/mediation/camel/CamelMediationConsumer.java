@@ -23,8 +23,8 @@ import org.apache.camel.impl.DefaultConsumer;
 import org.apache.camel.util.ObjectHelper;
 
 /**
- * mediation starts from here : this is the camel mediation consumer
- * for each route a consumer is created and added to the engine consumers map
+ * mediation starts from here : this is the camel mediation consumer.
+ * for each route a consumer is created and added to the engine consumers map.
  */
 public class CamelMediationConsumer extends DefaultConsumer {
     private final CamelMediationEngine engine;

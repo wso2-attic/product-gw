@@ -20,27 +20,7 @@
             xsi:schemaLocation="http://wso2.com/schema/netty-transports/config netty-transports.xsd"
             xmlns="http://wso2.com/schema/netty-transports/config">
     <listeners>
-        <!--
-                <listener
-                        id="jaxrs-http"
-                        host="127.0.0.1"
-                        port="7777"
-                        bossThreadPoolSize="2"
-                        workerThreadPoolSize="250"
-                        execHandlerThreadPoolSize="60"/>
 
-                <listener
-                        id="jaxrs-https"
-                        host="127.0.0.1"
-                        port="8888"
-                        bossThreadPoolSize="2"
-                        workerThreadPoolSize="250"
-                        execHandlerThreadPoolSize="60"
-                        scheme="https"
-                        keyStoreFile="repository/resources/security/cert.jks"
-                        keyStorePass="secret"
-                        certPass="secret"/>
-        -->
         <listener
                 id="netty-gw"
                 host="0.0.0.0"
@@ -55,6 +35,25 @@
                 <parameter name="disruptor.eventhandler.count">1</parameter>
             </parameters>
         </listener>
+
+<!--        <listener
+                id="netty-gw-https"
+                host="0.0.0.0"
+                port="9292"
+                bossThreadPoolSize="4"
+                workerThreadPoolSize="8"
+                execHandlerThreadPoolSize="60"
+                scheme="https"
+                keyStoreFile="repository/resources/security/wso2carbon.jks"
+                keyStorePass="wso2carbon"
+                certPass="wso2carbon">
+            <parameters>
+                <parameter name="disruptor.wait.strategy">BUSY_SPIN</parameter>
+                <parameter name="disruptor.buffer.size">1024</parameter>
+                <parameter name="disruptor.count">1</parameter>
+                <parameter name="disruptor.eventhandler.count">1</parameter>
+            </parameters>
+        </listener>-->
     </listeners>
 
     <senders>

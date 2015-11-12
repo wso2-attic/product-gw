@@ -34,7 +34,7 @@ import java.util.Map;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
- * Includes utility methods for creating http requests and responses and their related properties
+ * Includes utility methods for creating http requests and responses and their related properties.
  */
 public class Util {
 

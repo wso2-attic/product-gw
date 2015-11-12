@@ -39,11 +39,11 @@ public class CarbonCamelMessageUtil {
     private static Logger log = LoggerFactory.getLogger(CarbonCamelMessageUtil.class);
 
     /**
-     * Get carbon headers from client request and set in the camel exchange in message
+     * Get carbon headers from client request and set in the camel exchange in message.
      *
      * @param exchange         camel exchange
      * @param transportHeaders http headers
-     * @param request          http request carbon message
+     * @param request          http request carbon message.
      */
     public void setCamelHeadersToClientRequest(Exchange exchange, Map<String, Object> transportHeaders,
                                                CarbonMessage request) {
@@ -121,7 +121,7 @@ public class CarbonCamelMessageUtil {
     }
 
     /**
-     * Get camel headers from mediated request and set in carbon message
+     * Get camel headers from mediated request and set in carbon message.
      *
      * @param exchange camel exchange
      * @param host     endpoint host address
@@ -173,7 +173,7 @@ public class CarbonCamelMessageUtil {
     }
 
     /**
-     * Get carbon headers from backend response and set in camel exchange out message
+     * Get carbon headers from backend response and set in camel exchange out message.
      *
      * @param exchange         camel exchange
      * @param transportHeaders backend response http headers
