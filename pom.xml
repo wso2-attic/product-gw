@@ -16,9 +16,7 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -27,10 +25,17 @@
         <version>1</version>
     </parent>
 
-    <groupId>org.wso2.carbon</groupId>
+    <groupId>org.wso2.carbon.gateway</groupId>
     <artifactId>org.wso2.carbon.gateway.parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+
+    <scm>
+        <url>https://github.com/wso2/product-gw.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/product-gw.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/product-gw.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
     <repositories>
         <repository>
@@ -67,20 +72,20 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>wso2carbon-kernel</artifactId>
-                <version>${carbon.kernel.version}</version>
-                <type>zip</type>
+				<version>${carbon.kernel.version}</version>
+				 <type>zip</type>
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway</artifactId>
                 <version>${carbon.gateway.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway.feature</artifactId>
-                <version>${carbon.gateway.version}</version>
-                <type>zip</type>
+				<version>${carbon.gateway.version}</version>
+				 <type>zip</type>
             </dependency>
 
             <dependency>
@@ -174,18 +179,13 @@
                 <artifactId>commons-pool</artifactId>
                 <version>${commons.pool.version}</version>
             </dependency>
-            <dependency>
-                <groupId>xml-apis</groupId>
-                <artifactId>xml-apis</artifactId>
-                <version>${xml-apis-version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
+                <!--plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <executions>
@@ -209,7 +209,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin-->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
@@ -261,7 +261,7 @@
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!-- Dependencies -->
-        <carbon.kernel.version>5.0.0-m5</carbon.kernel.version>
+        <carbon.kernel.version>5.0.0-alpha</carbon.kernel.version>
         <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
 
@@ -273,15 +273,14 @@
         <camel.version>2.15.2</camel.version>
         <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <org.wso2.carbon.transport.http.netty.version>1.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
-        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT
-        </org.wso2.carbon.transport.http.netty.osgi.version>
-        <xml-apis-version>1.4.01</xml-apis-version>
+        <org.wso2.carbon.transport.http.netty.version>1.0.0-alpha</org.wso2.carbon.transport.http.netty.version>
+        <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.alpha</org.wso2.carbon.transport.http.netty.osgi.version>
+
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
         <commons.pool.version>1.5.6.wso2v1</commons.pool.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-        <carbon.feature.plugin.version>2.0.0-m1</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.0-alpha</carbon.feature.plugin.version>
     </properties>
 
     <modules>

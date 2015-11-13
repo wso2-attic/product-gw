@@ -29,7 +29,7 @@ public class CarbonDisruptorEventHandler extends DisruptorEventHandler {
 
     private CarbonMessageProcessor carbonMessageProcessor;
 
-    public CarbonDisruptorEventHandler(CarbonMessageProcessor engine) {
+    public CarbonDisruptorEventHandler(CarbonMessageProcessor  engine) {
         carbonMessageProcessor = engine;
     }
 

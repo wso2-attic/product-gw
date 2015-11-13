@@ -26,7 +26,6 @@ import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonException;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 
@@ -54,7 +53,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         try {
             URL url = new URL(ObjectHelper.after(getEndpoint().getEndpointKey(), "://"));
             host = url.getHost();
-            port = url.getPort();
+            port = (url.getPort() == -1) ? 80 : url.getPort();
             uri = url.getPath();
             carbonCamelMessageUtil = endpoint.getCarbonCamelMessageUtil();
         } catch (MalformedURLException e) {
@@ -63,23 +62,23 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     }
 
     /**
-     * send request to backend. when response in received callback done method will be invoked
+     * send request to backend. when response in received callback done method will be invoked.
      *
-     * @param exchange camel message exchange
-     * @param callback when the response is received from backend callback done method will be invoked
+     * @param exchange camel message exchange.
+     * @param callback when the response is received from backend callback done method will be invoked.
      */
     public boolean process(Exchange exchange, AsyncCallback callback) {
         //change the header parameters according to the routed endpoint url
-        boolean syncNeeded = true;
         carbonCamelMessageUtil.setCarbonHeadersToBackendRequest(exchange, host, port, uri);
+        //This parameter is used to decide whether we need to continue processing in case of a failure (FO endpoint)
+        boolean syncNeeded = true;
         try {
             syncNeeded = engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
-                    new NettyHttpBackEndCallback(exchange, callback));
-        } catch (CarbonException ex) {
-            exchange.setException(ex);
+                                                 new NettyHttpBackEndCallback(exchange, callback));
+        } catch (Exception exp) {
+            //Set the exception to the exchange such that camel can decide on failover
+            exchange.setException(exp);
         }
-        //engine.getSender()
-        //.send(exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         return syncNeeded;
     }
 
@@ -98,9 +97,9 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         }
 
         /**
-         * Invoked when the backend response arrived
+         * Invoked when the backend response arrived.
          *
-         * @param responseCmsg response carbon message
+         * @param responseCmsg response carbon message.
          */
         @Override
         public void done(CarbonMessage responseCmsg) {

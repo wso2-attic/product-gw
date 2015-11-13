@@ -48,7 +48,7 @@ public class PoolableTargetChannelFactory implements PoolableObjectFactory {
     public Object makeObject() throws Exception {
         TargetChannel targetChannel = new TargetChannel();
         ChannelFuture channelFuture = ChannelUtils.getNewChannelFuture(targetChannel,
-                eventLoopGroup, eventLoopClass, httpRoute);
+                                                                       eventLoopGroup, eventLoopClass, httpRoute);
         Channel channel = ChannelUtils.openChannel(channelFuture, httpRoute);
         log.debug("Created channel: {}", channel);
         targetChannel.setChannel(channel);

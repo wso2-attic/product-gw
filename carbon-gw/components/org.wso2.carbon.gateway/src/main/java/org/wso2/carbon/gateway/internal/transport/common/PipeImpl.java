@@ -16,11 +16,15 @@
 package org.wso2.carbon.gateway.internal.transport.common;
 
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.ContentChunk;
 import org.wso2.carbon.gateway.internal.common.Pipe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -34,6 +38,8 @@ public class PipeImpl implements Pipe {
     private BlockingQueue<ContentChunk> contentQueue;
 
     private BlockingQueue<ContentChunk> clonedContentQueue;
+
+    private List<ByteBuf> listOfContentBuffers = new ArrayList<ByteBuf>();
 
 
     public PipeImpl(int blockingQueueSize) {
@@ -53,6 +59,10 @@ public class PipeImpl implements Pipe {
 
     public void addContentChunk(ContentChunk contentChunk) {
         contentQueue.add(contentChunk);
+//        if(contentChunk instanceof HTTPContentChunk) {
+//            listOfContentBuffers.add(((HTTPContentChunk) contentChunk).getHttpContent().duplicate().content());
+//        }
+
     }
 
     @Override
@@ -65,6 +75,13 @@ public class PipeImpl implements Pipe {
         }
         return this.clonedContentQueue;
     }
+
+//    @Override
+//    public ByteBuf getCompositeBuffer() {
+//        ByteBuf compositeBuffer
+//                = Unpooled.wrappedBuffer(listOfContentBuffers.toArray(new ByteBuf[listOfContentBuffers.size()]));
+//        return compositeBuffer;
+//    }
 
 
     public void clearContent() {

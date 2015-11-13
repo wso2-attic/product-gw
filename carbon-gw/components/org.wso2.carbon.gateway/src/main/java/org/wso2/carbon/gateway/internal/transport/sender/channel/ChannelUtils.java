@@ -64,7 +64,7 @@ public class ChannelUtils {
         clientBootstrap.handler(targetInitializer);
         if (log.isDebugEnabled()) {
             log.debug("Created new TCP client bootstrap connecting to {}:{} with options: {}",
-                    httpRoute.getHost(), httpRoute.getPort(), clientBootstrap);
+                      httpRoute.getHost(), httpRoute.getPort(), clientBootstrap);
         }
 
         return clientBootstrap.connect(new InetSocketAddress(httpRoute.getHost(), httpRoute.getPort()));
@@ -84,7 +84,7 @@ public class ChannelUtils {
         // blocking for channel to be done
         if (log.isTraceEnabled()) {
             log.trace("Waiting for operation to complete {} for {} millis", channelFuture,
-                    bootstrapConfiguration.getConnectTimeOut());
+                      bootstrapConfiguration.getConnectTimeOut());
         }
 
         // here we need to wait it in other thread

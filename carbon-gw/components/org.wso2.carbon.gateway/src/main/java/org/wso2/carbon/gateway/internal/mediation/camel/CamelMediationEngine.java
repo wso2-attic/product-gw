@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
@@ -25,9 +29,18 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
+import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
+import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
+import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
+import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
+import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,10 +60,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     }
 
     /**
-     * Client messages will receive here
+     * Client messages will receive here.
      *
-     * @param cMsg            carbon message implementation
-     * @param requestCallback callback object to notify response is ready
+     * @param cMsg            carbon message implementation.
+     * @param requestCallback callback object to notify response is ready.
      */
     public boolean receive(CarbonMessage cMsg, CarbonCallback requestCallback) {
         //start mediation
@@ -58,7 +71,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.debug("Channel: {} received body: {}");
         }
         Map<String, Object> transportHeaders = (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
-        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI());
+
+
+        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(),
+                                                         cMsg.getProperty("HTTP_METHOD").toString(),
+                                                         transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
@@ -69,6 +86,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 log.error("Unit of Work creation failed");
             }
             processAsynchronously(exchange, consumer, requestCallback);
+        } else {
+            log.error("Message consumer not found.");
         }
         return true;
     }
@@ -81,23 +100,35 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                                        final CarbonCallback requestCallback) {
 
         consumer.getAsyncProcessor().process(exchange, done -> {
-            //CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
-            //Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
-            //mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
-            CarbonMessage mediatedResponse = null;
-            Object outMesgBody = exchange.getOut().getBody();
-            if (outMesgBody instanceof CarbonMessage) {
-                mediatedResponse = (CarbonMessage) exchange.getOut().getBody();
-            } else if (outMesgBody instanceof String) {
-                mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
-                mediatedResponse.setSimplePayload((String) outMesgBody);
-                //mediatedResponse.setContentStream(outMessage);
+
+            CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
+
+            if (mediatedResponse != null && !exchange.getIn().getMessageId().equals(exchange.getOut().getMessageId())) {
+                Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
+                mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
             } else {
                 mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
-                mediatedResponse.setSimplePayload("Error occurred");
+                Exception failedCause = exchange.getException();
+                String cause = failedCause.getMessage();
+                ByteBuf bbuf = Unpooled.copiedBuffer(cause, StandardCharsets.UTF_8);
+                DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
+                HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
+                Pipe pipe = new PipeImpl(bbuf.readableBytes());
+                pipe.addContentChunk(contentChunk);
+                mediatedResponse.setPipe(pipe);
+
+                mediatedResponse.setDirection(CarbonMessage.RESPONSE);
+
+                Map<String, Object> transportHeaders = new HashMap<>();
+                transportHeaders.put(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+                transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
+                transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
+                transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+                mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, transportHeaders);
+
+                mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, 500);
             }
-            Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
-            mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
+
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
@@ -106,20 +137,46 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         });
     }
 
-    private CamelMediationConsumer decideConsumer(String uri) {
+    private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
+                                                  Map<String, Object> transportHeaders) {
 
-        if (consumers.size() == 1) {
-            String key = consumers.keySet().iterator().next();
-            if (uri.contains(key)) {
-                return consumers.get(key);
+        for (String consumerKey : consumers.keySet()) {
+            if (!consumerKey.contains("?httpMethodRestrict=")) {
+                if (uri.contains(consumerKey)) {
+                    return consumers.get(consumerKey);
+                }
             }
         }
-        for (String key : consumers.keySet()) {
-            if (key.contains(uri)) {
-                return consumers.get(key);
+
+        /*Processing requests to REST interfaces */
+        for (String consumerKey : consumers.keySet()) {
+            if (consumerKey.contains("?httpMethodRestrict=")) {
+                Map<String, String> variables = new HashMap<String, String>();
+                URITemplate uriTemplate = null;
+                try {
+                    String[] urlTokens = consumerKey.split(":\\d\\d\\d\\d");
+                    if (urlTokens.length > 0) {
+                        String consumerContextPath = urlTokens[1];
+                        String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
+                        uriTemplate = new URITemplate(decodeConsumerURI);
+                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod, variables);
+                        if (variables.size() != 0) {
+                            for (Map.Entry<String, String> entry : variables.entrySet()) {
+                                transportHeaders.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                        if (isMatch) {
+                            return consumers.get(consumerKey);
+                        }
+                    }
+                } catch (URITemplateException e) {
+                    log.error("URI Template " + consumerKey + " is invalid. " + e);
+                } catch (UnsupportedEncodingException e) {
+                    log.error("URI Template " + consumerKey + " encoding error. " + e);
+                }
             }
         }
-        log.warn("No route found for the message URI : " + uri);
+
         return null;
     }
 
@@ -130,4 +187,5 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     public void removeConsumer(String endpointKey) {
         consumers.remove(endpointKey);
     }
+
 }

@@ -110,8 +110,8 @@ public class CarbonCamelMessageUtil {
             Map.Entry pair = (Map.Entry) it.next();
 
             if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
-                    !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
-                    !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
+                !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -130,8 +130,7 @@ public class CarbonCamelMessageUtil {
      */
     public void setCarbonHeadersToBackendRequest(Exchange exchange, String host, int port, String uri) {
 
-        CarbonMessage request = (CarbonMessage) exchange.getIn().getBody(CarbonMessage.class);
-        //CarbonMessage request = ((CamelHttp4Message) exchange.getIn()).getCarbonMessage();
+        CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
         if (request != null) {

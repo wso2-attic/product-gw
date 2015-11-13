@@ -15,10 +15,13 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.*;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.DecoderResult;
+import io.netty.handler.codec.TooLongFrameException;
+import io.netty.handler.codec.http.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.converter.jaxp.XmlConverter;
 import org.apache.camel.support.TypeConverterSupport;
@@ -35,7 +38,9 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.parsers.ParserConfigurationException;
 
-
+import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
+import static io.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
+import static io.netty.handler.codec.http.HttpHeaders.removeTransferEncodingChunked;
 
 
 /**
@@ -52,27 +57,28 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
 
     public <T> T convertTo(Class<T> type, Exchange exchange, Object value) {
         if (value instanceof CarbonMessage) {
-            List<ByteBuf> listOfContentBuffers = new ArrayList<ByteBuf>();
+//            List<ByteBuf> listOfContentBuffers = new ArrayList<ByteBuf>();
             Pipe pipe = ((CarbonMessage) value).getPipe();
             ByteBufInputStream byteBufInputStream = null;
-            BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
-            while (true) {
-                HTTPContentChunk httpContentChunk = null;
-                try {
-                    if (clonedContent.isEmpty()) {
-                        break;
-                    } else {
-                        httpContentChunk = (HTTPContentChunk) clonedContent.take();
-                        listOfContentBuffers.add(httpContentChunk.getHttpContent().duplicate().content());
-                    }
-                } catch (InterruptedException e) {
-                    log.error("Error occurred during conversion from CarbonMessage", e);
-                }
-
-            }
-            ByteBuf compositeBuffer
-                    = Unpooled.wrappedBuffer(listOfContentBuffers.toArray(new ByteBuf[listOfContentBuffers.size()]));
-            byteBufInputStream = new ByteBufInputStream(compositeBuffer);
+//            BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
+//            while (true) {
+//                HTTPContentChunk httpContentChunk = null;
+//                try {
+//                    if (clonedContent.isEmpty()) {
+//                        break;
+//                    } else {
+//                        httpContentChunk = (HTTPContentChunk) clonedContent.take();
+//                        listOfContentBuffers.add(httpContentChunk.getHttpContent().duplicate().content());
+//                    }
+//                } catch (InterruptedException e) {
+//                    log.error("Error occurred during conversion from CarbonMessage", e);
+//                }
+//
+//            }
+//            ByteBuf compositeBuffer
+//                    = Unpooled.wrappedBuffer(listOfContentBuffers.toArray(new ByteBuf[listOfContentBuffers.size()]));
+//            byteBufInputStream = new ByteBufInputStream(pipe.getCompositeBuffer());
+            byteBufInputStream = aggregateChunks(pipe);
             XmlConverter xmlConverter = new XmlConverter();
             try {
                 return (T) xmlConverter.toDOMDocument(byteBufInputStream, exchange);
@@ -86,6 +92,37 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
             //return (T)byteBufInputStream;
         }
         return null;
+    }
+
+    private ByteBufInputStream aggregateChunks(Pipe pipe) {
+        ByteBufInputStream byteBufInputStream = null;
+        BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
+        CompositeByteBuf content = new CompositeByteBuf(new PooledByteBufAllocator(), false, 1024);
+        ;
+
+        try {
+            //Get the first chunk
+            //content = (CompositeByteBuf)(((HTTPContentChunk) clonedContent.take()).getHttpContent().duplicate().content());
+            while (true) {
+                if (!clonedContent.isEmpty()) {
+                    HttpContent chunk = ((HTTPContentChunk) clonedContent.take()).getHttpContent();
+                    //listOfContentBuffers.add(httpContentChunk.getHttpContent().duplicate().content());
+                    // Append the content of the chunk
+                    if (chunk.content().isReadable()) {
+                        chunk.retain();
+                        content.addComponent(chunk.content());
+                        content.writerIndex(content.writerIndex() + chunk.content().readableBytes());
+                    }
+
+                } else {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred during conversion from CarbonMessage", e);
+        }
+        byteBufInputStream = new ByteBufInputStream(content);
+        return byteBufInputStream;
     }
 
 }

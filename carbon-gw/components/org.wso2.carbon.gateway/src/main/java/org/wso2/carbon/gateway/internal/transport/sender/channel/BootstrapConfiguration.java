@@ -45,16 +45,16 @@ public class BootstrapConfiguration {
 
         if (parameters != null) {
             tcpNoDelay = parameters.get(Constants.CLINET_BOOTSTRAP_TCP_NO_DELY) == null ||
-                    Boolean.parseBoolean(parameters.get(Constants.CLINET_BOOTSTRAP_TCP_NO_DELY));
+                         Boolean.parseBoolean(parameters.get(Constants.CLINET_BOOTSTRAP_TCP_NO_DELY));
             connectTimeOut = parameters.get(Constants.CLINET_BOOTSTRAP_CONNECT_TIME_OUT) != null ?
-                    Integer.parseInt(parameters.get(Constants.CLINET_BOOTSTRAP_CONNECT_TIME_OUT)) : 15000;
+                             Integer.parseInt(parameters.get(Constants.CLINET_BOOTSTRAP_CONNECT_TIME_OUT)) : 15000;
             reciveBufferSize = parameters.get(Constants.CLINET_BOOTSTRAP_RECEIVE_BUFFER_SIZE) != null ?
-                    Integer.parseInt
-                            (parameters.get(Constants.CLINET_BOOTSTRAP_RECEIVE_BUFFER_SIZE)) : 1048576;
+                               Integer.parseInt
+                                          (parameters.get(Constants.CLINET_BOOTSTRAP_RECEIVE_BUFFER_SIZE)) : 1048576;
             sendBufferSize = parameters.get(Constants.CLINET_BOOTSTRAP_SEND_BUFFER_SIZE) != null ?
-                    Integer.parseInt(parameters.get(Constants.CLINET_BOOTSTRAP_SEND_BUFFER_SIZE)) : 1048576;
+                             Integer.parseInt(parameters.get(Constants.CLINET_BOOTSTRAP_SEND_BUFFER_SIZE)) : 1048576;
             keepAlive = parameters.get(Constants.CLINET_BOOTSTRAP_KEEPALIVE) == null ||
-                    Boolean.parseBoolean(parameters.get(Constants.CLINET_BOOTSTRAP_KEEPALIVE));
+                        Boolean.parseBoolean(parameters.get(Constants.CLINET_BOOTSTRAP_KEEPALIVE));
             socketReuse = Boolean.parseBoolean(parameters.get(Constants.CLINET_BOOTSTRAP_SO_REUSE));
 
         }
