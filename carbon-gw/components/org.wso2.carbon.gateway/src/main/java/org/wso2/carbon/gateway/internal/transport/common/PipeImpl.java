@@ -17,14 +17,12 @@ package org.wso2.carbon.gateway.internal.transport.common;
 
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.ContentChunk;
 import org.wso2.carbon.gateway.internal.common.Pipe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -39,14 +37,16 @@ public class PipeImpl implements Pipe {
 
     private BlockingQueue<ContentChunk> clonedContentQueue;
 
-    private List<ByteBuf> listOfContentBuffers = new ArrayList<ByteBuf>();
+    private boolean isLastChunkAdded = false;
 
+    private InputStream inputStream = null;
+
+    private ByteBuf messageBytes = null;
 
     public PipeImpl(int blockingQueueSize) {
         this.contentQueue = new LinkedBlockingQueue<>(blockingQueueSize);
         this.clonedContentQueue = new LinkedBlockingQueue<>(blockingQueueSize);
     }
-
 
     public ContentChunk getContent() {
         try {
@@ -59,10 +59,9 @@ public class PipeImpl implements Pipe {
 
     public void addContentChunk(ContentChunk contentChunk) {
         contentQueue.add(contentChunk);
-//        if(contentChunk instanceof HTTPContentChunk) {
-//            listOfContentBuffers.add(((HTTPContentChunk) contentChunk).getHttpContent().duplicate().content());
-//        }
-
+        if (contentChunk.isLastChunk()) {
+            this.setLastChunkAdded(true);
+        }
     }
 
     @Override
@@ -76,16 +75,36 @@ public class PipeImpl implements Pipe {
         return this.clonedContentQueue;
     }
 
-//    @Override
-//    public ByteBuf getCompositeBuffer() {
-//        ByteBuf compositeBuffer
-//                = Unpooled.wrappedBuffer(listOfContentBuffers.toArray(new ByteBuf[listOfContentBuffers.size()]));
-//        return compositeBuffer;
-//    }
-
-
     public void clearContent() {
         this.contentQueue.clear();
         this.clonedContentQueue.clear();
+    }
+
+    public boolean isEmpty() {
+        return contentQueue.isEmpty();
+    }
+
+    public boolean isLastChunkAdded() {
+        return isLastChunkAdded;
+    }
+
+    public void setLastChunkAdded(boolean isLastChunkAdded) {
+        this.isLastChunkAdded = isLastChunkAdded;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public ByteBuf getMessageBytes() {
+        return messageBytes;
+    }
+
+    public void setMessageBytes(ByteBuf messageBytes) {
+        this.messageBytes = messageBytes;
     }
 }

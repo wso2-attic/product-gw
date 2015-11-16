@@ -15,13 +15,11 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.*;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.handler.codec.http.HttpContent;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.handler.codec.DecoderResult;
-import io.netty.handler.codec.TooLongFrameException;
-import io.netty.handler.codec.http.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.converter.jaxp.XmlConverter;
 import org.apache.camel.support.TypeConverterSupport;
@@ -33,81 +31,80 @@ import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import javax.xml.parsers.ParserConfigurationException;
 
-import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
-import static io.netty.handler.codec.http.HttpHeaders.isContentLengthSet;
-import static io.netty.handler.codec.http.HttpHeaders.removeTransferEncodingChunked;
-
 
 /**
- * A type converter which is used to convert to and from array types
- * particularly for derived types of array component types and dealing with
- * primitive array types.
+ * A type converter which is used to convert to and from CarbonMessage to other types
+ * Specailly in case of content aware mediation
  */
 
 public class CarbonMessageTypeConverter extends TypeConverterSupport {
-    //public final class CarbonMessageTypeConverter {
     private static final Logger log = Logger.getLogger(CarbonMessageTypeConverter.class);
 
     @SuppressWarnings("unchecked")
 
     public <T> T convertTo(Class<T> type, Exchange exchange, Object value) {
         if (value instanceof CarbonMessage) {
-//            List<ByteBuf> listOfContentBuffers = new ArrayList<ByteBuf>();
+            //Retrieving the Pipe from the carbon message
             Pipe pipe = ((CarbonMessage) value).getPipe();
+            //Input stream used for building the desired message
             ByteBufInputStream byteBufInputStream = null;
-//            BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
-//            while (true) {
-//                HTTPContentChunk httpContentChunk = null;
-//                try {
-//                    if (clonedContent.isEmpty()) {
-//                        break;
-//                    } else {
-//                        httpContentChunk = (HTTPContentChunk) clonedContent.take();
-//                        listOfContentBuffers.add(httpContentChunk.getHttpContent().duplicate().content());
-//                    }
-//                } catch (InterruptedException e) {
-//                    log.error("Error occurred during conversion from CarbonMessage", e);
-//                }
-//
-//            }
-//            ByteBuf compositeBuffer
-//                    = Unpooled.wrappedBuffer(listOfContentBuffers.toArray(new ByteBuf[listOfContentBuffers.size()]));
-//            byteBufInputStream = new ByteBufInputStream(pipe.getCompositeBuffer());
-            byteBufInputStream = aggregateChunks(pipe);
-            XmlConverter xmlConverter = new XmlConverter();
-            try {
-                return (T) xmlConverter.toDOMDocument(byteBufInputStream, exchange);
-            } catch (IOException e) {
-                log.error("IO Error occurred during conversion to XML", e);
-            } catch (SAXException e) {
-                log.error("SAX Parser Error occurred during conversion to XML", e);
-            } catch (ParserConfigurationException e) {
-                log.error("Parser Configuration Error occurred during conversion to XML", e);
+            //Create a composite buffer from content chunks in the pipe
+            CompositeByteBuf contentBuf = aggregateChunks(pipe);
+            //Check whether we have any content to be processed
+            if (contentBuf.capacity() != 0) {
+                //Increase the reference count by 1
+                contentBuf.retain();
+                //Create the input stream from the composite buffer
+                byteBufInputStream = new ByteBufInputStream(contentBuf);
+                try {
+                    if (type.isAssignableFrom(org.w3c.dom.Document.class)) {
+                        //Convert the input stream into xml dom element
+                        XmlConverter xmlConverter = new XmlConverter();
+                        return (T) xmlConverter.toDOMDocument(byteBufInputStream, exchange);
+                    } else if (type.isAssignableFrom(java.io.InputStream.class)) {
+                        return (T) byteBufInputStream;
+                    }
+                } catch (IOException e) {
+                    log.error("IO Error occurred during conversion to XML", e);
+                } catch (SAXException e) {
+                    log.error("SAX Parser Error occurred during conversion to XML", e);
+                } catch (ParserConfigurationException e) {
+                    log.error("Parser Configuration Error occurred during conversion to XML", e);
+                } finally {
+                    try {
+                        // Release the buffer and input stream
+                        contentBuf.release();
+                        byteBufInputStream.close();
+                    } catch (IOException e) {
+                        log.error("IOException when closing the input stream", e);
+                    }
+                }
             }
-            //return (T)byteBufInputStream;
+
         }
         return null;
     }
 
-    private ByteBufInputStream aggregateChunks(Pipe pipe) {
+    private CompositeByteBuf aggregateChunks(Pipe pipe) {
         ByteBufInputStream byteBufInputStream = null;
-        BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
-        CompositeByteBuf content = new CompositeByteBuf(new PooledByteBufAllocator(), false, 1024);
-        ;
-
+        //Create an instance of composite byte buffer to hold the content chunks
+        CompositeByteBuf content = new UnpooledByteBufAllocator(true).compositeBuffer();
         try {
-            //Get the first chunk
-            //content = (CompositeByteBuf)(((HTTPContentChunk) clonedContent.take()).getHttpContent().duplicate().content());
+            //Check whether the pipe is filled with HTTP content chunks up to last chunk
+            while (pipe.isEmpty() || !pipe.isLastChunkAdded()) {
+                Thread.sleep(10);
+            }
+            //Get a clone of content chunk queue from the pipe
+            BlockingQueue<ContentChunk> clonedContent = pipe.getClonedContentQueue();
+            //Traverse through the http content chunks and create the composite buffer
             while (true) {
                 if (!clonedContent.isEmpty()) {
+                    //Retrieve the HTTP content chunk from cloned queue
                     HttpContent chunk = ((HTTPContentChunk) clonedContent.take()).getHttpContent();
-                    //listOfContentBuffers.add(httpContentChunk.getHttpContent().duplicate().content());
-                    // Append the content of the chunk
+                    // Append the content of the chunk to the composite buffer
                     if (chunk.content().isReadable()) {
                         chunk.retain();
                         content.addComponent(chunk.content());
@@ -115,15 +112,27 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
                     }
 
                 } else {
+                    //When all the content chunks are read, break from the loop
                     break;
                 }
             }
         } catch (Exception e) {
             log.error("Error occurred during conversion from CarbonMessage", e);
         }
-        byteBufInputStream = new ByteBufInputStream(content);
-        return byteBufInputStream;
+        //Return the composite buffer
+        return content;
     }
+
+    /**
+     * This method needs to return true for subsequent executions of the same type converter.
+     *
+     * @return
+     */
+    @Override
+    public boolean allowNull() {
+        return true;
+    }
+
 
 }
 

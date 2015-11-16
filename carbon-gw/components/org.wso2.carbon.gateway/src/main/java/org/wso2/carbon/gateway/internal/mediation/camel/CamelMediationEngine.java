@@ -27,6 +27,7 @@ import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonCallback;
+import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.common.Pipe;
@@ -78,6 +79,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                                                          transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
+            //Set CarbonMessage as a property to exchange such that we can reuse that for retrieving the properties
+            exchange.setProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
             //need to close the unit of work finally
             try {

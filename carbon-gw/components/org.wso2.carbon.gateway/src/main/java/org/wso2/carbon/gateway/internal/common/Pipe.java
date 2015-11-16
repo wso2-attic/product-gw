@@ -17,6 +17,7 @@ package org.wso2.carbon.gateway.internal.common;
 
 import io.netty.buffer.ByteBuf;
 
+import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -29,6 +30,18 @@ public interface Pipe {
     void addContentChunk(ContentChunk chunk);
 
     BlockingQueue<ContentChunk> getClonedContentQueue();
+
+    boolean isEmpty();
+
+    boolean isLastChunkAdded();
+
+    InputStream getInputStream();
+
+    void setInputStream(InputStream inputStream);
+
+    void setMessageBytes(ByteBuf messageBytes);
+
+    ByteBuf getMessageBytes();
 
 //    ByteBuf getCompositeBuffer();
 

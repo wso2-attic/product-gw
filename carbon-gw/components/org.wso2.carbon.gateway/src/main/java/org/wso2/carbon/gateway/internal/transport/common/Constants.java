@@ -23,6 +23,8 @@ public class Constants {
 
     public static final String HTTP_VERSION = "HTTP_VERSION";
 
+    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+
     public static final String HTTP_METHOD = "HTTP_METHOD";
 
     public static final String HTTP_CONTENT_TYPE = "Content-Type";

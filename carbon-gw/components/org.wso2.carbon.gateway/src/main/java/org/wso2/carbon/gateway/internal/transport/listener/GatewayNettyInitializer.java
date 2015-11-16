@@ -26,6 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
+import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageReverseTypeConverter;
 import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageTypeConverter;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
@@ -36,6 +37,7 @@ import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfig
 import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -72,6 +74,10 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             CamelMediationComponent component = (CamelMediationComponent) camelContext.getComponent("wso2-gw");
             camelContext.getTypeConverterRegistry().addTypeConverter(org.w3c.dom.Document.class, CarbonMessage.class,
                     new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(InputStream.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(CarbonMessage.class, String.class,
+                    new CarbonMessageReverseTypeConverter());
             CamelMediationEngine engine = component.getEngine();
             connectionManager = component.getConnectionManager();
 
