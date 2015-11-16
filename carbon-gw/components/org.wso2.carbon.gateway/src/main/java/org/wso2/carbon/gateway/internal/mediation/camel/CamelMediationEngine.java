@@ -154,7 +154,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 Map<String, String> variables = new HashMap<String, String>();
                 URITemplate uriTemplate = null;
                 try {
-                    String[] urlTokens = consumerKey.split(":\\d\\d\\d\\d");
+                    /* Extracting the context information from registered REST consumers. */
+                    String[] urlTokens = consumerKey.split(":\\d+");
                     if (urlTokens.length > 0) {
                         String consumerContextPath = urlTokens[1];
                         String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
