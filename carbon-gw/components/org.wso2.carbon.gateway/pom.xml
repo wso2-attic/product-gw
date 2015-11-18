@@ -226,6 +226,9 @@
                                 org.apache.commons.pool.*,
                                 com.lmax.disruptor.*,
                                 org.springframework.context.*,
+                                org.w3c.dom.*,
+                                org.xml.sax.*,
+                                javax.xml.*,
                                 org.slf4j.*
                             </Import-Package>
                             <_dsannotations>*</_dsannotations>

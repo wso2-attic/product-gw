@@ -22,6 +22,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 
@@ -110,8 +111,8 @@ public class CarbonCamelMessageUtil {
             Map.Entry pair = (Map.Entry) it.next();
 
             if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
-                !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
-                !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
+                    !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                    !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -130,7 +131,8 @@ public class CarbonCamelMessageUtil {
      */
     public void setCarbonHeadersToBackendRequest(Exchange exchange, String host, int port, String uri) {
 
-        CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
+        //CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
+        CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
         if (request != null) {
@@ -155,6 +157,14 @@ public class CarbonCamelMessageUtil {
                     request.setProperty(Constants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
                     request.setProperty(Constants.HTTP_VERSION, pair.getValue());
+                } else if (key.equals(Exchange.CONTENT_LENGTH)) {
+                    //Content has been replaced. Take the new content-length
+                    if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
+                        carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
+                                .getMessageBytes().readableBytes());
+                    } else {
+                        carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, pair.getValue());
+                    }
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue());
                 }
@@ -167,7 +177,36 @@ public class CarbonCamelMessageUtil {
                 carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host);
             }
 
+            if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
+                if (carbonBackEndRequestHeaders.contains(Constants.HTTP_CONTENT_LENGTH)) {
+                    carbonBackEndRequestHeaders.remove(Constants.HTTP_CONTENT_LENGTH);
+                }
+                carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
+                        .getMessageBytes().readableBytes());
+            }
+
             request.setProperty(Constants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
+
+            //Set source handler and disruptor if they are not available
+            CarbonMessage originalMessage = (CarbonMessage) exchange
+                    .getProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE);
+            if (request.getProperty(Constants.SRC_HNDLR) == null) {
+                if (originalMessage != null) {
+                    request.setProperty(Constants.SRC_HNDLR, originalMessage.getProperty(Constants.SRC_HNDLR));
+                }
+            }
+
+            if (request.getProperty(Constants.DISRUPTOR) == null) {
+                if (originalMessage != null) {
+                    request.setProperty(Constants.DISRUPTOR, originalMessage.getProperty(Constants.DISRUPTOR));
+                }
+            }
+
+            //Set the Camel Message back to the exchange for sending through the producer
+            CamelHttp4Message answer = new CamelHttp4Message();
+            answer.setCarbonMessage(request);
+            answer.setExchange(exchange);
+            exchange.setIn(answer);
         }
     }
 
