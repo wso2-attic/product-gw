@@ -23,6 +23,7 @@ import org.apache.camel.spring.SpringCamelContext;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.Document;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
@@ -39,6 +40,12 @@ import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitialize
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
+
 
 /**
  * A class that responsible for create server side channels.
@@ -72,9 +79,19 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             SpringCamelContext camelContext = (SpringCamelContext) applicationContext.getBean("wso2-cc");
             camelContext.start();
             CamelMediationComponent component = (CamelMediationComponent) camelContext.getComponent("wso2-gw");
-            camelContext.getTypeConverterRegistry().addTypeConverter(org.w3c.dom.Document.class, CarbonMessage.class,
+            camelContext.getTypeConverterRegistry().addTypeConverter(Document.class, CarbonMessage.class,
                     new CarbonMessageTypeConverter());
             camelContext.getTypeConverterRegistry().addTypeConverter(InputStream.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(DOMSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(SAXSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(StAXSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(StreamSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(String.class, CarbonMessage.class,
                     new CarbonMessageTypeConverter());
             camelContext.getTypeConverterRegistry().addTypeConverter(CarbonMessage.class, String.class,
                     new CarbonMessageReverseTypeConverter());

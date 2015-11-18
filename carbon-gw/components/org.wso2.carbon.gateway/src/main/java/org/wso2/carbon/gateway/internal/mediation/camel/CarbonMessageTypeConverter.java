@@ -15,24 +15,28 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.handler.codec.http.HttpContent;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.converter.jaxp.XmlConverter;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.ContentChunk;
 import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.BlockingQueue;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 
 /**
@@ -55,31 +59,29 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
             CompositeByteBuf contentBuf = aggregateChunks(pipe);
             //Check whether we have any content to be processed
             if (contentBuf.capacity() != 0) {
-                //Increase the reference count by 1
-                contentBuf.retain();
-                //Create the input stream from the composite buffer
-                byteBufInputStream = new ByteBufInputStream(contentBuf);
                 try {
-                    if (type.isAssignableFrom(org.w3c.dom.Document.class)) {
+                    if (type.isAssignableFrom(Document.class)) {
                         //Convert the input stream into xml dom element
-                        XmlConverter xmlConverter = new XmlConverter();
-                        return (T) xmlConverter.toDOMDocument(byteBufInputStream, exchange);
-                    } else if (type.isAssignableFrom(java.io.InputStream.class)) {
-                        return (T) byteBufInputStream;
+                        return (T) toDocument(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(DOMSource.class)) {
+                        return (T) toDOMSource(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(SAXSource.class)) {
+                        return (T) toSAXSource(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(StAXSource.class)) {
+                        return (T) toStAXSource(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(StreamSource.class)) {
+                        return (T) toStreamSource(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(InputStream.class)) {
+                        return (T) toInputStream(contentBuf, exchange);
+                    } else if (type.isAssignableFrom(String.class)) {
+                        return (T) toString(contentBuf, exchange);
                     }
-                } catch (IOException e) {
-                    log.error("IO Error occurred during conversion to XML", e);
-                } catch (SAXException e) {
-                    log.error("SAX Parser Error occurred during conversion to XML", e);
-                } catch (ParserConfigurationException e) {
-                    log.error("Parser Configuration Error occurred during conversion to XML", e);
+                } catch (UnsupportedEncodingException e) {
+                    log.error("Error occurred during type conversion", e);
                 } finally {
-                    try {
-                        // Release the buffer and input stream
+                    //Release the buffer if all the content has been consumed
+                    if (contentBuf.readerIndex() == contentBuf.writerIndex()) {
                         contentBuf.release();
-                        byteBufInputStream.close();
-                    } catch (IOException e) {
-                        log.error("IOException when closing the input stream", e);
                     }
                 }
             }
@@ -131,6 +133,58 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
     @Override
     public boolean allowNull() {
         return true;
+    }
+
+
+    private byte[] toByteArray(ByteBuf buffer, Exchange exchange) {
+        byte[] bytes = new byte[buffer.readableBytes()];
+        int readerIndex = buffer.readerIndex();
+        buffer.getBytes(readerIndex, bytes);
+        return bytes;
+    }
+
+
+    private String toString(ByteBuf buffer, Exchange exchange) throws UnsupportedEncodingException {
+        byte[] bytes = toByteArray(buffer, exchange);
+        // use type converter as it can handle encoding set on the Exchange
+        if (exchange != null) {
+            return exchange.getContext().getTypeConverter().convertTo(String.class, exchange, bytes);
+        }
+        return new String(bytes, "UTF-8");
+    }
+
+
+    private InputStream toInputStream(ByteBuf buffer, Exchange exchange) {
+        return new ByteBufInputStream(buffer);
+    }
+
+    private Document toDocument(ByteBuf buffer, Exchange exchange) {
+        InputStream is = toInputStream(buffer, exchange);
+        return exchange.getContext().getTypeConverter().convertTo(Document.class, exchange, is);
+    }
+
+
+    private DOMSource toDOMSource(ByteBuf buffer, Exchange exchange) {
+        InputStream is = toInputStream(buffer, exchange);
+        return exchange.getContext().getTypeConverter().convertTo(DOMSource.class, exchange, is);
+    }
+
+
+    private SAXSource toSAXSource(ByteBuf buffer, Exchange exchange) {
+        InputStream is = toInputStream(buffer, exchange);
+        return exchange.getContext().getTypeConverter().convertTo(SAXSource.class, exchange, is);
+    }
+
+
+    private StreamSource toStreamSource(ByteBuf buffer, Exchange exchange) {
+        InputStream is = toInputStream(buffer, exchange);
+        return exchange.getContext().getTypeConverter().convertTo(StreamSource.class, exchange, is);
+    }
+
+
+    private StAXSource toStAXSource(ByteBuf buffer, Exchange exchange) {
+        InputStream is = toInputStream(buffer, exchange);
+        return exchange.getContext().getTypeConverter().convertTo(StAXSource.class, exchange, is);
     }
 
 
