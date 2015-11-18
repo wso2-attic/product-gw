@@ -16,7 +16,11 @@
 package org.wso2.carbon.gateway.internal.transport.sender;
 
 import com.lmax.disruptor.RingBuffer;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.LastHttpContent;
@@ -89,15 +93,25 @@ public class NettySender implements TransportSender {
 
     private boolean writeContent(Channel channel, HttpRequest httpRequest, CarbonMessage carbonMessage) {
         channel.write(httpRequest);
-        while (true) {
-            HTTPContentChunk chunk = (HTTPContentChunk) carbonMessage.getPipe().getContent();
-            HttpContent httpContent = chunk.getHttpContent();
-            if (httpContent instanceof LastHttpContent) {
-                channel.writeAndFlush(httpContent);
-                break;
+        if (carbonMessage.getPipe().getMessageBytes() == null) {
+            while (true) {
+                HTTPContentChunk chunk = (HTTPContentChunk) carbonMessage.getPipe().getContent();
+                HttpContent httpContent = chunk.getHttpContent();
+                if (httpContent instanceof LastHttpContent) {
+                    channel.writeAndFlush(httpContent);
+                    break;
+                }
+                if (httpContent != null) {
+                    channel.write(httpContent);
+                }
             }
-            if (httpContent != null) {
-                channel.write(httpContent);
+        } else {
+            //If the pipe does not contain any HTTP chunks, write using the input stream
+            ByteBuf contentBuf = carbonMessage.getPipe().getMessageBytes();
+            if (contentBuf != null && contentBuf.isReadable()) {
+                LastHttpContent httpContent = new DefaultLastHttpContent(contentBuf);
+                final ChannelFuture f = channel.writeAndFlush(httpContent);
+                f.addListener(new ChannelFutureListener2(f, contentBuf));
             }
         }
         return true;
@@ -143,6 +157,27 @@ public class NettySender implements TransportSender {
             return this;
         }
 
+    }
+
+    private static class ChannelFutureListener2 implements ChannelFutureListener {
+        private ChannelFuture channelFuture;
+        //private Channel channel;
+        private ByteBuf contentBuf;
+
+        public ChannelFutureListener2(ChannelFuture channelFuture, ByteBuf contentBuf) {
+            this.channelFuture = channelFuture;
+            //this.channel = channel;
+            this.contentBuf = contentBuf;
+        }
+
+        @Override
+        public void operationComplete(ChannelFuture future) {
+            assert this.channelFuture == future;
+            // Release the buffer and input stream
+            if (contentBuf.refCnt() > 0) {
+                contentBuf.release();
+            }
+        }
     }
 
 }

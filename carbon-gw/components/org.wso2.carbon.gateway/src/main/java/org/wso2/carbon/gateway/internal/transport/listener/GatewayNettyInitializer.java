@@ -23,8 +23,12 @@ import org.apache.camel.spring.SpringCamelContext;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.Document;
+import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
+import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageReverseTypeConverter;
+import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageTypeConverter;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorConfig;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.DisruptorFactory;
@@ -34,7 +38,14 @@ import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfig
 import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
+
 
 /**
  * A class that responsible for create server side channels.
@@ -46,9 +57,9 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
     private ConnectionManager connectionManager;
 
     public static final String CAMEL_CONTEXT_CONFIG_FILE = "repository" + File.separator + "conf" +
-                                                           File.separator +
-                                                           "camel" + File.separator
-                                                           + "camel-context.xml";
+            File.separator +
+            "camel" + File.separator
+            + "camel-context.xml";
 
     public GatewayNettyInitializer() {
 
@@ -68,6 +79,22 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
             SpringCamelContext camelContext = (SpringCamelContext) applicationContext.getBean("wso2-cc");
             camelContext.start();
             CamelMediationComponent component = (CamelMediationComponent) camelContext.getComponent("wso2-gw");
+            camelContext.getTypeConverterRegistry().addTypeConverter(Document.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(InputStream.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(DOMSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(SAXSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(StAXSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(StreamSource.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(String.class, CarbonMessage.class,
+                    new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry().addTypeConverter(CarbonMessage.class, String.class,
+                    new CarbonMessageReverseTypeConverter());
             CamelMediationEngine engine = component.getEngine();
             connectionManager = component.getConnectionManager();
 
@@ -81,17 +108,17 @@ public class GatewayNettyInitializer implements CarbonNettyServerInitializer {
                                 parameters.get(Constants.WAIT_STRATEGY),
                                 Boolean.parseBoolean(Constants.SHARE_DISRUPTOR_WITH_OUTBOUND));
                 DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND,
-                                                  disruptorConfig, engine);
+                        disruptorConfig, engine);
                 String queueSize = parameters.get(Constants.CONTENT_QUEUE_SIZE);
                 if (queueSize != null) {
                     this.queueSize = Integer.parseInt(queueSize);
                 }
             } else {
                 log.warn("Disruptor specific parameters are not specified in " +
-                         "configuration hence using default configs");
+                        "configuration hence using default configs");
                 DisruptorConfig disruptorConfig = new DisruptorConfig();
                 DisruptorFactory.createDisruptors(DisruptorFactory.DisruptorType.INBOUND,
-                                                  disruptorConfig, engine);
+                        disruptorConfig, engine);
             }
         } catch (Exception e) {
             String msg = "Error while loading " + CAMEL_CONTEXT_CONFIG_FILE + " configuration file";

@@ -15,34 +15,24 @@
 
 package org.wso2.carbon.gateway.internal.common;
 
-import io.netty.buffer.ByteBuf;
-
-import java.io.InputStream;
-import java.util.concurrent.BlockingQueue;
-
 /**
- * Interface for create Content Holders.
+ * Custom exception class for gateway specific exceptions
  */
-public interface Pipe {
+public class CarbonException extends Exception {
 
-    ContentChunk getContent();
+    public CarbonException() {
+    }
 
-    void addContentChunk(ContentChunk chunk);
+    public CarbonException(String message) {
+        super(message);
+    }
 
-    BlockingQueue<ContentChunk> getClonedContentQueue();
+    public CarbonException(Throwable cause) {
+        super(cause);
+    }
 
-    boolean isEmpty();
-
-    boolean isLastChunkAdded();
-
-    InputStream getInputStream();
-
-    void setInputStream(InputStream inputStream);
-
-    void setMessageBytes(ByteBuf messageBytes);
-
-    ByteBuf getMessageBytes();
-
-//    ByteBuf getCompositeBuffer();
+    public CarbonException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }
