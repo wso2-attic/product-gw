@@ -97,27 +97,6 @@ public class Util {
         return outgoingResponse;
     }
 
-
-    @SuppressWarnings("unchecked")
-    public static HttpResponse createHttp202Response() {
-        HttpVersion httpVersion = new HttpVersion(HTTP_1_1.text(), true);
-
-        int statusCode = 202;
-
-        HttpResponseStatus httpResponseStatus = new HttpResponseStatus(statusCode,
-                HttpResponseStatus.valueOf(statusCode).reasonPhrase());
-
-        DefaultHttpResponse outgoingResponse = new DefaultHttpResponse(httpVersion,
-                httpResponseStatus, false);
-
-
-        //Map<String, String> headerMap = (Map) msg.getProperty(Constants.TRANSPORT_HEADERS);
-
-        //Util.setHeaders(outgoingResponse, headerMap);
-
-        return outgoingResponse;
-    }
-
     @SuppressWarnings("unchecked")
     public static HttpRequest createHttpRequest(CarbonMessage msg) {
         HttpMethod httpMethod;

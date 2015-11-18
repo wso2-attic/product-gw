@@ -36,7 +36,7 @@ public class CarbonMessage {
 
     private CarbonCallback carbonCallback;
 
-    private String simplePayload;
+
 
     private int direction;
 
@@ -117,15 +117,6 @@ public class CarbonMessage {
 
     public Lock getLock() {
         return lock;
-    }
-
-
-    public String getSimplePayload() {
-        return simplePayload;
-    }
-
-    public void setSimplePayload(String simplePayload) {
-        this.simplePayload = simplePayload;
     }
 
 }
