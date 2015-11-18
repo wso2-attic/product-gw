@@ -20,9 +20,11 @@ package org.wso2.carbon.gateway.internal.mediation.camel;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.log4j.Logger;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 
 import java.util.Map;
@@ -35,6 +37,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     private CamelMediationEngine engine;
     private CarbonCamelMessageUtil carbonCamelMessageUtil;
     private String httpMethodRestrict;
+    private static final Logger log = Logger.getLogger(CamelMediationEndpoint.class);
 
     public CamelMediationEndpoint(String uri, CamelMediationComponent component, CamelMediationEngine engine) {
         super(uri, component);
@@ -65,9 +68,23 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
 
     public Exchange createExchange(Map<String, Object> headers, CarbonMessage cmsg) {
         Exchange exchange = createExchange();
-        carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
-        exchange.getIn().setBody(cmsg);
+        try {
+            Message msg = createCamelMessage(cmsg, exchange);
+            exchange.setIn(msg);
+            carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
+        } catch (Exception e) {
+            log.error("Error occurred during the camel message creation", e);
+        }
+        //carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
+        //exchange.getIn().setBody(cmsg);
         return exchange;
+    }
+
+    public Message createCamelMessage(CarbonMessage carbonMessage, Exchange exchange) throws Exception {
+        CamelHttp4Message answer = new CamelHttp4Message();
+        answer.setCarbonMessage(carbonMessage);
+        answer.setExchange(exchange);
+        return answer;
     }
 
     public CarbonCamelMessageUtil getCarbonCamelMessageUtil() {

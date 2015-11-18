@@ -25,6 +25,7 @@ import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.Util;
 
+
 /**
  * A Class responsible for handling the response.
  */

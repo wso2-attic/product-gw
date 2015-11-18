@@ -12,37 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-
 package org.wso2.carbon.gateway.internal.common;
 
-import io.netty.buffer.ByteBuf;
-
-import java.io.InputStream;
-import java.util.concurrent.BlockingQueue;
-
 /**
- * Interface for create Content Holders.
+ * Class to keep the contants required for gateway implementation
  */
-public interface Pipe {
-
-    ContentChunk getContent();
-
-    void addContentChunk(ContentChunk chunk);
-
-    BlockingQueue<ContentChunk> getClonedContentQueue();
-
-    boolean isEmpty();
-
-    boolean isLastChunkAdded();
-
-    InputStream getInputStream();
-
-    void setInputStream(InputStream inputStream);
-
-    void setMessageBytes(ByteBuf messageBytes);
-
-    ByteBuf getMessageBytes();
-
-//    ByteBuf getCompositeBuffer();
-
+public class CarbonGatewayConstants {
+    public static final String ORIGINAL_MESSAGE = "ORIGINAL_MESSAGE";
+    public static final int AGGREGATED_HTTP_MESSAGE_MAX_SIZE = 1048576;
 }
