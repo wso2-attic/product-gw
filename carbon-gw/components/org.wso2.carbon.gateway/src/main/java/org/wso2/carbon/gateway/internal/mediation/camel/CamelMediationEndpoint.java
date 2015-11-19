@@ -69,22 +69,13 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     public Exchange createExchange(Map<String, Object> headers, CarbonMessage cmsg) {
         Exchange exchange = createExchange();
         try {
-            Message msg = createCamelMessage(cmsg, exchange);
+            Message msg = carbonCamelMessageUtil.createCamelMessage(cmsg, exchange);
             exchange.setIn(msg);
             carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
-        } catch (Exception e) {
-            log.error("Error occurred during the camel message creation", e);
+        } catch (Exception exception) {
+            log.error("Error occurred during the camel message creation", exception);
         }
-        //carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
-        //exchange.getIn().setBody(cmsg);
         return exchange;
-    }
-
-    public Message createCamelMessage(CarbonMessage carbonMessage, Exchange exchange) throws Exception {
-        CamelHttp4Message answer = new CamelHttp4Message();
-        answer.setCarbonMessage(carbonMessage);
-        answer.setExchange(exchange);
-        return answer;
     }
 
     public CarbonCamelMessageUtil getCarbonCamelMessageUtil() {

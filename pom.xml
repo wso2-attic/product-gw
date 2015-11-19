@@ -270,7 +270,7 @@
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
         <netty.version>4.0.30.Final</netty.version>
         <disruptor.version>3.3.2.wso2v2</disruptor.version>
-        <camel.version>2.15.2</camel.version>
+        <camel.version>2.16.0</camel.version>
         <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
         <slf4j.version>1.7.5</slf4j.version>
         <org.wso2.carbon.transport.http.netty.version>1.0.0-alpha</org.wso2.carbon.transport.http.netty.version>
