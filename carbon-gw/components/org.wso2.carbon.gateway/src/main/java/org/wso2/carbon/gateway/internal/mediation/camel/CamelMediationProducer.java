@@ -21,6 +21,7 @@ package org.wso2.carbon.gateway.internal.mediation.camel;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultAsyncProducer;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
@@ -107,12 +108,20 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                 Map<String, Object> transportHeaders =
                         (Map<String, Object>) responseCmsg.getProperty(Constants.TRANSPORT_HEADERS);
                 if (transportHeaders != null) {
+                    transportHeaders
+                            .put(Exchange.HTTP_RESPONSE_CODE, responseCmsg.getProperty(Constants.HTTP_STATUS_CODE));
                     CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
                     responseCmsg.setProperty(Constants.SRC_HNDLR, request.getProperty(Constants.SRC_HNDLR));
                     responseCmsg.setProperty(Constants.DISRUPTOR, request.getProperty(Constants.DISRUPTOR));
                     responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX, request.getProperty(Constants.CHNL_HNDLR_CTX));
-                    carbonCamelMessageUtil.setCamelHeadersToBackendResponse(exchange, transportHeaders);
-                    exchange.getOut().setBody(responseCmsg);
+                    Message msg = null;
+                    try {
+                        msg = carbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);
+                        exchange.setOut(msg);
+                        carbonCamelMessageUtil.setCamelHeadersToBackendResponse(exchange, transportHeaders);
+                    } catch (Exception e) {
+                        log.error("Error occurred during the response camel message creation", e);
+                    }
                 } else {
                     log.warn("Backend response : Received empty headers in carbon message...");
                 }

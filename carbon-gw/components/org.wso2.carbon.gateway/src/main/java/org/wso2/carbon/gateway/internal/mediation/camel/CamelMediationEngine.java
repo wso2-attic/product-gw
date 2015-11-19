@@ -18,10 +18,6 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultLastHttpContent;
-import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
@@ -30,17 +26,13 @@ import org.wso2.carbon.gateway.internal.common.CarbonCallback;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
-import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
-import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,32 +96,34 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
         consumer.getAsyncProcessor().process(exchange, done -> {
 
-            CarbonMessage mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
+            CarbonMessage mediatedResponse = null;
 
-            if (mediatedResponse != null && !exchange.getIn().getMessageId().equals(exchange.getOut().getMessageId())) {
-                Map<String, Object> mediatedHeaders = exchange.getOut().getHeaders();
-                mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
+            if (null == exchange.getException()) {
+                Map<String, Object> mediatedHeaders = null;
+                if (null != exchange.getOut().getBody()) {
+                    mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
+                    mediatedHeaders = exchange.getOut().getHeaders();
+                } else if (null != exchange.getIn().getBody()) {
+                    mediatedResponse = exchange.getIn().getBody(CarbonMessage.class);
+                    mediatedHeaders = exchange.getIn().getHeaders();
+                } else {
+                    log.error("Error while reading the response carbon message...");
+                }
+                if (!mediatedHeaders.isEmpty() && mediatedResponse != null) {
+                    try {
+                        int statusCode = (Integer) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE);
+                        mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
+                        mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
+                    } catch (ClassCastException classCastException) {
+                        log.info("Response Http Status code is invalid. response code : " +
+                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+                    }
+                    mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
+                    mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
+                }
             } else {
-                mediatedResponse = new CarbonMessage(Constants.PROTOCOL_NAME);
-                Exception failedCause = exchange.getException();
-                String cause = failedCause.getMessage();
-                ByteBuf bbuf = Unpooled.copiedBuffer(cause, StandardCharsets.UTF_8);
-                DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
-                HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
-                Pipe pipe = new PipeImpl(bbuf.readableBytes());
-                pipe.addContentChunk(contentChunk);
-                mediatedResponse.setPipe(pipe);
-
-                mediatedResponse.setDirection(CarbonMessage.RESPONSE);
-
-                Map<String, Object> transportHeaders = new HashMap<>();
-                transportHeaders.put(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-                transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
-                transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
-                transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
-                mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, transportHeaders);
-
-                mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, 500);
+                mediatedResponse =
+                        CarbonCamelMessageUtil.createHttpCarbonResponse(exchange.getException().getMessage(), 500);
             }
 
             try {

@@ -18,16 +18,28 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.util.ObjectHelper;
+import org.apache.camel.util.URISupport;
+import org.apache.camel.util.UnsafeUriCharactersEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.gateway.internal.common.CarbonMessage;
+import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
+import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
+import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,7 +153,12 @@ public class CarbonCamelMessageUtil {
 
             request.setHost(host);
             request.setPort(port);
-            request.setURI(uri);
+
+            try {
+                request.setURI(createURI(exchange, uri));
+            } catch (URISyntaxException e) {
+                log.error("Error while generating the URL for to endpoint : " + uri);
+            }
 
             Iterator it = headers.entrySet().iterator();
             while (it.hasNext()) {
@@ -210,6 +227,20 @@ public class CarbonCamelMessageUtil {
         }
     }
 
+    private String createURI(Exchange exchange, String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        String queryString = exchange.getIn().getHeader(Exchange.HTTP_QUERY, String.class);
+        if (queryString == null) {
+            queryString = uri.getRawQuery();
+        }
+        if (queryString != null) {
+            // need to encode query string
+            queryString = UnsafeUriCharactersEncoder.encodeHttpURI(queryString);
+            uri = URISupport.createURIWithQuery(uri, queryString);
+        }
+        return uri.toString();
+    }
+
     /**
      * Get carbon headers from backend response and set in camel exchange out message.
      *
@@ -220,4 +251,49 @@ public class CarbonCamelMessageUtil {
         exchange.getOut().setHeaders(transportHeaders);
     }
 
+    /**
+     * Create Camel Message which encapsulate Carbon message.
+     *
+     * @param carbonMessage Carbon message
+     * @param exchange      Camel Exchange.
+     * @return Camel Message
+     * @throws Exception
+     */
+    public static Message createCamelMessage(CarbonMessage carbonMessage, Exchange exchange) throws Exception {
+        CamelHttp4Message answer = new CamelHttp4Message();
+        answer.setCarbonMessage(carbonMessage);
+        answer.setExchange(exchange);
+        return answer;
+    }
+
+    /**
+     * Generate Http Error Responses as a Carbon Message.
+     *
+     * @param errorMessage Error message in the http message body.
+     * @param code         Error Code of the Http response.
+     * @return Http Error Response as a Carbon message.
+     */
+    public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
+
+        CarbonMessage response = new CarbonMessage(Constants.PROTOCOL_NAME);
+        ByteBuf bbuf = Unpooled.copiedBuffer(errorMessage, StandardCharsets.UTF_8);
+        DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
+        HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
+        Pipe pipe = new PipeImpl(bbuf.readableBytes());
+        pipe.addContentChunk(contentChunk);
+        response.setPipe(pipe);
+
+        response.setDirection(CarbonMessage.RESPONSE);
+
+        Map<String, Object> transportHeaders = new HashMap<>();
+        transportHeaders.put(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+        transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
+        transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
+        transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+        response.setProperty(Constants.TRANSPORT_HEADERS, transportHeaders);
+
+        response.setProperty(Constants.HTTP_STATUS_CODE, code);
+
+        return response;
+    }
 }
