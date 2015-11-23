@@ -15,6 +15,9 @@
 
 package org.wso2.carbon.gateway.internal.common;
 
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+
 /**
  * Interface for Message Sender to the BE.
  */

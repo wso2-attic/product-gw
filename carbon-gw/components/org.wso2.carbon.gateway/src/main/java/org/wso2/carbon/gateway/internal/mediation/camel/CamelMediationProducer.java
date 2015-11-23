@@ -26,9 +26,9 @@ import org.apache.camel.impl.DefaultAsyncProducer;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.net.MalformedURLException;
 import java.net.URL;

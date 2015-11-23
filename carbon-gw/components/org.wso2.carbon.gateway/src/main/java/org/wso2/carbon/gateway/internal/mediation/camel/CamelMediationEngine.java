@@ -22,14 +22,14 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.Document;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
 import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
 import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageReverseTypeConverter;
@@ -35,6 +34,7 @@ import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.Disrup
 import org.wso2.carbon.gateway.internal.transport.sender.channel.BootstrapConfiguration;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.PoolConfiguration;
+import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
 
 import java.io.File;

@@ -17,10 +17,11 @@ package org.wso2.carbon.gateway.internal.transport.common;
 
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.ContentChunk;
-import org.wso2.carbon.gateway.internal.common.Pipe;
+import org.wso2.carbon.messaging.ContentChunk;
+import org.wso2.carbon.messaging.Pipe;
 
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
@@ -100,11 +101,13 @@ public class PipeImpl implements Pipe {
         this.inputStream = inputStream;
     }
 
-    public ByteBuf getMessageBytes() {
-        return messageBytes;
+    @Override
+    public void setMessageBytes(byte[] bytes) {
+        this.messageBytes = Unpooled.copiedBuffer(bytes);
     }
 
-    public void setMessageBytes(ByteBuf messageBytes) {
-        this.messageBytes = messageBytes;
+    public byte[] getMessageBytes() {
+        return messageBytes.array();
     }
+
 }

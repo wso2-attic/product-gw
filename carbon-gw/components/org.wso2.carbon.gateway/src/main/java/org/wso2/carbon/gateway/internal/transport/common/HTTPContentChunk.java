@@ -17,7 +17,7 @@ package org.wso2.carbon.gateway.internal.transport.common;
 
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.LastHttpContent;
-import org.wso2.carbon.gateway.internal.common.ContentChunk;
+import org.wso2.carbon.messaging.ContentChunk;
 
 
 /**

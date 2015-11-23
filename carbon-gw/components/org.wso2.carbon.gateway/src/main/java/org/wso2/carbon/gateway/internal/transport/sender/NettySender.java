@@ -17,6 +17,7 @@ package org.wso2.carbon.gateway.internal.transport.sender;
 
 import com.lmax.disruptor.RingBuffer;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -26,8 +27,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
 import org.wso2.carbon.gateway.internal.common.GWException;
 import org.wso2.carbon.gateway.internal.common.TransportSender;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
@@ -39,6 +38,8 @@ import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.Disrup
 import org.wso2.carbon.gateway.internal.transport.listener.SourceHandler;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.transport.http.netty.listener.ssl.SSLConfig;
 
 /**
@@ -107,7 +108,7 @@ public class NettySender implements TransportSender {
             }
         } else {
             //If the pipe does not contain any HTTP chunks, write using the input stream
-            ByteBuf contentBuf = carbonMessage.getPipe().getMessageBytes();
+            ByteBuf contentBuf = Unpooled.copiedBuffer(carbonMessage.getPipe().getMessageBytes());
             if (contentBuf != null && contentBuf.isReadable()) {
                 LastHttpContent httpContent = new DefaultLastHttpContent(contentBuf);
                 final ChannelFuture f = channel.writeAndFlush(httpContent);

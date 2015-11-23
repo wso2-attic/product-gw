@@ -19,11 +19,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.Util;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Pipe;
 
 
 /**

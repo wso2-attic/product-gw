@@ -26,11 +26,11 @@ import com.lmax.disruptor.TimeoutBlockingWaitStrategy;
 import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.event.CarbonDisruptorEvent;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.exception.GenericExceptionHandler;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.handler.CarbonDisruptorEventHandler;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;

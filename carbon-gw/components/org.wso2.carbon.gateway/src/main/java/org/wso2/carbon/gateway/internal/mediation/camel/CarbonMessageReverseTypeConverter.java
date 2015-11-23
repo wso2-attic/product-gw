@@ -21,9 +21,9 @@ import io.netty.buffer.Unpooled;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Pipe;
 
 import java.io.UnsupportedEncodingException;
 
@@ -45,7 +45,7 @@ public class CarbonMessageReverseTypeConverter extends TypeConverterSupport {
                 msgBytes = Unpooled.wrappedBuffer(((String) value).getBytes("UTF-8"));
                 CarbonMessage carbonMessage = new CarbonMessage("http");
                 Pipe pipe = new PipeImpl(msgBytes.readableBytes());
-                pipe.setMessageBytes(msgBytes);
+                pipe.setMessageBytes(msgBytes.array());
                 carbonMessage.setPipe(pipe);
                 return (T) carbonMessage;
             } catch (UnsupportedEncodingException e) {

@@ -26,7 +26,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 
 
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
+import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.HashMap;
 import java.util.Map;

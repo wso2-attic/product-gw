@@ -30,11 +30,11 @@ import org.apache.camel.util.UnsafeUriCharactersEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Pipe;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -178,7 +178,7 @@ public class CarbonCamelMessageUtil {
                     //Content has been replaced. Take the new content-length
                     if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
                         carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
-                                .getMessageBytes().readableBytes());
+                                .getMessageBytes().length);
                     } else {
                         carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, pair.getValue());
                     }
@@ -199,7 +199,7 @@ public class CarbonCamelMessageUtil {
                     carbonBackEndRequestHeaders.remove(Constants.HTTP_CONTENT_LENGTH);
                 }
                 carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
-                        .getMessageBytes().readableBytes());
+                        .getMessageBytes().length);
             }
 
             request.setProperty(Constants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);

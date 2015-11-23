@@ -16,7 +16,7 @@
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
 import org.apache.camel.impl.DefaultMessage;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
+import org.wso2.carbon.messaging.CarbonMessage;
 
 /**
  * Wrapper class which represents the camel message to the mediation engine

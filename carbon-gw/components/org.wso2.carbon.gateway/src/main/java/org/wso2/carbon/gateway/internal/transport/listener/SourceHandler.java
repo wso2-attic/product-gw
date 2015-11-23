@@ -23,8 +23,6 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.HttpRoute;
@@ -35,6 +33,8 @@ import org.wso2.carbon.gateway.internal.transport.common.disruptor.config.Disrup
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.publisher.CarbonEventPublisher;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Pipe;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;

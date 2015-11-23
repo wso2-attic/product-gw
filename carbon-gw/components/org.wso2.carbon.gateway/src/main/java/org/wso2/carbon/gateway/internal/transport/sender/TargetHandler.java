@@ -22,9 +22,6 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.Pipe;
 import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
 import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
@@ -32,6 +29,9 @@ import org.wso2.carbon.gateway.internal.transport.common.Util;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.publisher.CarbonEventPublisher;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.TargetChannel;
 import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Pipe;
 
 import java.net.InetSocketAddress;
 

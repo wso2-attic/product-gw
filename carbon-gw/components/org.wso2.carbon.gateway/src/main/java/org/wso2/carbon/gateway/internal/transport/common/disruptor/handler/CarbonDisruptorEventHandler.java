@@ -15,10 +15,10 @@
 
 package org.wso2.carbon.gateway.internal.transport.common.disruptor.handler;
 
-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
-import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
 import org.wso2.carbon.gateway.internal.transport.common.disruptor.event.CarbonDisruptorEvent;
+import org.wso2.carbon.messaging.CarbonCallback;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
 
 import java.util.concurrent.locks.Lock;
 
