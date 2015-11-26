@@ -52,6 +52,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         this.sender = sender;
     }
 
+    public CamelMediationEngine() {
+        this.sender = null;
+    }
     /**
      * Client messages will receive here.
      *
@@ -85,6 +88,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.error("Message consumer not found.");
         }
         return true;
+    }
+
+    @Override
+    public void setTransportSender(org.wso2.carbon.messaging.TransportSender transportSender) {
+        // TODO: 11/24/15
     }
 
     public TransportSender getSender() {

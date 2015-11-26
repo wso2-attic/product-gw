@@ -23,6 +23,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
 
 /**
  * OSGi service component for Gateway.
@@ -36,12 +37,12 @@ public class GatewayServiceComponent {
 
     @Reference(
             name = "carbon-transport",
-            service = CarbonTransport.class,
+            service = CarbonMessageProcessor.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "removeCarbonTransport"
     )
-    protected void addCarbonTransport(CarbonTransport carbonTransport) {
+    protected void addCarbonTransport(CarbonMessageProcessor carbonTransport) {
         DataHolder.getInstance().addCarbonTransport(carbonTransport);
     }
 

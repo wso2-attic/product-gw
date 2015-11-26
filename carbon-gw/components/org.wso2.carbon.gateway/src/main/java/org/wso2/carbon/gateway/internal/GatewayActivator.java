@@ -17,6 +17,10 @@ package org.wso2.carbon.gateway.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
+
+import java.util.Hashtable;
 
 /**
  * OSGi Bundle Activator of the gateway Carbon component.
@@ -24,7 +28,11 @@ import org.osgi.framework.BundleContext;
 public class GatewayActivator implements BundleActivator {
 
     public void start(BundleContext bundleContext) throws Exception {
+        Hashtable<String, String> httpInitParams = new Hashtable<>();
         DataHolder.getInstance().setBundleContext(bundleContext);
+        //GatewayNettyInitializer gatewayNettyInitializer = new GatewayNettyInitializer();
+       bundleContext.registerService(CarbonMessageProcessor.class,
+                        new CamelMediationEngine(), httpInitParams);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {

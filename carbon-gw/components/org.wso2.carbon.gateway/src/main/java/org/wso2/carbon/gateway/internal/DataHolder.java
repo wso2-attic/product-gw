@@ -21,9 +21,8 @@ package org.wso2.carbon.gateway.internal;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.wso2.carbon.gateway.internal.transport.listener.GatewayNettyInitializer;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
-import org.wso2.carbon.transport.http.netty.listener.CarbonNettyServerInitializer;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -39,7 +38,7 @@ public class DataHolder {
 
     private static DataHolder instance = new DataHolder();
     private BundleContext bundleContext;
-    private Map<String, ServiceRegistration<CarbonNettyServerInitializer>> carbonTransports = new HashMap<>();
+    private Map<String, ServiceRegistration<CarbonMessageProcessor>> carbonTransports = new HashMap<>();
 
     private DataHolder() {
     }
@@ -52,19 +51,19 @@ public class DataHolder {
         this.bundleContext = bundleContext;
     }
 
-    public void addCarbonTransport(CarbonTransport carbonTransport) {
+    public void addCarbonTransport(CarbonMessageProcessor carbonTransport) {
         if (bundleContext == null) {
             log.fatal("BundleContext is null. Transport dispatching will fail.");
             return;
         }
-        String channelKey = carbonTransport.getId();
+//        String channelKey = carbonTransport.getId();
         Hashtable<String, String> httpInitParams = new Hashtable<>();
-        httpInitParams.put(CHANNEL_ID_KEY, channelKey);
-        GatewayNettyInitializer gatewayNettyInitializer = new GatewayNettyInitializer();
-        ServiceRegistration<CarbonNettyServerInitializer> service =
-                bundleContext.registerService(CarbonNettyServerInitializer.class,
-                        gatewayNettyInitializer, httpInitParams);
-        carbonTransports.put(channelKey, service);
+        httpInitParams.put(CHANNEL_ID_KEY, "aa");
+        //GatewayNettyInitializer gatewayNettyInitializer = new GatewayNettyInitializer();
+        ServiceRegistration<CarbonMessageProcessor> service =
+                bundleContext.registerService(CarbonMessageProcessor.class,
+                        carbonTransport, httpInitParams);
+        carbonTransports.put("aa", service);
     }
 
     public void removeCarbonTransport(CarbonTransport carbonTransport) {

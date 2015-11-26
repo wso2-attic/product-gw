@@ -233,7 +233,8 @@
                                 org.w3c.dom.*,
                                 org.xml.sax.*,
                                 javax.xml.*,
-                                org.slf4j.*
+                                org.slf4j.*,
+                                org.wso2.carbon.messaging.*
                             </Import-Package>
                             <_dsannotations>*</_dsannotations>
                         </instructions>
