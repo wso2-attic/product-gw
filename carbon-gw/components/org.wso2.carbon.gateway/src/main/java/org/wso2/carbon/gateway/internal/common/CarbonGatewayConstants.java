@@ -18,6 +18,33 @@ package org.wso2.carbon.gateway.internal.common;
  * Class to keep the contants required for gateway implementation
  */
 public class CarbonGatewayConstants {
+
     public static final String ORIGINAL_MESSAGE = "ORIGINAL_MESSAGE";
-    public static final int AGGREGATED_HTTP_MESSAGE_MAX_SIZE = 1048576;
+
+    public static final String DISRUPTOR = "Disruptor";
+
+    public static final String PROTOCOL_NAME = "http";
+
+    public static final String HTTP_VERSION = "HTTP_VERSION";
+
+    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+
+    public static final String HTTP_METHOD = "HTTP_METHOD";
+
+    public static final String HTTP_CONTENT_TYPE = "Content-Type";
+
+    public static final String HTTP_SOAP_ACTION = "SOAPAction";
+
+    public static final String HTTP_CONTENT_ENCODING = "Accept-Encoding";
+
+    public static final String HTTP_HOST = "Host";
+
+    public static final String TRANSPORT_HEADERS = "TRANSPORT_HEADERS";
+
+    public static final String HTTP_STATUS_CODE = "HTTP_STATUS_CODE";
+
+    public static final String CHNL_HNDLR_CTX = "CHNL_HNDLR_CTX";
+
+    public static final String SRC_HNDLR = "SRC_HNDLR";
+
 }

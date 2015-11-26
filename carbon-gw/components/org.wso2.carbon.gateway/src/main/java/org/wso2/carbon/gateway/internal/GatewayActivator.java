@@ -15,16 +15,73 @@
 
 package org.wso2.carbon.gateway.internal;
 
+import org.apache.camel.spring.SpringCamelContext;
+import org.apache.log4j.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.w3c.dom.Document;
+import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent;
+import org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationEngine;
+import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageReverseTypeConverter;
+import org.wso2.carbon.gateway.internal.mediation.camel.CarbonMessageTypeConverter;
+import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.CarbonMessageProcessor;
+
+import java.io.File;
+import java.io.InputStream;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * OSGi Bundle Activator of the gateway Carbon component.
  */
 public class GatewayActivator implements BundleActivator {
 
+    private static final Logger log = Logger.getLogger(GatewayActivator.class);
+
+    public static final String CAMEL_CONTEXT_CONFIG_FILE =
+            "repository" + File.separator + "conf" + File.separator + "camel" + File.separator + "camel-context.xml";
+
     public void start(BundleContext bundleContext) throws Exception {
-        DataHolder.getInstance().setBundleContext(bundleContext);
+        try {
+            SpringCamelContext.setNoStart(true);
+            ApplicationContext applicationContext =
+                    new ClassPathXmlApplicationContext(new String[] { CAMEL_CONTEXT_CONFIG_FILE });
+
+            SpringCamelContext camelContext = (SpringCamelContext) applicationContext.getBean("wso2-cc");
+            camelContext.start();
+            CamelMediationComponent component = (CamelMediationComponent) camelContext.getComponent("wso2-gw");
+
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(Document.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(InputStream.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(DOMSource.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(SAXSource.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(StAXSource.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(StreamSource.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(String.class, CarbonMessage.class, new CarbonMessageTypeConverter());
+            camelContext.getTypeConverterRegistry()
+                        .addTypeConverter(CarbonMessage.class, String.class, new CarbonMessageReverseTypeConverter());
+
+            CamelMediationEngine engine = component.getEngine();
+
+            bundleContext.registerService(CarbonMessageProcessor.class, engine, null);
+
+        } catch (Exception exception) {
+            String msg = "Error while loading " + CAMEL_CONTEXT_CONFIG_FILE + " configuration file";
+            log.error(msg + exception);
+            throw new RuntimeException(msg, exception);
+        }
     }
 
     public void stop(BundleContext bundleContext) throws Exception {

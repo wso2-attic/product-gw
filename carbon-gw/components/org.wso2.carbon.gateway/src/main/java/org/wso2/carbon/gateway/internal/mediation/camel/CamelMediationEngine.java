@@ -23,13 +23,12 @@ import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
-import org.wso2.carbon.gateway.internal.common.TransportSender;
-import org.wso2.carbon.gateway.internal.transport.common.Constants;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
+import org.wso2.carbon.messaging.TransportSender;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -46,10 +45,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
-    private TransportSender sender;
+    private TransportSender sender = null;
 
-    public CamelMediationEngine(TransportSender sender) {
-        this.sender = sender;
+    public CamelMediationEngine() {
     }
 
     /**
@@ -63,7 +61,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         if (log.isDebugEnabled()) {
             log.debug("Channel: {} received body: {}");
         }
-        Map<String, Object> transportHeaders = (Map<String, Object>) cMsg.getProperty(Constants.TRANSPORT_HEADERS);
+        Map<String, Object> transportHeaders =
+                (Map<String, Object>) cMsg.getProperty(CarbonGatewayConstants.TRANSPORT_HEADERS);
 
 
         CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(),
@@ -85,6 +84,16 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.error("Message consumer not found.");
         }
         return true;
+    }
+
+    /**
+     * Set the transport sender for the engine implementation.
+     *
+     * @param transportSender  Transport Sender
+     */
+    @Override
+    public void setTransportSender(TransportSender transportSender) {
+        this.sender = transportSender;
     }
 
     public TransportSender getSender() {
@@ -113,13 +122,13 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                     try {
                         int statusCode = (Integer) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE);
                         mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
-                        mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
+                        mediatedResponse.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
                         log.info("Response Http Status code is invalid. response code : " +
                                  mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
-                    mediatedResponse.setProperty(Constants.TRANSPORT_HEADERS, mediatedHeaders);
+                    mediatedResponse.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, mediatedHeaders);
                 }
             } else {
                 mediatedResponse =

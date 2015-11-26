@@ -1,23 +1,26 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations under the License.
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ * /
  */
 
-package org.wso2.carbon.gateway.internal.transport.common;
+package org.wso2.carbon.gateway.internal.common;
+
 
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.ContentChunk;
@@ -101,13 +104,22 @@ public class PipeImpl implements Pipe {
         this.inputStream = inputStream;
     }
 
-    @Override
-    public void setMessageBytes(byte[] bytes) {
-        this.messageBytes = Unpooled.copiedBuffer(bytes);
+    public void setMessageBytes(ByteBuf messageBytes) {
+        this.messageBytes = messageBytes;
     }
 
-    public byte[] getMessageBytes() {
-        return messageBytes.array();
+/*    public ByteBuf getMessageBytes() {
+        return messageBytes;
+    }*/
+
+    @Override
+    public void setMessageBytes(byte[] bytes) {
+
+    }
+
+    @Override public byte[] getMessageBytes() {
+        return new byte[0];
     }
 
 }
+
