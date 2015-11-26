@@ -25,7 +25,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
+import org.wso2.carbon.gateway.internal.common.HTTPContentChunk;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.ContentChunk;
 import org.wso2.carbon.messaging.Pipe;

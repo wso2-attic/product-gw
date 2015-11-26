@@ -30,9 +30,8 @@ import org.apache.camel.util.UnsafeUriCharactersEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
-import org.wso2.carbon.gateway.internal.transport.common.Constants;
-import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
-import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
+import org.wso2.carbon.gateway.internal.common.HTTPContentChunk;
+import org.wso2.carbon.gateway.internal.common.PipeImpl;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Pipe;
 
@@ -62,11 +61,11 @@ public class CarbonCamelMessageUtil {
                                                CarbonMessage request) {
         ConcurrentHashMap<String, Object> headers = new ConcurrentHashMap<>();
 
-        if (request.getProperty(Constants.HTTP_METHOD) != null) {
-            headers.put(Exchange.HTTP_METHOD, request.getProperty(Constants.HTTP_METHOD));
+        if (request.getProperty(CarbonGatewayConstants.HTTP_METHOD) != null) {
+            headers.put(Exchange.HTTP_METHOD, request.getProperty(CarbonGatewayConstants.HTTP_METHOD));
         }
-        if (request.getProperty(Constants.HTTP_VERSION) != null) {
-            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(Constants.HTTP_VERSION));
+        if (request.getProperty(CarbonGatewayConstants.HTTP_VERSION) != null) {
+            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(CarbonGatewayConstants.HTTP_VERSION));
         }
 
         // strip query parameters from the uri
@@ -81,7 +80,7 @@ public class CarbonCamelMessageUtil {
         //   http://servername/foo
         String http = request.getProtocol() + "://";
         if (!s.startsWith(http)) {
-            s = http + transportHeaders.get(Constants.HTTP_HOST) + s;
+            s = http + transportHeaders.get(CarbonGatewayConstants.HTTP_HOST) + s;
         }
 
         headers.put(Exchange.HTTP_URL, s);
@@ -108,23 +107,23 @@ public class CarbonCamelMessageUtil {
             }
         }
 
-        if (transportHeaders.get(Constants.HTTP_CONTENT_TYPE) != null) {
-            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(Constants.HTTP_CONTENT_TYPE));
+        if (transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_TYPE) != null) {
+            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_TYPE));
         }
-        if (transportHeaders.get(Constants.HTTP_SOAP_ACTION) != null) {
-            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(Constants.HTTP_SOAP_ACTION));
+        if (transportHeaders.get(CarbonGatewayConstants.HTTP_SOAP_ACTION) != null) {
+            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(CarbonGatewayConstants.HTTP_SOAP_ACTION));
         }
-        if (transportHeaders.get(Constants.HTTP_CONTENT_ENCODING) != null) {
-            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(Constants.HTTP_CONTENT_ENCODING));
+        if (transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_ENCODING) != null) {
+            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_ENCODING));
         }
 
         Iterator it = transportHeaders.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
-                    !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
-                    !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
+            if (!CarbonGatewayConstants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
+                    !CarbonGatewayConstants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                    !CarbonGatewayConstants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -165,22 +164,22 @@ public class CarbonCamelMessageUtil {
                 Map.Entry pair = (Map.Entry) it.next();
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
-                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_TYPE, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_TYPE, pair.getValue());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
-                    carbonBackEndRequestHeaders.put(Constants.HTTP_SOAP_ACTION, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_SOAP_ACTION, pair.getValue());
                 } else if (key.equals(Exchange.CONTENT_ENCODING)) {
-                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_ENCODING, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_ENCODING, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_METHOD)) {
-                    request.setProperty(Constants.HTTP_METHOD, pair.getValue());
+                    request.setProperty(CarbonGatewayConstants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
-                    request.setProperty(Constants.HTTP_VERSION, pair.getValue());
+                    request.setProperty(CarbonGatewayConstants.HTTP_VERSION, pair.getValue());
                 } else if (key.equals(Exchange.CONTENT_LENGTH)) {
                     //Content has been replaced. Take the new content-length
                     if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
-                        carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
+                        carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, request.getPipe()
                                 .getMessageBytes().length);
                     } else {
-                        carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, pair.getValue());
+                        carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, pair.getValue());
                     }
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue());
@@ -189,33 +188,35 @@ public class CarbonCamelMessageUtil {
             }
 
             if (port != 80) {
-                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host + ":" + port);
+                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host + ":" + port);
             } else {
-                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host);
+                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host);
             }
 
             if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
-                if (carbonBackEndRequestHeaders.contains(Constants.HTTP_CONTENT_LENGTH)) {
-                    carbonBackEndRequestHeaders.remove(Constants.HTTP_CONTENT_LENGTH);
+                if (carbonBackEndRequestHeaders.contains(CarbonGatewayConstants.HTTP_CONTENT_LENGTH)) {
+                    carbonBackEndRequestHeaders.remove(CarbonGatewayConstants.HTTP_CONTENT_LENGTH);
                 }
-                carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_LENGTH, request.getPipe()
+                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, request.getPipe()
                         .getMessageBytes().length);
             }
 
-            request.setProperty(Constants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
+            request.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
 
             //Set source handler and disruptor if they are not available
-            CarbonMessage originalMessage = (CarbonMessage) exchange
-                    .getProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE);
-            if (request.getProperty(Constants.SRC_HNDLR) == null) {
+            CarbonMessage originalMessage =
+                    (CarbonMessage) exchange.getProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE);
+            if (request.getProperty(CarbonGatewayConstants.SRC_HNDLR) == null) {
                 if (originalMessage != null) {
-                    request.setProperty(Constants.SRC_HNDLR, originalMessage.getProperty(Constants.SRC_HNDLR));
+                    request.setProperty(CarbonGatewayConstants.SRC_HNDLR,
+                                        originalMessage.getProperty(CarbonGatewayConstants.SRC_HNDLR));
                 }
             }
 
-            if (request.getProperty(Constants.DISRUPTOR) == null) {
+            if (request.getProperty(CarbonGatewayConstants.DISRUPTOR) == null) {
                 if (originalMessage != null) {
-                    request.setProperty(Constants.DISRUPTOR, originalMessage.getProperty(Constants.DISRUPTOR));
+                    request.setProperty(CarbonGatewayConstants.DISRUPTOR,
+                                        originalMessage.getProperty(CarbonGatewayConstants.DISRUPTOR));
                 }
             }
 
@@ -275,7 +276,7 @@ public class CarbonCamelMessageUtil {
      */
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
 
-        CarbonMessage response = new CarbonMessage(Constants.PROTOCOL_NAME);
+        CarbonMessage response = new CarbonMessage(CarbonGatewayConstants.PROTOCOL_NAME);
         ByteBuf bbuf = Unpooled.copiedBuffer(errorMessage, StandardCharsets.UTF_8);
         DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
         HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
@@ -290,9 +291,9 @@ public class CarbonCamelMessageUtil {
         transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
         transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
         transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
-        response.setProperty(Constants.TRANSPORT_HEADERS, transportHeaders);
+        response.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, transportHeaders);
 
-        response.setProperty(Constants.HTTP_STATUS_CODE, code);
+        response.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, code);
 
         return response;
     }

@@ -27,9 +27,6 @@ import org.apache.camel.spi.RestConfiguration;
 import org.apache.camel.spi.RestConsumerFactory;
 import org.apache.camel.util.FileUtil;
 import org.apache.camel.util.HostUtils;
-import org.wso2.carbon.gateway.internal.common.TransportSender;
-import org.wso2.carbon.gateway.internal.transport.sender.NettySender;
-import org.wso2.carbon.gateway.internal.transport.sender.channel.pool.ConnectionManager;
 
 import java.util.Locale;
 import java.util.Map;
@@ -40,14 +37,9 @@ import java.util.Map;
 public class CamelMediationComponent extends DefaultComponent implements RestConsumerFactory {
 
     private CamelMediationEngine engine;
-    private ConnectionManager connectionManager;
-    private int queueSize = 32544;
 
     public CamelMediationComponent() {
-        NettySender.Config config = new NettySender.Config("netty-gw-sender").setQueueSize(this.queueSize);
-        connectionManager = ConnectionManager.getInstance();
-        TransportSender sender = new NettySender(config, connectionManager);
-        engine = new CamelMediationEngine(sender);
+        engine = new CamelMediationEngine();
     }
 
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
@@ -105,7 +97,4 @@ public class CamelMediationComponent extends DefaultComponent implements RestCon
         return engine;
     }
 
-    public ConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
 }
