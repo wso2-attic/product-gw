@@ -21,9 +21,9 @@ import io.netty.buffer.Unpooled;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.PipeImpl;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Pipe;
+import org.wso2.carbon.messaging.PipeImpl;
 
 import java.io.UnsupportedEncodingException;
 

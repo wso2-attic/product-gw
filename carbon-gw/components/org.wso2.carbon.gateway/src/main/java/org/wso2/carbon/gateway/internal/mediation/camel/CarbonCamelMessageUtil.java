@@ -30,10 +30,10 @@ import org.apache.camel.util.UnsafeUriCharactersEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
-import org.wso2.carbon.gateway.internal.common.HTTPContentChunk;
-import org.wso2.carbon.gateway.internal.common.PipeImpl;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.HTTPContentChunk;
 import org.wso2.carbon.messaging.Pipe;
+import org.wso2.carbon.messaging.PipeImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
