@@ -172,7 +172,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.messaging</groupId>
                 <artifactId>org.wso2.carbon.messaging</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${org.wso2.carbon.messaging.version}</version>
             </dependency>
 
         </dependencies>
@@ -270,6 +270,9 @@
         <slf4j.version>1.7.5</slf4j.version>
         <org.wso2.carbon.transport.http.netty.version>1.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
         <org.wso2.carbon.transport.http.netty.osgi.version>1.0.0.SNAPSHOT</org.wso2.carbon.transport.http.netty.osgi.version>
+
+        <org.wso2.carbon.messaging.version>1.0.0-SNAPSHOT</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.messaging.osgi.version>1.0.0.SNAPSHOT</org.wso2.carbon.messaging.osgi.version>
 
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
