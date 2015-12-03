@@ -24,7 +24,8 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.Map;
@@ -37,7 +38,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     private CamelMediationEngine engine;
     private CarbonCamelMessageUtil carbonCamelMessageUtil;
     private String httpMethodRestrict;
-    private static final Logger log = Logger.getLogger(CamelMediationEndpoint.class);
+    private static final Logger log = LoggerFactory.getLogger(CamelMediationEndpoint.class);
 
     public CamelMediationEndpoint(String uri, CamelMediationComponent component, CamelMediationEngine engine) {
         super(uri, component);

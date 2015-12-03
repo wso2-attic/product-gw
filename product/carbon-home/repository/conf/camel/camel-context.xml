@@ -28,7 +28,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
 
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
 
-        <restConfiguration bindingMode="auto" component="wso2-gw" scheme="http" port="9090"/>
+        <restConfiguration bindingMode="off" component="wso2-gw" scheme="http" port="9090"/>
 
         <!--sample rest interfaces -->
         <rest path="/gw">

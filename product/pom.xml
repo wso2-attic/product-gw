@@ -59,6 +59,12 @@
             <version>${carbon.gateway.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty.feature</artifactId>
+            <version>${org.wso2.carbon.transport.http.netty.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -115,6 +121,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.gateway.feature</id>
                                     <version>${carbon.gateway.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature</id>
+                                    <version>${org.wso2.carbon.transport.http.netty.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -175,6 +185,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.gateway.feature.group</id>
                                     <version>${carbon.gateway.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature.group</id>
+                                    <version>${org.wso2.carbon.transport.http.netty.version}</version>
                                 </feature>
                             </features>
                         </configuration>

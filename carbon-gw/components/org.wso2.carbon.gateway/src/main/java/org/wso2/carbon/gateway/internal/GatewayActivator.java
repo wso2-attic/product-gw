@@ -16,9 +16,10 @@
 package org.wso2.carbon.gateway.internal;
 
 import org.apache.camel.spring.SpringCamelContext;
-import org.apache.log4j.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.Document;
@@ -41,7 +42,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class GatewayActivator implements BundleActivator {
 
-    private static final Logger log = Logger.getLogger(GatewayActivator.class);
+    private static final Logger log = LoggerFactory.getLogger(GatewayActivator.class);
 
     public static final String CAMEL_CONTEXT_CONFIG_FILE =
             "repository" + File.separator + "conf" + File.separator + "camel" + File.separator + "camel-context.xml";

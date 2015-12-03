@@ -15,17 +15,15 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.Pipe;
 import org.wso2.carbon.messaging.PipeImpl;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 
 /**
@@ -34,23 +32,18 @@ import java.io.UnsupportedEncodingException;
  */
 
 public class CarbonMessageReverseTypeConverter extends TypeConverterSupport {
-    private static final Logger log = Logger.getLogger(CarbonMessageTypeConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(CarbonMessageTypeConverter.class);
 
     @SuppressWarnings("unchecked")
 
     public <T> T convertTo(Class<T> type, Exchange exchange, Object value) {
         if (value instanceof String) {
-            ByteBuf msgBytes = null;
-            try {
-                msgBytes = Unpooled.wrappedBuffer(((String) value).getBytes("UTF-8"));
-                CarbonMessage carbonMessage = new CarbonMessage("http");
-                Pipe pipe = new PipeImpl(msgBytes.readableBytes());
-                pipe.setMessageBytes(msgBytes.array());
-                carbonMessage.setPipe(pipe);
-                return (T) carbonMessage;
-            } catch (UnsupportedEncodingException e) {
-                log.error("Encoding type is not supported", e);
-            }
+            byte[] msgBytes = ((String) value).getBytes(Charset.forName("UTF-8"));
+            CarbonMessage carbonMessage = new CarbonMessage("http");
+            Pipe pipe = new PipeImpl(msgBytes.length);
+            pipe.setMessageBytes(msgBytes);
+            carbonMessage.setPipe(pipe);
+            return (T) carbonMessage;
         }
         return null;
     }

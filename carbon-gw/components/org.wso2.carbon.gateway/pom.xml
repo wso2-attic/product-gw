@@ -62,10 +62,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.transport</groupId>
-            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
         </dependency>
@@ -97,10 +93,10 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.com.lmax</groupId>-->
+            <!--<artifactId>disruptor</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -120,10 +116,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-pool.wso2</groupId>
-            <artifactId>commons-pool</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
@@ -223,15 +215,9 @@
                                 org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
                                 io.netty.*,
                                 org.wso2.carbon.kernel.transports.*,
-                                org.wso2.carbon.transport.http.netty.*,
-                                org.apache.log4j.*,
-                                org.apache.commons.logging.*,
                                 org.apache.camel.*,
-                                org.apache.commons.pool.*,
-                                com.lmax.disruptor.*,
                                 org.springframework.context.*,
                                 org.w3c.dom.*,
-                                org.xml.sax.*,
                                 javax.xml.*,
                                 org.slf4j.*,
                                 org.wso2.carbon.messaging.*

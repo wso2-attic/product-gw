@@ -23,7 +23,8 @@ import io.netty.handler.codec.http.HttpContent;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.ContentChunk;
@@ -45,7 +46,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 
 public class CarbonMessageTypeConverter extends TypeConverterSupport {
-    private static final Logger log = Logger.getLogger(CarbonMessageTypeConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(CarbonMessageTypeConverter.class);
 
     @SuppressWarnings("unchecked")
 
