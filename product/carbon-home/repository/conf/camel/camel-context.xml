@@ -73,9 +73,9 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         <route id="failover">
             <from uri="wso2-gw:/failover"/>
             <loadBalance>
-                <failover roundRobin="false"/>
-                <to uri="wso2-gw:http://http://localhost:9000/services/SimpleStockQuoteService"/>
-                <to uri="wso2-gw:http://http://localhost:9001/services/SimpleStockQuoteService"/>
+                <failover roundRobin="true"/>
+                <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+                <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
             </loadBalance>
         </route>
 
