@@ -119,7 +119,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                                              request.getProperty(CarbonGatewayConstants.CHNL_HNDLR_CTX));
                     Message msg = null;
                     try {
-                        msg = carbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);
+                        msg = CarbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);
                         exchange.setOut(msg);
                         carbonCamelMessageUtil.setCamelHeadersToBackendResponse(exchange, transportHeaders);
                     } catch (Exception e) {

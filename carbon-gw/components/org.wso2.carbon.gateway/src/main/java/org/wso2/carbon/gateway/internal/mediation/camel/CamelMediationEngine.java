@@ -45,7 +45,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
-    private TransportSender sender = null;
+    private TransportSender sender;
 
     public CamelMediationEngine() {
     }
@@ -70,8 +70,6 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
-            //Set CarbonMessage as a property to exchange such that we can reuse that for retrieving the properties
-            exchange.setProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE, cMsg);
             exchange.setPattern(ExchangePattern.InOut);
             //need to close the unit of work finally
             try {

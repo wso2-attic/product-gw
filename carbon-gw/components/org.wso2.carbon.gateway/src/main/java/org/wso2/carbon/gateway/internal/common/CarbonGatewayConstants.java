@@ -19,15 +19,11 @@ package org.wso2.carbon.gateway.internal.common;
  */
 public class CarbonGatewayConstants {
 
-    public static final String ORIGINAL_MESSAGE = "ORIGINAL_MESSAGE";
-
     public static final String DISRUPTOR = "Disruptor";
 
     public static final String PROTOCOL_NAME = "http";
 
     public static final String HTTP_VERSION = "HTTP_VERSION";
-
-    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
 
     public static final String HTTP_METHOD = "HTTP_METHOD";
 

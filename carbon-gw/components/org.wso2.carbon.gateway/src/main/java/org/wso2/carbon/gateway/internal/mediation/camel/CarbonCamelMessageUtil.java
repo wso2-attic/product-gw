@@ -142,7 +142,6 @@ public class CarbonCamelMessageUtil {
      */
     public void setCarbonHeadersToBackendRequest(Exchange exchange, String host, int port, String uri) {
 
-        //CarbonMessage request = (CarbonMessage) exchange.getIn().getBody();
         CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
         Map<String, Object> headers = exchange.getIn().getHeaders();
 
@@ -173,14 +172,6 @@ public class CarbonCamelMessageUtil {
                     request.setProperty(CarbonGatewayConstants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
                     request.setProperty(CarbonGatewayConstants.HTTP_VERSION, pair.getValue());
-                } else if (key.equals(Exchange.CONTENT_LENGTH)) {
-                    //Content has been replaced. Take the new content-length
-                    if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
-                        carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, request.getPipe()
-                                .getMessageBytes().length);
-                    } else {
-                        carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, pair.getValue());
-                    }
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue());
                 }
@@ -193,38 +184,7 @@ public class CarbonCamelMessageUtil {
                 carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host);
             }
 
-            if (request.getPipe().isEmpty() && (request.getPipe().getMessageBytes() != null)) {
-                if (carbonBackEndRequestHeaders.contains(CarbonGatewayConstants.HTTP_CONTENT_LENGTH)) {
-                    carbonBackEndRequestHeaders.remove(CarbonGatewayConstants.HTTP_CONTENT_LENGTH);
-                }
-                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH, request.getPipe()
-                        .getMessageBytes().length);
-            }
-
             request.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
-
-            //Set source handler and disruptor if they are not available
-            CarbonMessage originalMessage =
-                    (CarbonMessage) exchange.getProperty(CarbonGatewayConstants.ORIGINAL_MESSAGE);
-            if (request.getProperty(CarbonGatewayConstants.SRC_HNDLR) == null) {
-                if (originalMessage != null) {
-                    request.setProperty(CarbonGatewayConstants.SRC_HNDLR,
-                                        originalMessage.getProperty(CarbonGatewayConstants.SRC_HNDLR));
-                }
-            }
-
-            if (request.getProperty(CarbonGatewayConstants.DISRUPTOR) == null) {
-                if (originalMessage != null) {
-                    request.setProperty(CarbonGatewayConstants.DISRUPTOR,
-                                        originalMessage.getProperty(CarbonGatewayConstants.DISRUPTOR));
-                }
-            }
-
-            //Set the Camel Message back to the exchange for sending through the producer
-            CamelHttp4Message answer = new CamelHttp4Message();
-            answer.setCarbonMessage(request);
-            answer.setExchange(exchange);
-            exchange.setIn(answer);
         }
     }
 
@@ -297,4 +257,5 @@ public class CarbonCamelMessageUtil {
 
         return response;
     }
+
 }

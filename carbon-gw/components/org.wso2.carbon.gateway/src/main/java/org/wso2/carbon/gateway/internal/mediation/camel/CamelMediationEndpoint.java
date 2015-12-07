@@ -20,12 +20,9 @@ package org.wso2.carbon.gateway.internal.mediation.camel;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 import java.util.Map;
@@ -38,7 +35,6 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
     private CamelMediationEngine engine;
     private CarbonCamelMessageUtil carbonCamelMessageUtil;
     private String httpMethodRestrict;
-    private static final Logger log = LoggerFactory.getLogger(CamelMediationEndpoint.class);
 
     public CamelMediationEndpoint(String uri, CamelMediationComponent component, CamelMediationEngine engine) {
         super(uri, component);
@@ -69,13 +65,8 @@ public class CamelMediationEndpoint extends DefaultEndpoint {
 
     public Exchange createExchange(Map<String, Object> headers, CarbonMessage cmsg) {
         Exchange exchange = createExchange();
-        try {
-            Message msg = carbonCamelMessageUtil.createCamelMessage(cmsg, exchange);
-            exchange.setIn(msg);
-            carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
-        } catch (Exception exception) {
-            log.error("Error occurred during the camel message creation", exception);
-        }
+        carbonCamelMessageUtil.setCamelHeadersToClientRequest(exchange, headers, cmsg);
+        exchange.getIn().setBody(cmsg);
         return exchange;
     }
 
