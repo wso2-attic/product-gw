@@ -65,7 +65,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 (Map<String, Object>) cMsg.getProperty(CarbonGatewayConstants.TRANSPORT_HEADERS);
 
 
-        CamelMediationConsumer consumer = decideConsumer(cMsg.getURI(),
+        CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty("TO"),
                 cMsg.getProperty("HTTP_METHOD").toString(),
                 transportHeaders);
         if (consumer != null) {

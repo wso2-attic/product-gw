@@ -18,10 +18,6 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultLastHttpContent;
-import io.netty.handler.codec.http.HttpHeaders;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.util.ObjectHelper;
@@ -31,13 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.HTTPContentChunk;
-import org.wso2.carbon.messaging.Pipe;
-import org.wso2.carbon.messaging.PipeImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -69,7 +62,7 @@ public class CarbonCamelMessageUtil {
         }
 
         // strip query parameters from the uri
-        String s = request.getURI();
+        String s = (String) request.getProperty("TO");
         if (s.contains("?")) {
             s = ObjectHelper.before(s, "?");
         }
@@ -78,7 +71,7 @@ public class CarbonCamelMessageUtil {
         // absolute or relative, eg
         //   /foo
         //   http://servername/foo
-        String http = request.getProtocol() + "://";
+        String http = request.getProperty("PROTOCOL") + "://";
         if (!s.startsWith(http)) {
             s = http + transportHeaders.get(CarbonGatewayConstants.HTTP_HOST) + s;
         }
@@ -87,9 +80,9 @@ public class CarbonCamelMessageUtil {
         // uri is without the host and port
         URI uri = null;
         try {
-            uri = new URI(request.getURI());
+            uri = new URI((String) request.getProperty("TO"));
         } catch (URISyntaxException e) {
-            log.error("Could not decode the URI in the message : " + request.getURI());
+            log.error("Could not decode the URI in the message : " + request.getProperty("TO"));
         }
 
         if (uri != null) {
@@ -149,11 +142,11 @@ public class CarbonCamelMessageUtil {
 
             ConcurrentHashMap<String, Object> carbonBackEndRequestHeaders = new ConcurrentHashMap<>();
 
-            request.setHost(host);
-            request.setPort(port);
+            request.setProperty("HOST", host);
+            request.setProperty("PORT", port);
 
             try {
-                request.setURI(createURI(exchange, uri));
+                request.setProperty("TO", createURI(exchange, uri));
             } catch (URISyntaxException e) {
                 log.error("Error while generating the URL for to endpoint : " + uri);
             }
@@ -236,21 +229,17 @@ public class CarbonCamelMessageUtil {
      */
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
 
-        CarbonMessage response = new CarbonMessage(CarbonGatewayConstants.PROTOCOL_NAME);
-        ByteBuf bbuf = Unpooled.copiedBuffer(errorMessage, StandardCharsets.UTF_8);
-        DefaultLastHttpContent lastHttpContent = new DefaultLastHttpContent(bbuf);
-        HTTPContentChunk contentChunk = new HTTPContentChunk(lastHttpContent);
-        Pipe pipe = new PipeImpl(bbuf.readableBytes());
-        pipe.addContentChunk(contentChunk);
-        response.setPipe(pipe);
-
-        response.setDirection(CarbonMessage.RESPONSE);
+        CarbonMessage response = new CarbonMessage();
+        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
+        response.setMessageBody(errorMessageBytes);
+        response.setProperty("DIRECTION", "response");
 
         Map<String, Object> transportHeaders = new HashMap<>();
-        transportHeaders.put(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-        transportHeaders.put(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
-        transportHeaders.put(HttpHeaders.Names.CONTENT_TYPE, "text/xml");
-        transportHeaders.put(HttpHeaders.Names.CONTENT_LENGTH, bbuf.readableBytes());
+        // TODO: 12/8/15 introduce a constants
+        transportHeaders.put("Connection", "keep-alive");
+        transportHeaders.put("Accept-Encoding", "gzip");
+        transportHeaders.put("Content-Type", "text/xml");
+        transportHeaders.put("Content-Length", errorMessageBytes.length);
         response.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, transportHeaders);
 
         response.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, code);
