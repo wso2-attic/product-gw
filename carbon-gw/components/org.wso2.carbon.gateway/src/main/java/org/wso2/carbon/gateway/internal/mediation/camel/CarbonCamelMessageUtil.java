@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.PipeImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -230,16 +231,24 @@ public class CarbonCamelMessageUtil {
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
 
         CarbonMessage response = new CarbonMessage();
-        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
-        response.setMessageBody(errorMessageBytes);
+        PipeImpl pipe = new PipeImpl(1);
+
+        // TODO: 12/9/15 change to a better name rather than content chunk
+        pipe.addContentChunk(errorMessage);
+        response.setProperty("PIPE", pipe);
+
         response.setProperty("DIRECTION", "response");
 
         Map<String, Object> transportHeaders = new HashMap<>();
-        // TODO: 12/8/15 introduce a constants
+        // TODO: 12/8/15 introduce constants
         transportHeaders.put("Connection", "keep-alive");
         transportHeaders.put("Accept-Encoding", "gzip");
         transportHeaders.put("Content-Type", "text/xml");
+
+        //// TODO: 12/9/15 will be changing this
+        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
         transportHeaders.put("Content-Length", errorMessageBytes.length);
+
         response.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, transportHeaders);
 
         response.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, code);
