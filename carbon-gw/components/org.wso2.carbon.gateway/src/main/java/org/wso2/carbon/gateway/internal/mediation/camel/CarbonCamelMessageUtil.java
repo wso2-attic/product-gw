@@ -27,10 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonMessage;
-import org.wso2.carbon.messaging.PipeImpl;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -230,13 +231,12 @@ public class CarbonCamelMessageUtil {
      */
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
 
-        CarbonMessage response = new CarbonMessage();
-        PipeImpl pipe = new PipeImpl(1);
+        CarbonMessage response = new DefaultCarbonMessage();
 
         // TODO: 12/9/15 change to a better name rather than content chunk
-        pipe.addContentChunk(errorMessage);
-        response.setProperty("PIPE", pipe);
 
+        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
+        response.addMessageBody(ByteBuffer.wrap(errorMessageBytes));
         response.setProperty("DIRECTION", "response");
 
         Map<String, Object> transportHeaders = new HashMap<>();
@@ -246,7 +246,7 @@ public class CarbonCamelMessageUtil {
         transportHeaders.put("Content-Type", "text/xml");
 
         //// TODO: 12/9/15 will be changing this
-        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
+
         transportHeaders.put("Content-Length", errorMessageBytes.length);
 
         response.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, transportHeaders);
