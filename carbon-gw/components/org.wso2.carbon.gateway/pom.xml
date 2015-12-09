@@ -69,30 +69,7 @@
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -209,12 +186,9 @@
                             <Import-Package>
                                 org.osgi.framework.*;version="${osgi.framework.import.version.range}",
                                 org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
-                                io.netty.*,
                                 org.wso2.carbon.kernel.transports.*,
                                 org.apache.camel.*,
                                 org.springframework.context.*,
-                                org.w3c.dom.*,
-                                javax.xml.*,
                                 org.slf4j.*,
                                 org.wso2.carbon.messaging.*
                             </Import-Package>

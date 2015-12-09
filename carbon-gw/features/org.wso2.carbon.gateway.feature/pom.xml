@@ -48,30 +48,7 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -129,32 +106,6 @@
                                     <symbolicName>org.eclipse.osgi.services</symbolicName>
                                     <version>${equinox.osgi.services.version}</version>
                                 </bundle>
-
-                                <bundle>
-                                    <symbolicName>io.netty.common</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.transport</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.codec</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.codec-http</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.handler</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>io.netty.buffer</symbolicName>
-                                    <version>${netty.version}</version>
-                                </bundle>
-
                                 <bundle>
                                     <symbolicName>org.apache.camel.camel-core</symbolicName>
                                     <version>${camel.version}</version>
