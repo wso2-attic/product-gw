@@ -94,6 +94,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         this.sender = transportSender;
     }
 
+    @Override
+    public String getId() {
+        return "camel-engine";
+    }
+
     public TransportSender getSender() {
         return sender;
     }
