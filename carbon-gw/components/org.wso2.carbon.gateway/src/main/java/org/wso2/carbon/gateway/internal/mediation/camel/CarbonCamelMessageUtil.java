@@ -31,7 +31,6 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,7 +51,7 @@ public class CarbonCamelMessageUtil {
      * @param transportHeaders http headers
      * @param request          http request carbon message.
      */
-    public void setCamelHeadersToClientRequest(Exchange exchange, Map<String, Object> transportHeaders,
+    public void setCamelHeadersToClientRequest(Exchange exchange, Map<String, String> transportHeaders,
                                                CarbonMessage request) {
         ConcurrentHashMap<String, Object> headers = new ConcurrentHashMap<>();
 
@@ -142,7 +141,7 @@ public class CarbonCamelMessageUtil {
 
         if (request != null) {
 
-            ConcurrentHashMap<String, Object> carbonBackEndRequestHeaders = new ConcurrentHashMap<>();
+            ConcurrentHashMap<String, String> carbonBackEndRequestHeaders = new ConcurrentHashMap<>();
 
             request.setProperty("HOST", host);
             request.setProperty("PORT", port);
@@ -158,17 +157,20 @@ public class CarbonCamelMessageUtil {
                 Map.Entry pair = (Map.Entry) it.next();
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_TYPE, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_TYPE,
+                            pair.getValue().toString());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_SOAP_ACTION, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_SOAP_ACTION,
+                            pair.getValue().toString());
                 } else if (key.equals(Exchange.CONTENT_ENCODING)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_ENCODING, pair.getValue());
+                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_ENCODING,
+                            pair.getValue().toString());
                 } else if (key.equals(Exchange.HTTP_METHOD)) {
                     request.setProperty(CarbonGatewayConstants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
                     request.setProperty(CarbonGatewayConstants.HTTP_VERSION, pair.getValue());
                 } else if (!key.startsWith("Camel")) {
-                    carbonBackEndRequestHeaders.put(key, pair.getValue());
+                    carbonBackEndRequestHeaders.put(key, pair.getValue().toString());
                 }
                 it.remove();
             }
@@ -179,7 +181,7 @@ public class CarbonCamelMessageUtil {
                 carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host);
             }
 
-            request.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, carbonBackEndRequestHeaders);
+            request.setHeaders(carbonBackEndRequestHeaders);
         }
     }
 
@@ -203,8 +205,8 @@ public class CarbonCamelMessageUtil {
      * @param exchange         camel exchange
      * @param transportHeaders backend response http headers
      */
-    public void setCamelHeadersToBackendResponse(Exchange exchange, Map<String, Object> transportHeaders) {
-        exchange.getOut().setHeaders(transportHeaders);
+    public void setCamelHeadersToBackendResponse(Exchange exchange, Map<String, String> transportHeaders) {
+        transportHeaders.forEach((k, v) -> exchange.getOut().setHeader(k, v));
     }
 
     /**
@@ -231,27 +233,20 @@ public class CarbonCamelMessageUtil {
      */
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
 
-        CarbonMessage response = new DefaultCarbonMessage();
-
-        // TODO: 12/9/15 change to a better name rather than content chunk
-
+        DefaultCarbonMessage response = new DefaultCarbonMessage();
+        response.setStringMessageBody(errorMessage);
         byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
-        response.addMessageBody(ByteBuffer.wrap(errorMessageBytes));
-        response.setProperty("DIRECTION", "response");
 
-        Map<String, Object> transportHeaders = new HashMap<>();
-        // TODO: 12/8/15 introduce constants
+        Map<String, String> transportHeaders = new HashMap<>();
         transportHeaders.put("Connection", "keep-alive");
         transportHeaders.put("Accept-Encoding", "gzip");
         transportHeaders.put("Content-Type", "text/xml");
+        transportHeaders.put("Content-Length", (String.valueOf(errorMessageBytes.length)));
 
-        //// TODO: 12/9/15 will be changing this
-
-        transportHeaders.put("Content-Length", errorMessageBytes.length);
-
-        response.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, transportHeaders);
+        response.setHeaders(transportHeaders);
 
         response.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, code);
+        response.setProperty("DIRECTION", "response");
 
         return response;
     }

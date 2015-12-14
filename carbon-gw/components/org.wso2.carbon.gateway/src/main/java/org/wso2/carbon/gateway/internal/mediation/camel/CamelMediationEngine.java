@@ -61,9 +61,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         if (log.isDebugEnabled()) {
             log.debug("Channel: {} received body: {}");
         }
-        Map<String, Object> transportHeaders =
-                (Map<String, Object>) cMsg.getProperty(CarbonGatewayConstants.TRANSPORT_HEADERS);
-
+        Map<String, String> transportHeaders = cMsg.getHeaders();
 
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty("TO"),
                 cMsg.getProperty("HTTP_METHOD").toString(),
@@ -123,7 +121,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 }
                 if (!mediatedHeaders.isEmpty() && mediatedResponse != null) {
                     try {
-                        int statusCode = (Integer) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE);
+                        int statusCode = Integer.parseInt((String) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                         mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                         mediatedResponse.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
@@ -131,7 +129,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
-                    mediatedResponse.setProperty(CarbonGatewayConstants.TRANSPORT_HEADERS, mediatedHeaders);
+                    mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
+                    Map<String, String> responseHeaders = new HashMap<>();
+                    mediatedHeaders.forEach((k, v) -> responseHeaders.put(k, (String) v));
+                    mediatedResponse.setHeaders(responseHeaders);
                 }
             } else {
                 mediatedResponse =
@@ -147,7 +148,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     }
 
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
-                                                  Map<String, Object> transportHeaders) {
+                                                  Map<String, String> transportHeaders) {
 
         for (String consumerKey : consumers.keySet()) {
             if (!consumerKey.contains("?httpMethodRestrict=")) {
