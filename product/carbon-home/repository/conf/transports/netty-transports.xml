@@ -58,7 +58,10 @@
 
     <senders>
         <sender
-                id="netty-gw"
-                queueSize="32244"/>
+                id="netty-gw">
+            <parameters>
+                <parameter name="connection.pool.count">0</parameter>
+            </parameters>
+        </sender>
     </senders>
 </transports>
