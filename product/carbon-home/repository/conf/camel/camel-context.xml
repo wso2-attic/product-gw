@@ -62,7 +62,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
                 </when>
                 <when>
                     <simple>${header.routeId} regex 'r2'</simple>
-                    <to uri="wso2-gw:http://localhost:9002/service/SimpleStockQuoteService"/>
+                    <to uri="wso2-gw:http://localhost:9002/services/SimpleStockQuoteService"/>
                 </when>
                 <otherwise>
                     <to uri="wso2-gw:http://localhost:9004/SimpleStockQuoteService"/>
