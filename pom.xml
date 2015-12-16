@@ -48,6 +48,17 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+
+        <repository>
+            <id>wso2-nexus-staging</id>
+            <name>WSO2 staging Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/orgwso2carbon-177/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -226,7 +237,7 @@
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!-- Dependencies -->
-        <carbon.kernel.version>5.0.0-beta</carbon.kernel.version>
+        <carbon.kernel.version>5.0.0</carbon.kernel.version>
         <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
         <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
 

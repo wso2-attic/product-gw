@@ -95,7 +95,7 @@
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target</outputDirectory>
-                                    <excludes>**/repository/conf/osgi/launch.properties</excludes>
+                                    <excludes>**/conf/osgi/launch.properties</excludes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -165,7 +165,7 @@
                             </productConfigurationFile>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
                             <targetPath>
-                                file:${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/repository/components
+                                file:${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi
                             </targetPath>
                             <profile>profiles/default</profile>
                         </configuration>
@@ -180,7 +180,7 @@
                             <profile>profiles/default</profile>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
                             <destination>
-                                ${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/repository/components
+                                ${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi
                             </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
@@ -218,7 +218,7 @@
                         <phase>package</phase>
                         <configuration>
                             <tasks>
-                                <replace dir="target/wso2carbon-kernel-${carbon.kernel.version}/repository/components" token="false" value="true">
+                                <replace dir="target/wso2carbon-kernel-${carbon.kernel.version}/osgi" token="false" value="true">
                                     <include name="**/bundles.info" />
                                 </replace>
                             </tasks>

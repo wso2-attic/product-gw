@@ -47,23 +47,23 @@
         </fileSet>
 
         <fileSet>
-            <directory>carbon-home/repository/conf/transports</directory>
-            <outputDirectory>repository/conf/transports</outputDirectory>
+            <directory>carbon-home/conf/transports</directory>
+            <outputDirectory>conf/transports</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>carbon-home/repository/conf/camel</directory>
-            <outputDirectory>repository/conf/camel</outputDirectory>
+            <directory>carbon-home/conf/camel</directory>
+            <outputDirectory>conf/camel</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>carbon-home/repository/conf/osgi</directory>
-            <outputDirectory>repository/conf/osgi</outputDirectory>
+            <directory>carbon-home/conf/osgi</directory>
+            <outputDirectory>conf/osgi</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>carbon-home/repository/resources/security</directory>
-            <outputDirectory>repository/resources/security</outputDirectory>
+            <directory>carbon-home/resources/security</directory>
+            <outputDirectory>resources/security</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
     </fileSets>

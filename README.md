@@ -23,7 +23,7 @@ can be controlled by configuring WSO2 GW’s mediation logic.
 
 ##Getting Started
 
-By configuring the [camel-context.xml](https://github.com/wso2/product-gw/blob/master/product/carbon-home/repository/conf/camel/camel-context.xml) (which can be found in `$CARBON_HOME/repository/conf/camel/camel-context.xml`)
+By configuring the [camel-context.xml](https://github.com/wso2/product-gw/blob/master/product/carbon-home/conf/camel/camel-context.xml) (which can be found in `$CARBON_HOME/conf/camel/camel-context.xml`)
 we can achieve camel routing.
 
 ####Sample camel configuration for Header-based routing

@@ -36,7 +36,7 @@ public class GatewayActivator implements BundleActivator {
     private static final Logger log = LoggerFactory.getLogger(GatewayActivator.class);
 
     public static final String CAMEL_CONTEXT_CONFIG_FILE =
-            "repository" + File.separator + "conf" + File.separator + "camel" + File.separator + "camel-context.xml";
+            "conf" + File.separator + "camel" + File.separator + "camel-context.xml";
 
     public void start(BundleContext bundleContext) throws Exception {
         try {
