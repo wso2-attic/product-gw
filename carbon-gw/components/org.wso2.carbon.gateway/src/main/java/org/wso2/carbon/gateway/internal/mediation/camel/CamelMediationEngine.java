@@ -130,9 +130,10 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                     mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
-                    Map<String, String> responseHeaders = new HashMap<>();
-                    mediatedHeaders.forEach((k, v) -> responseHeaders.put(k, (String) v));
-                    mediatedResponse.setHeaders(responseHeaders);
+
+                    for (Map.Entry<String, Object> entry : mediatedHeaders.entrySet()) {
+                        mediatedResponse.setHeader(entry.getKey(), (String) entry.getValue());
+                    }
                 }
             } else {
                 mediatedResponse =
