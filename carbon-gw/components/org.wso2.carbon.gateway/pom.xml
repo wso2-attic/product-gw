@@ -189,44 +189,6 @@
                         <deployAtEnd>true</deployAtEnd>
                     </configuration>
                 </plugin>
-
-                <!-- Bundle plugin -->
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <instructions>
-                            <Bundle-Vendor>WSO2 Inc</Bundle-Vendor>
-                            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                            <Bundle-Activator>org.wso2.carbon.gateway.internal.GatewayActivator</Bundle-Activator>
-                            <Private-Package>
-                                org.wso2.carbon.gateway.internal
-                            </Private-Package>
-                            <Export-Package>
-                                !org.wso2.carbon.gateway.internal,
-                                org.wso2.carbon.gateway.*
-                            </Export-Package>
-                            <Import-Package>
-                                org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-                                org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
-                                org.wso2.carbon.kernel.transports.*,
-                                org.apache.camel.*,
-                                org.apache.log4j.*,
-                                org.apache.commons.logging.*,
-                                org.apache.commons.pool.*,
-                                org.springframework.context.*,
-                                io.netty.buffer.*,
-                                org.w3c.dom.*,
-                                org.xml.sax.*,
-                                javax.xml.*,
-                                org.slf4j.*,
-                                org.wso2.carbon.messaging.*
-                            </Import-Package>
-                            <_dsannotations>*</_dsannotations>
-                        </instructions>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -260,11 +222,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.4</version>
             </plugin>
         </plugins>
     </build>
@@ -425,5 +382,29 @@
         </profile>
 
     </profiles>
+    <properties>
+        <bundle.activator>org.wso2.carbon.gateway.internal.GatewayActivator</bundle.activator>
+        <private.package>org.wso2.carbon.gateway.internal</private.package>
+        <export.package>
+            !org.wso2.carbon.gateway.internal,
+            org.wso2.carbon.gateway.*
+        </export.package>
+        <import.package>
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
+            org.wso2.carbon.kernel.transports.*,
+            org.apache.camel.*,
+            org.apache.log4j.*,
+            org.apache.commons.logging.*,
+            org.apache.commons.pool.*,
+            org.springframework.context.*,
+            io.netty.buffer.*,
+            org.w3c.dom.*,
+            org.xml.sax.*,
+            javax.xml.*,
+            org.slf4j.*,
+            org.wso2.carbon.messaging.*
+        </import.package>
+    </properties>
 
 </project>
