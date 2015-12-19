@@ -175,6 +175,15 @@ public class CarbonCamelMessageUtil {
                 it.remove();
             }
 
+            //Set the new content length if we have changed the message content
+            if (request.getProperty(CarbonGatewayConstants.HTTP_CONTENT_LENGTH) != null) {
+                if (carbonBackEndRequestHeaders.contains(CarbonGatewayConstants.HTTP_CONTENT_LENGTH)) {
+                    carbonBackEndRequestHeaders.remove(CarbonGatewayConstants.HTTP_CONTENT_LENGTH);
+                }
+                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_LENGTH,
+                        (String) request.getProperty(CarbonGatewayConstants.HTTP_CONTENT_LENGTH));
+            }
+
             if (port != 80) {
                 carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host + ":" + port);
             } else {
@@ -182,6 +191,27 @@ public class CarbonCamelMessageUtil {
             }
 
             request.setHeaders(carbonBackEndRequestHeaders);
+
+            //Set source handler and disruptor if they are not available
+            if (request.getProperty(CarbonGatewayConstants.SRC_HNDLR) == null) {
+                if (exchange.getProperty(CarbonGatewayConstants.SRC_HNDLR) != null) {
+                    request.setProperty(CarbonGatewayConstants.SRC_HNDLR,
+                            exchange.getProperty(CarbonGatewayConstants.SRC_HNDLR));
+                }
+            }
+
+            if (request.getProperty(CarbonGatewayConstants.DISRUPTOR) == null) {
+                if (exchange.getProperty(CarbonGatewayConstants.DISRUPTOR) != null) {
+                    request.setProperty(CarbonGatewayConstants.DISRUPTOR,
+                            exchange.getProperty(CarbonGatewayConstants.DISRUPTOR));
+                }
+            }
+
+            //Set the Camel Message back to the exchange for sending through the producer
+            CamelHttp4Message answer = new CamelHttp4Message();
+            answer.setCarbonMessage(request);
+            answer.setExchange(exchange);
+            exchange.setIn(answer);
         }
     }
 

@@ -68,6 +68,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
+            //Set the Source Hanlder and Disruptor for content overwriting scenario
+            exchange.setProperty(CarbonGatewayConstants.SRC_HNDLR, cMsg.getProperty(CarbonGatewayConstants.SRC_HNDLR));
+            exchange.setProperty(CarbonGatewayConstants.DISRUPTOR, cMsg.getProperty(CarbonGatewayConstants.DISRUPTOR));
             exchange.setPattern(ExchangePattern.InOut);
             //need to close the unit of work finally
             try {

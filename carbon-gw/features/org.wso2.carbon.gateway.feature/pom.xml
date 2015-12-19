@@ -47,8 +47,6 @@
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
-
-
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -118,7 +116,6 @@
                                     <symbolicName>spring.framework</symbolicName>
                                     <version>${spring.orbit.version}</version>
                                 </bundle>
-
                                 <bundle>
                                     <symbolicName>slf4j.api</symbolicName>
                                     <version>${slf4j.version}</version>

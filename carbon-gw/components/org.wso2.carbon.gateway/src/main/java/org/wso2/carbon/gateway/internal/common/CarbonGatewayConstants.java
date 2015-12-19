@@ -29,6 +29,8 @@ public class CarbonGatewayConstants {
 
     public static final String HTTP_CONTENT_TYPE = "Content-Type";
 
+    public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+
     public static final String HTTP_SOAP_ACTION = "SOAPAction";
 
     public static final String HTTP_CONTENT_ENCODING = "Accept-Encoding";
