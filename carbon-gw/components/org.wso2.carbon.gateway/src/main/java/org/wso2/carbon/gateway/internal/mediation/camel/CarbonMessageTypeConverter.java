@@ -18,17 +18,12 @@
 
 package org.wso2.carbon.gateway.internal.mediation.camel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.CompositeByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledByteBufAllocator;
-
 
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.wso2.carbon.gateway.internal.common.ByteBufferBackedInputStream;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 
@@ -55,81 +50,31 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
     public <T> T convertTo(Class<T> type, Exchange exchange, Object value) {
         if (value instanceof CarbonMessage) {
             CarbonMessage msg = (CarbonMessage) value;
-            //Input stream used for building the desired message
-            ByteBufInputStream byteBufInputStream = null;
-
-            //Create a composite buffer from content chunks in the pipe
-            CompositeByteBuf contentBuf = aggregateChunks(msg);
-            //Check whether we have any content to be processed
-            if (contentBuf.capacity() != 0) {
+            //Take a clone of the message content
+            BlockingQueue<ByteBuffer> contentBuf = aggregateContent(msg);
+            InputStream inputStream = new ByteBufferBackedInputStream(contentBuf);
                 try {
                     if (type.isAssignableFrom(Document.class)) {
                         //Convert the input stream into xml dom element
-                        return (T) toDocument(contentBuf, exchange);
+                        return (T) toDocument(inputStream, exchange);
                     } else if (type.isAssignableFrom(DOMSource.class)) {
-                        return (T) toDOMSource(contentBuf, exchange);
+                        return (T) toDOMSource(inputStream, exchange);
                     } else if (type.isAssignableFrom(SAXSource.class)) {
-                        return (T) toSAXSource(contentBuf, exchange);
+                        return (T) toSAXSource(inputStream, exchange);
                     } else if (type.isAssignableFrom(StAXSource.class)) {
-                        return (T) toStAXSource(contentBuf, exchange);
+                        return (T) toStAXSource(inputStream, exchange);
                     } else if (type.isAssignableFrom(StreamSource.class)) {
-                        return (T) toStreamSource(contentBuf, exchange);
+                        return (T) toStreamSource(inputStream, exchange);
                     } else if (type.isAssignableFrom(InputStream.class)) {
-                        return (T) toInputStream(contentBuf, exchange);
+                        return (T) inputStream;
                     } else if (type.isAssignableFrom(String.class)) {
-                        return (T) toString(contentBuf, exchange);
+                        return (T) toString(inputStream, exchange);
                     }
                 } catch (UnsupportedEncodingException e) {
                     log.error("Error occurred during type conversion", e);
-                } finally {
-                    //Release the buffer if all the content has been consumed
-                    if (contentBuf.readerIndex() == contentBuf.writerIndex()) {
-                        contentBuf.release();
-                    }
                 }
             }
-
-        }
         return null;
-    }
-
-    private CompositeByteBuf aggregateChunks(CarbonMessage msg) {
-        ByteBufInputStream byteBufInputStream = null;
-        //Create an instance of composite byte buffer to hold the content chunks
-        CompositeByteBuf content = new UnpooledByteBufAllocator(true).compositeBuffer();
-        try {
-            //Check whether the pipe is filled with HTTP content chunks up to last chunk
-            while (!msg.isEomAdded()) {
-                Thread.sleep(10);
-            }
-            //Get a clone of content chunk queue from the pipe
-            BlockingQueue<ByteBuffer> clonedContent = msg.getClonedMessageBody();
-            //Traverse through the http content chunks and create the composite buffer
-            while (true) {
-                if (!clonedContent.isEmpty()) {
-
-                    ByteBuffer msgBuffer = clonedContent.take();
-                    //Retrieve the HTTP content chunk from cloned queue
-                    ByteBuf chunk = Unpooled.wrappedBuffer(msgBuffer);
-
-                    // Append the content of the chunk to the composite buffer
-                    if (chunk.isReadable()) {
-                        chunk.retain();
-                        content.addComponent(chunk);
-                        content.writerIndex(content.writerIndex() + chunk.readableBytes());
-                    }
-                } else {
-                    break;
-
-                }
-
-
-            }
-        } catch (Exception e) {
-            log.error("Error occurred during conversion from CarbonMessage", e);
-        }
-        //Return the composite buffer
-        return content;
     }
 
     /**
@@ -142,56 +87,59 @@ public class CarbonMessageTypeConverter extends TypeConverterSupport {
         return true;
     }
 
-
-    private byte[] toByteArray(ByteBuf buffer, Exchange exchange) {
-        byte[] bytes = new byte[buffer.readableBytes()];
-        int readerIndex = buffer.readerIndex();
-        buffer.getBytes(readerIndex, bytes);
-        return bytes;
-    }
-
-
-    private String toString(ByteBuf buffer, Exchange exchange) throws UnsupportedEncodingException {
-        byte[] bytes = toByteArray(buffer, exchange);
+    private String toString(InputStream is, Exchange exchange) throws UnsupportedEncodingException {
+        //byte[] bytes = toByteArray(buffer, exchange);
         // use type converter as it can handle encoding set on the Exchange
         if (exchange != null) {
-            return exchange.getContext().getTypeConverter().convertTo(String.class, exchange, bytes);
+            return exchange.getContext().getTypeConverter().convertTo(String.class, exchange, is);
         }
-        return new String(bytes, "UTF-8");
+        return null;
     }
 
-
-    private InputStream toInputStream(ByteBuf buffer, Exchange exchange) {
-        return new ByteBufInputStream(buffer);
-    }
-
-    private Document toDocument(ByteBuf buffer, Exchange exchange) {
-        InputStream is = toInputStream(buffer, exchange);
+    private Document toDocument(InputStream is, Exchange exchange) {
+        //InputStream is = toInputStream(buffer, exchange);
         return exchange.getContext().getTypeConverter().convertTo(Document.class, exchange, is);
     }
 
 
-    private DOMSource toDOMSource(ByteBuf buffer, Exchange exchange) {
-        InputStream is = toInputStream(buffer, exchange);
+    private DOMSource toDOMSource(InputStream is, Exchange exchange) {
+        //InputStream is = toInputStream(buffer, exchange);
         return exchange.getContext().getTypeConverter().convertTo(DOMSource.class, exchange, is);
     }
 
 
-    private SAXSource toSAXSource(ByteBuf buffer, Exchange exchange) {
-        InputStream is = toInputStream(buffer, exchange);
+    private SAXSource toSAXSource(InputStream is, Exchange exchange) {
+        //InputStream is = toInputStream(buffer, exchange);
         return exchange.getContext().getTypeConverter().convertTo(SAXSource.class, exchange, is);
     }
 
 
-    private StreamSource toStreamSource(ByteBuf buffer, Exchange exchange) {
-        InputStream is = toInputStream(buffer, exchange);
+    private StreamSource toStreamSource(InputStream is, Exchange exchange) {
+        //InputStream is = toInputStream(buffer, exchange);
         return exchange.getContext().getTypeConverter().convertTo(StreamSource.class, exchange, is);
     }
 
 
-    private StAXSource toStAXSource(ByteBuf buffer, Exchange exchange) {
-        InputStream is = toInputStream(buffer, exchange);
+    private StAXSource toStAXSource(InputStream is, Exchange exchange) {
+        //InputStream is = toInputStream(buffer, exchange);
         return exchange.getContext().getTypeConverter().convertTo(StAXSource.class, exchange, is);
+    }
+
+
+    private BlockingQueue<ByteBuffer> aggregateContent(CarbonMessage msg) {
+
+        try {
+            //Check whether the message is fully read
+            while (!msg.isEomAdded()) {
+                Thread.sleep(10);
+            }
+            //Get a clone of content chunk queue from the pipe
+            BlockingQueue<ByteBuffer> clonedContent = msg.getClonedMessageBody();
+            return clonedContent;
+        } catch (Exception e) {
+            log.error("Error occurred during conversion from CarbonMessage", e);
+        }
+        return null;
     }
 
 
