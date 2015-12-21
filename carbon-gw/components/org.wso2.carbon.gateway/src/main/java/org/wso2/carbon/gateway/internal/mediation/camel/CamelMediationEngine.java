@@ -22,12 +22,12 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
 import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
+import org.wso2.carbon.messaging.Constants;
 import org.wso2.carbon.messaging.TransportSender;
 
 import java.io.UnsupportedEncodingException;
@@ -62,8 +62,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         }
         Map<String, String> transportHeaders = cMsg.getHeaders();
 
-        CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty("TO"),
-                cMsg.getProperty("HTTP_METHOD").toString(),
+        CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
+                cMsg.getProperty(Constants.HTTP_METHOD).toString(),
                 transportHeaders);
         if (consumer != null) {
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
@@ -116,7 +116,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                     try {
                         int statusCode = Integer.parseInt((String) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                         mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
-                        mediatedResponse.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, statusCode);
+                        mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
                         log.info("Response Http Status code is invalid. response code : " +
                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));

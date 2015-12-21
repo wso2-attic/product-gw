@@ -25,8 +25,8 @@ import org.apache.camel.util.URISupport;
 import org.apache.camel.util.UnsafeUriCharactersEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.net.URI;
@@ -55,15 +55,15 @@ public class CarbonCamelMessageUtil {
                                                CarbonMessage request) {
         ConcurrentHashMap<String, Object> headers = new ConcurrentHashMap<>();
 
-        if (request.getProperty(CarbonGatewayConstants.HTTP_METHOD) != null) {
-            headers.put(Exchange.HTTP_METHOD, request.getProperty(CarbonGatewayConstants.HTTP_METHOD));
+        if (request.getProperty(Constants.HTTP_METHOD) != null) {
+            headers.put(Exchange.HTTP_METHOD, request.getProperty(Constants.HTTP_METHOD));
         }
-        if (request.getProperty(CarbonGatewayConstants.HTTP_VERSION) != null) {
-            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(CarbonGatewayConstants.HTTP_VERSION));
+        if (request.getProperty(Constants.HTTP_VERSION) != null) {
+            headers.put(Exchange.HTTP_PROTOCOL_VERSION, request.getProperty(Constants.HTTP_VERSION));
         }
 
         // strip query parameters from the uri
-        String s = (String) request.getProperty("TO");
+        String s = (String) request.getProperty(Constants.TO);
         if (s.contains("?")) {
             s = ObjectHelper.before(s, "?");
         }
@@ -72,18 +72,18 @@ public class CarbonCamelMessageUtil {
         // absolute or relative, eg
         //   /foo
         //   http://servername/foo
-        String http = request.getProperty("PROTOCOL") + "://";
+        String http = request.getProperty(Constants.PROTOCOL) + "://";
         if (!s.startsWith(http)) {
-            s = http + transportHeaders.get(CarbonGatewayConstants.HTTP_HOST) + s;
+            s = http + transportHeaders.get(Constants.HTTP_HOST) + s;
         }
 
         headers.put(Exchange.HTTP_URL, s);
         // uri is without the host and port
         URI uri = null;
         try {
-            uri = new URI((String) request.getProperty("TO"));
+            uri = new URI((String) request.getProperty(Constants.TO));
         } catch (URISyntaxException e) {
-            log.error("Could not decode the URI in the message : " + request.getProperty("TO"));
+            log.error("Could not decode the URI in the message : " + request.getProperty(Constants.TO));
         }
 
         if (uri != null) {
@@ -101,23 +101,23 @@ public class CarbonCamelMessageUtil {
             }
         }
 
-        if (transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_TYPE) != null) {
-            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_TYPE));
+        if (transportHeaders.get(Constants.HTTP_CONTENT_TYPE) != null) {
+            headers.put(Exchange.CONTENT_TYPE, transportHeaders.get(Constants.HTTP_CONTENT_TYPE));
         }
-        if (transportHeaders.get(CarbonGatewayConstants.HTTP_SOAP_ACTION) != null) {
-            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(CarbonGatewayConstants.HTTP_SOAP_ACTION));
+        if (transportHeaders.get(Constants.HTTP_SOAP_ACTION) != null) {
+            headers.put(Exchange.SOAP_ACTION, transportHeaders.get(Constants.HTTP_SOAP_ACTION));
         }
-        if (transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_ENCODING) != null) {
-            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(CarbonGatewayConstants.HTTP_CONTENT_ENCODING));
+        if (transportHeaders.get(Constants.HTTP_CONTENT_ENCODING) != null) {
+            headers.put(Exchange.CONTENT_ENCODING, transportHeaders.get(Constants.HTTP_CONTENT_ENCODING));
         }
 
         Iterator it = transportHeaders.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            if (!CarbonGatewayConstants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
-                    !CarbonGatewayConstants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
-                    !CarbonGatewayConstants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
+            if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
+                    !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                    !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -143,11 +143,11 @@ public class CarbonCamelMessageUtil {
 
             ConcurrentHashMap<String, String> carbonBackEndRequestHeaders = new ConcurrentHashMap<>();
 
-            request.setProperty("HOST", host);
-            request.setProperty("PORT", port);
+            request.setProperty(Constants.HOST, host);
+            request.setProperty(Constants.PORT, port);
 
             try {
-                request.setProperty("TO", createURI(exchange, uri));
+                request.setProperty(Constants.TO, createURI(exchange, uri));
             } catch (URISyntaxException e) {
                 log.error("Error while generating the URL for to endpoint : " + uri);
             }
@@ -157,18 +157,18 @@ public class CarbonCamelMessageUtil {
                 Map.Entry pair = (Map.Entry) it.next();
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_TYPE,
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_TYPE,
                             pair.getValue().toString());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_SOAP_ACTION,
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_SOAP_ACTION,
                             pair.getValue().toString());
                 } else if (key.equals(Exchange.CONTENT_ENCODING)) {
-                    carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_CONTENT_ENCODING,
+                    carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_ENCODING,
                             pair.getValue().toString());
                 } else if (key.equals(Exchange.HTTP_METHOD)) {
-                    request.setProperty(CarbonGatewayConstants.HTTP_METHOD, pair.getValue());
+                    request.setProperty(Constants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
-                    request.setProperty(CarbonGatewayConstants.HTTP_VERSION, pair.getValue());
+                    request.setProperty(Constants.HTTP_VERSION, pair.getValue());
                 } else if (!key.startsWith("Camel")) {
                     carbonBackEndRequestHeaders.put(key, pair.getValue().toString());
                 }
@@ -176,9 +176,9 @@ public class CarbonCamelMessageUtil {
             }
 
             if (port != 80) {
-                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host + ":" + port);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host + ":" + port);
             } else {
-                carbonBackEndRequestHeaders.put(CarbonGatewayConstants.HTTP_HOST, host);
+                carbonBackEndRequestHeaders.put(Constants.HTTP_HOST, host);
             }
 
             request.setHeaders(carbonBackEndRequestHeaders);
@@ -238,15 +238,15 @@ public class CarbonCamelMessageUtil {
         byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
 
         Map<String, String> transportHeaders = new HashMap<>();
-        transportHeaders.put("Connection", "keep-alive");
-        transportHeaders.put("Accept-Encoding", "gzip");
-        transportHeaders.put("Content-Type", "text/xml");
-        transportHeaders.put("Content-Length", (String.valueOf(errorMessageBytes.length)));
+        transportHeaders.put(Constants.HTTP_CONNECTION, Constants.KEEP_ALIVE);
+        transportHeaders.put(Constants.HTTP_CONTENT_ENCODING, Constants.GZIP);
+        transportHeaders.put(Constants.HTTP_CONTENT_TYPE, Constants.TEXT_XML);
+        transportHeaders.put(Constants.HTTP_CONTENT_LENGTH, (String.valueOf(errorMessageBytes.length)));
 
         response.setHeaders(transportHeaders);
 
-        response.setProperty(CarbonGatewayConstants.HTTP_STATUS_CODE, code);
-        response.setProperty("DIRECTION", "response");
+        response.setProperty(Constants.HTTP_STATUS_CODE, code);
+        response.setProperty(Constants.DIRECTION, Constants.DIRECTION_RESPONSE);
 
         return response;
     }

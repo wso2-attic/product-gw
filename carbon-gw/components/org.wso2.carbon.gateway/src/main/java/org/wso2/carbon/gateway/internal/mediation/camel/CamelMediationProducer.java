@@ -27,9 +27,9 @@ import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.gateway.internal.GatewayContextHolder;
-import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -109,14 +109,14 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                 Map<String, String> transportHeaders = responseCmsg.getHeaders();
                 if (transportHeaders != null) {
                     transportHeaders.put(Exchange.HTTP_RESPONSE_CODE,
-                             responseCmsg.getProperty(CarbonGatewayConstants.HTTP_STATUS_CODE).toString());
+                             responseCmsg.getProperty(Constants.HTTP_STATUS_CODE).toString());
                     CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
-                    responseCmsg.setProperty(CarbonGatewayConstants.SRC_HNDLR,
-                                             request.getProperty(CarbonGatewayConstants.SRC_HNDLR));
-                    responseCmsg.setProperty(CarbonGatewayConstants.DISRUPTOR,
-                                             request.getProperty(CarbonGatewayConstants.DISRUPTOR));
-                    responseCmsg.setProperty(CarbonGatewayConstants.CHNL_HNDLR_CTX,
-                                             request.getProperty(CarbonGatewayConstants.CHNL_HNDLR_CTX));
+                    responseCmsg.setProperty(Constants.SRC_HNDLR,
+                                             request.getProperty(Constants.SRC_HNDLR));
+                    responseCmsg.setProperty(Constants.DISRUPTOR,
+                                             request.getProperty(Constants.DISRUPTOR));
+                    responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
+                                             request.getProperty(Constants.CHNL_HNDLR_CTX));
                     Message msg = null;
                     try {
                         msg = CarbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);
