@@ -26,6 +26,7 @@ import org.apache.camel.impl.DefaultAsyncProducer;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.gateway.internal.GatewayContextHolder;
 import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
@@ -74,8 +75,8 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         //This parameter is used to decide whether we need to continue processing in case of a failure (FO endpoint)
         boolean syncNeeded = true;
         try {
-            syncNeeded = engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
-                                                 new NettyHttpBackEndCallback(exchange, callback));
+            syncNeeded = GatewayContextHolder.getInstance().getSender().send(
+                    exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         } catch (Exception exp) {
             //Set the exception to the exchange such that camel can decide on failover
             exchange.setException(exp);

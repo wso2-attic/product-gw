@@ -19,7 +19,6 @@
 package org.wso2.carbon.gateway.internal;
 
 
-import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.TransportSender;
 
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import java.util.Map;
 public class GatewayContextHolder {
 
     private Map<String, TransportSender> transportSenders = new HashMap<>();
-    private CarbonMessageProcessor engine;
 
 
     private GatewayContextHolder() {
@@ -46,23 +44,16 @@ public class GatewayContextHolder {
 
     public void addTransportSender(TransportSender transportSender) {
 
-        if (engine != null) {
-            engine.setTransportSender(transportSender);
-        }
         transportSenders.put(transportSender.getId(), transportSender);
-    }
-
-    public void addMessageProcessor(CarbonMessageProcessor carbonMessageProcessor) {
-
-        if (!transportSenders.isEmpty()) {
-            Map.Entry<String, TransportSender> senderEntry = transportSenders.entrySet().iterator().next();
-            carbonMessageProcessor.setTransportSender(senderEntry.getValue());
-        }
-
-        engine = carbonMessageProcessor;
     }
 
     public void removeTransportSender(TransportSender transportSender) {
         transportSenders.remove(transportSender.getId());
+    }
+
+    public TransportSender getSender() {
+        //todo need to write a logic to identify the correct sender
+        Map.Entry<String, TransportSender> senderEntry = transportSenders.entrySet().iterator().next();
+        return senderEntry.getValue();
     }
 }

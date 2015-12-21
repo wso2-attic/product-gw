@@ -51,7 +51,6 @@ public class GatewayActivator implements BundleActivator {
             CamelMediationEngine engine = component.getEngine();
 
             bundleContext.registerService(CarbonMessageProcessor.class, engine, null);
-            GatewayContextHolder.getInstance().addMessageProcessor(engine);
 
         } catch (Exception exception) {
             String msg = "Error while loading " + CAMEL_CONTEXT_CONFIG_FILE + " configuration file";

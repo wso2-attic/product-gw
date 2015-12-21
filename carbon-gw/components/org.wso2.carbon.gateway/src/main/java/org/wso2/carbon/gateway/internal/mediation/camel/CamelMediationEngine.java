@@ -45,7 +45,6 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(CamelMediationEngine.class);
     private final ConcurrentHashMap<String, CamelMediationConsumer> consumers = new ConcurrentHashMap<>();
-    private TransportSender sender;
 
     public CamelMediationEngine() {
     }
@@ -88,17 +87,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
      * @param transportSender  Transport Sender
      */
     @Override
-    public void setTransportSender(TransportSender transportSender) {
-        this.sender = transportSender;
-    }
+    public void setTransportSender(TransportSender transportSender) {}
 
     @Override
     public String getId() {
         return "camel-engine";
-    }
-
-    public TransportSender getSender() {
-        return sender;
     }
 
     private void processAsynchronously(final Exchange exchange, final CamelMediationConsumer consumer,
