@@ -78,7 +78,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.transport</groupId>
                 <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
-                <version>${org.wso2.carbon.transport.http.netty.version}</version>
+                <version>${carbon.transport.version}</version>
             </dependency>
 
             <dependency>
@@ -111,7 +111,7 @@
             <dependency>
                 <groupId>org.wso2.orbit.org.springframework.ws</groupId>
                 <artifactId>spring.framework</artifactId>
-                <version>${spring.orbit.version}</version>
+                <version>${spring.framework.version}</version>
             </dependency>
 
             <dependency>
@@ -128,7 +128,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.messaging</groupId>
                 <artifactId>org.wso2.carbon.messaging</artifactId>
-                <version>${org.wso2.carbon.messaging.version}</version>
+                <version>${carbon.messaging.version}</version>
             </dependency>
 
         </dependencies>
@@ -214,23 +214,36 @@
 
         <!-- Dependencies -->
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
+
         <carbon.gateway.version>1.0.0-SNAPSHOT</carbon.gateway.version>
-        <carbon.gateway.osgi.version>1.0.0.SNAPSHOT</carbon.gateway.osgi.version>
+        <carbon.gateway.package.export.version>1.0.0</carbon.gateway.package.export.version>
 
         <osgi.api.version>6.0.0</osgi.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
-        <camel.version>2.16.0</camel.version>
-        <spring.orbit.version>4.1.6.wso2v1</spring.orbit.version>
-        <slf4j.version>1.7.5</slf4j.version>
 
-        <org.wso2.carbon.transport.http.netty.version>2.0.0-SNAPSHOT</org.wso2.carbon.transport.http.netty.version>
-        <org.wso2.carbon.messaging.version>1.0.0-alpha</org.wso2.carbon.messaging.version>
+        <camel.version>2.16.0</camel.version>
+        <camel.import.package.version>[2.16.0, 2.17.0)</camel.import.package.version>
+
+        <spring.framework.version>4.1.6.wso2v1</spring.framework.version>
+        <spring.framework.package.import.version.range>[4.1.6, 4.2.0)</spring.framework.package.import.version.range>
+
+
+        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
+
+        <carbon.transport.version>2.0.0-SNAPSHOT</carbon.transport.version>
+        <carbon.transport.package.import.version.range>[2.0.0, 2.1.0)</carbon.transport.package.import.version.range>
+
+
+        <carbon.messaging.version>1.0.0-alpha</carbon.messaging.version>
+        <carbon.messaging.package.import.version.range>[0.0.0, 2.0.0)</carbon.messaging.package.import.version.range>
 
         <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-        <carbon.feature.plugin.version>2.0.0-beta</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
     </properties>
 
     <modules>
