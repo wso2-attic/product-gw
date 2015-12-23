@@ -85,9 +85,9 @@ it will be routed to `http://jsonplaceholder.typicode.com/posts`
 similarly `http://localhost:9090/gw/news/24` will be routed to `http://jsonplaceholder.typicode.com/posts/24`
 
 ####Route Hot Deployment
-By Default we are keeping the routes configuration in the camel-context.xml. If we want, we can hot deploy the routes by adding custom routes configuration files. In order to deploy the custom routes follw the bellow steps accordingly.
+By default we are keeping all the route configurations in the `camel-context.xml`. If we want, we can hot deploy the routes (i.e we can add routes without restarting the server) by adding custom routes configuration files. Custom routes can be added by following the below steps.
 
-* Your custom routes should be reside in separate configuration files as in the following configuration.
+* Multiple custom route configuration files can be placed with the following structure.
 
 ```
 <routes xmlns="http://camel.apache.org/schema/spring">
@@ -104,12 +104,8 @@ By Default we are keeping the routes configuration in the camel-context.xml. If 
 
 </routes>
 ```
-* Copy the route configuration file to "GW_HOME/conf/camel"
-* Do not add routes to the existing camel-context.xml configuration file, in which the routes will not hot deployed
-* You may have custom route configuration files already in the "GW_HOME/conf/camel" directory, before the server starts.
-* Those custom routes will be loaded to the context when the server starts
-* If you add a custom route and if it is an existing one, latter one will override the former one
+* Copy the route configuration file to `$CARBON_HOME/conf/camel`
+* Routes added to the existing camel-context.xml configuration file, will not be hot deployed
+* You may have custom route configuration files already in the `$CARBON_HOME/conf/camel` directory, before the server starts. These custom routes will be loaded to the context when the server starts
+* If you add a custom route and it is an existing one, the latter one will override the former one
 * Do not add two routes with same id in the same configuration file
-
-#####Known Limitations
-[1] `https://wso2.org/jira/browse/WGW-15`
