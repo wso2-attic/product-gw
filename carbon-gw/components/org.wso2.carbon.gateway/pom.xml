@@ -363,22 +363,24 @@
         <private.package>org.wso2.carbon.gateway.internal</private.package>
         <export.package>
             !org.wso2.carbon.gateway.internal,
-            org.wso2.carbon.gateway.*
+            org.wso2.carbon.gateway.*;version="${carbon.gateway.package.export.version}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
-            org.wso2.carbon.kernel.transports.*,
-            org.apache.camel.*,
+
             org.apache.log4j.*,
             org.apache.commons.logging.*,
             org.apache.commons.pool.*,
-            org.springframework.context.*,
             org.w3c.dom.*,
             org.xml.sax.*,
             javax.xml.*,
-            org.slf4j.*,
-            org.wso2.carbon.messaging.*
+
+            org.osgi.util.tracker;version="${osgi.service.tracker.import.version.range}",
+            org.wso2.carbon.kernel.transports.*;version="${carbon.kernel.package.import.version.range}",
+            org.apache.camel.*;version="${camel.import.package.version}",
+            org.springframework.context.*;version="${spring.framework.package.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}"
         </import.package>
     </properties>
 

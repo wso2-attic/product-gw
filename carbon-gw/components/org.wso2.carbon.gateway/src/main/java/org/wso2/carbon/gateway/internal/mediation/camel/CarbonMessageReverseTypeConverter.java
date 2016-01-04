@@ -21,8 +21,8 @@ package org.wso2.carbon.gateway.internal.mediation.camel;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.TypeConverterSupport;
 import org.apache.log4j.Logger;
-import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 
 import java.io.UnsupportedEncodingException;
@@ -45,7 +45,7 @@ public class CarbonMessageReverseTypeConverter extends TypeConverterSupport {
                 CarbonMessage carbonMessage = new DefaultCarbonMessage();
                 ByteBuffer byteBuffer = ByteBuffer.wrap(((String) value).getBytes("UTF-8"));
                 //Set the content length of the new message
-                carbonMessage.setProperty(CarbonGatewayConstants.HTTP_CONTENT_LENGTH,
+                carbonMessage.setProperty(Constants.HTTP_CONTENT_LENGTH,
                         String.valueOf(byteBuffer.limit()));
                 carbonMessage.addMessageBody(byteBuffer);
                 carbonMessage.setEomAdded(true);

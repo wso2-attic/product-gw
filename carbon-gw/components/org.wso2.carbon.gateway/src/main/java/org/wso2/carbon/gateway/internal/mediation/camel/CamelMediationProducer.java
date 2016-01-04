@@ -26,9 +26,10 @@ import org.apache.camel.impl.DefaultAsyncProducer;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.common.CarbonGatewayConstants;
+import org.wso2.carbon.gateway.internal.GatewayContextHolder;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
+import org.wso2.carbon.messaging.Constants;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,8 +75,8 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         //This parameter is used to decide whether we need to continue processing in case of a failure (FO endpoint)
         boolean syncNeeded = true;
         try {
-            syncNeeded = engine.getSender().send(exchange.getIn().getBody(CarbonMessage.class),
-                                                 new NettyHttpBackEndCallback(exchange, callback));
+            syncNeeded = GatewayContextHolder.getInstance().getSender().send(
+                    exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         } catch (Exception exp) {
             //Set the exception to the exchange such that camel can decide on failover
             exchange.setException(exp);
@@ -108,14 +109,14 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                 Map<String, String> transportHeaders = responseCmsg.getHeaders();
                 if (transportHeaders != null) {
                     transportHeaders.put(Exchange.HTTP_RESPONSE_CODE,
-                             responseCmsg.getProperty(CarbonGatewayConstants.HTTP_STATUS_CODE).toString());
+                             responseCmsg.getProperty(Constants.HTTP_STATUS_CODE).toString());
                     CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
-                    responseCmsg.setProperty(CarbonGatewayConstants.SRC_HNDLR,
-                                             request.getProperty(CarbonGatewayConstants.SRC_HNDLR));
-                    responseCmsg.setProperty(CarbonGatewayConstants.DISRUPTOR,
-                                             request.getProperty(CarbonGatewayConstants.DISRUPTOR));
-                    responseCmsg.setProperty(CarbonGatewayConstants.CHNL_HNDLR_CTX,
-                                             request.getProperty(CarbonGatewayConstants.CHNL_HNDLR_CTX));
+                    responseCmsg.setProperty(Constants.SRC_HNDLR,
+                                             request.getProperty(Constants.SRC_HNDLR));
+                    responseCmsg.setProperty(Constants.DISRUPTOR,
+                                             request.getProperty(Constants.DISRUPTOR));
+                    responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
+                                             request.getProperty(Constants.CHNL_HNDLR_CTX));
                     Message msg = null;
                     try {
                         msg = CarbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);

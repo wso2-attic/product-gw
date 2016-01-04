@@ -114,7 +114,7 @@
                                 </bundle>
                                 <bundle>
                                     <symbolicName>spring.framework</symbolicName>
-                                    <version>${spring.orbit.version}</version>
+                                    <version>${spring.framework.version}</version>
                                 </bundle>
                                 <bundle>
                                     <symbolicName>slf4j.api</symbolicName>
@@ -126,7 +126,7 @@
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.gateway</symbolicName>
-                                    <version>${carbon.gateway.osgi.version}</version>
+                                    <version>${carbon.gateway.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

@@ -83,3 +83,29 @@ when we invoke the request `http://localhost:9090/gw/news`
 it will be routed to `http://jsonplaceholder.typicode.com/posts`
 
 similarly `http://localhost:9090/gw/news/24` will be routed to `http://jsonplaceholder.typicode.com/posts/24`
+
+####Route Hot Deployment
+By default we are keeping all the route configurations in the `camel-context.xml`. If we want, we can hot deploy the routes (i.e we can add routes without restarting the server) by adding custom routes configuration files. Custom routes can be added by following the below steps.
+
+* Multiple custom route configuration files can be placed with the following structure.
+
+```
+<routes xmlns="http://camel.apache.org/schema/spring">
+
+    <route id="bar">
+        <from uri="wso2-gw:/barroute"/>
+        <to uri="wso2-gw:http://localhost:8080"/>
+    </route>
+
+    <route id="foo">
+        <from uri="wso2-gw:/fooroute"/>
+        <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+    </route>
+
+</routes>
+```
+* Copy the route configuration file to `$CARBON_HOME/conf/camel`
+* Routes added to the existing camel-context.xml configuration file, will not be hot deployed
+* You may have custom route configuration files already in the `$CARBON_HOME/conf/camel` directory, before the server starts. These custom routes will be loaded to the context when the server starts
+* If you add a custom route and it is an existing one, the latter one will override the former one
+* Do not add two routes with same id in the same configuration file
