@@ -29,7 +29,7 @@
     <artifactId>org.wso2.carbon.gateway</artifactId>
     <packaging>bundle</packaging>
 
-    <name>org.wso2.carbon.gateway</name>
+    <name>WSO2 Carbon - Gateway Component</name>
     <description>WSO2 Carbon Gateway</description>
     <url>http://maven.apache.org</url>
 

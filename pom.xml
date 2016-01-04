@@ -29,6 +29,7 @@
     <artifactId>org.wso2.carbon.gateway.parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+    <name>WSO2 Carbon - Product Gateway Parent</name>
 
     <scm>
         <url>https://github.com/wso2/product-gw.git</url>
