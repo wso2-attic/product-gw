@@ -28,6 +28,9 @@ import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.Constants;
+import org.wso2.carbon.messaging.DefaultCarbonMessage;
+import org.wso2.carbon.messaging.FaultHandler;
+import org.wso2.carbon.messaging.MessageProcessorException;
 import org.wso2.carbon.messaging.TransportSender;
 
 import java.io.UnsupportedEncodingException;
@@ -61,12 +64,13 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.debug("Channel: {} received body: {}");
         }
         Map<String, String> transportHeaders = cMsg.getHeaders();
-
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
-                cMsg.getProperty(Constants.HTTP_METHOD).toString(),
-                transportHeaders);
+                                                         cMsg.getProperty(Constants.HTTP_METHOD).toString(),
+                                                         transportHeaders);
         if (consumer != null) {
+
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
+            cMsg.getFaultHandlerStack().push(new CamelMediationEngineFaultHandler(exchange));
             exchange.setPattern(ExchangePattern.InOut);
             //need to close the unit of work finally
             try {
@@ -84,10 +88,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     /**
      * Set the transport sender for the engine implementation.
      *
-     * @param transportSender  Transport Sender
+     * @param transportSender Transport Sender
      */
     @Override
-    public void setTransportSender(TransportSender transportSender) {}
+    public void setTransportSender(TransportSender transportSender) {
+    }
 
     @Override
     public String getId() {
@@ -119,7 +124,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                         mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
                         log.info("Response Http Status code is invalid. response code : " +
-                                mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                     mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
@@ -128,11 +133,21 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                         mediatedResponse.setHeader(entry.getKey(), (String) entry.getValue());
                     }
                 }
-            } else {
-                mediatedResponse =
-                        CarbonCamelMessageUtil.createHttpCarbonResponse(exchange.getException().getMessage(), 500);
-            }
 
+            } else {
+                int code = 500;
+
+                if (exchange.getOut() instanceof CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
+                           getCarbonMessage().
+                           getProperty(Constants.HTTP_STATUS_CODE) != null) {
+                    String value = (String) ((CamelHttp4Message) exchange.getOut()).getCarbonMessage().
+                               getProperty(Constants.HTTP_STATUS_CODE);
+                    code = Integer.parseInt(value);
+                }
+                mediatedResponse =
+                           CarbonCamelMessageUtil.createHttpCarbonResponse
+                                      (exchange.getException().getMessage(), code);
+            }
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
@@ -191,6 +206,44 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
     public void removeConsumer(String endpointKey) {
         consumers.remove(endpointKey);
+    }
+
+
+    private static class CamelMediationEngineFaultHandler implements FaultHandler {
+
+        private Exchange exchange;
+
+
+        public CamelMediationEngineFaultHandler(Exchange exchange) {
+            this.exchange = exchange;
+        }
+
+        @Override
+        public void handleFault(String s) {
+
+        }
+
+        @Override
+        public void handleFault() {
+
+        }
+
+        @Override
+        public void handleFault(String s, CarbonCallback carbonCallback) {
+            exchange.setException(new MessageProcessorException(s));
+            DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
+            defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, "500");
+            carbonCallback.done(defaultCarbonMessage);
+        }
+
+        @Override
+        public void handleFault(String statusCode, Throwable throwable, CarbonCallback carbonCallback) {
+            exchange.setException(throwable);
+            DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
+            defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
+            defaultCarbonMessage.setProperty(Constants.EXCHANGE, throwable);
+            carbonCallback.done(defaultCarbonMessage);
+        }
     }
 
 }
