@@ -76,7 +76,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
         boolean syncNeeded = true;
         try {
             syncNeeded = GatewayContextHolder.getInstance().getSender().send(
-                    exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
+                       exchange.getIn().getBody(CarbonMessage.class), new NettyHttpBackEndCallback(exchange, callback));
         } catch (Exception exp) {
             //Set the exception to the exchange such that camel can decide on failover
             exchange.setException(exp);
@@ -90,7 +90,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     }
 
     private class NettyHttpBackEndCallback implements CarbonCallback {
-        private final Exchange exchange;
+        private Exchange exchange;
         private final AsyncCallback callback;
 
         public NettyHttpBackEndCallback(Exchange exchange, AsyncCallback callback) {
@@ -109,7 +109,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                 Map<String, String> transportHeaders = responseCmsg.getHeaders();
                 if (transportHeaders != null) {
                     transportHeaders.put(Exchange.HTTP_RESPONSE_CODE,
-                             responseCmsg.getProperty(Constants.HTTP_STATUS_CODE).toString());
+                                         responseCmsg.getProperty(Constants.HTTP_STATUS_CODE).toString());
                     CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
                     responseCmsg.setProperty(Constants.SRC_HNDLR,
                                              request.getProperty(Constants.SRC_HNDLR));
@@ -117,6 +117,17 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                                              request.getProperty(Constants.DISRUPTOR));
                     responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
                                              request.getProperty(Constants.CHNL_HNDLR_CTX));
+                    Object obj = responseCmsg.getProperty(Constants.EXCHANGE);
+
+                    if (obj != null) {
+                        exchange.setException((Throwable) obj);
+                    } else if (responseCmsg.getProperty(Constants.HTTP_STATUS_CODE) != null &&
+                               ((responseCmsg.getProperty
+                                          (Constants.HTTP_STATUS_CODE).toString().trim().equals("200") ||
+                                 responseCmsg.getProperty
+                                            (Constants.HTTP_STATUS_CODE).toString().trim().equals("202")))) {
+                        exchange.setException(null);
+                    }
                     Message msg = null;
                     try {
                         msg = CarbonCamelMessageUtil.createCamelMessage(responseCmsg, exchange);
@@ -133,5 +144,6 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
             }
             callback.done(false);
         }
+
     }
 }
