@@ -76,11 +76,18 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             try {
                 consumer.createUoW(exchange);
             } catch (Exception e) {
-                log.error("Unit of Work creation failed");
+                String msg = "Unit of Work creation failed" + e.getMessage();
+                CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
+                           (msg, 500, Constants.TEXT_PLAIN);
+                requestCallback.done(carbonMessage);
             }
             processAsynchronously(exchange, consumer, requestCallback);
         } else {
-            log.error("Message consumer not found.");
+            String msg = "Message consumer not found.";
+            log.error(msg);
+            CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
+                       (msg, 404, Constants.TEXT_PLAIN);
+            requestCallback.done(carbonMessage);
         }
         return true;
     }
@@ -136,8 +143,18 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
             } else {
                 int code = 500;
+                String contentType = Constants.TEXT_PLAIN;
 
-                if (exchange.getOut() instanceof CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
+                if (exchange.getProperty(Constants.HTTP_STATUS_CODE) != null) {
+                    code = Integer.parseInt((String) exchange.getProperty(Constants.HTTP_STATUS_CODE));
+                }
+
+                if (exchange.getProperty(Constants.HTTP_CONTENT_TYPE) != null) {
+                    contentType = (String) exchange.getProperty(Constants.HTTP_CONTENT_TYPE);
+                }
+
+                if (exchange.getProperty(Constants.HTTP_STATUS_CODE) == null && exchange.getOut() instanceof
+                           CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
                            getCarbonMessage().
                            getProperty(Constants.HTTP_STATUS_CODE) != null) {
                     String value = (String) ((CamelHttp4Message) exchange.getOut()).getCarbonMessage().
@@ -146,7 +163,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 }
                 mediatedResponse =
                            CarbonCamelMessageUtil.createHttpCarbonResponse
-                                      (exchange.getException().getMessage(), code);
+                                      (exchange.getException().getMessage(), code, contentType);
             }
             try {
                 requestCallback.done(mediatedResponse);
@@ -230,9 +247,11 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
         @Override
         public void handleFault(String s, CarbonCallback carbonCallback) {
-            exchange.setException(new MessageProcessorException(s));
+            Throwable throwable = new MessageProcessorException(s);
+            exchange.setException(throwable);
             DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
             defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, "500");
+            defaultCarbonMessage.setProperty(Constants.EXCHANGE, throwable);
             carbonCallback.done(defaultCarbonMessage);
         }
 

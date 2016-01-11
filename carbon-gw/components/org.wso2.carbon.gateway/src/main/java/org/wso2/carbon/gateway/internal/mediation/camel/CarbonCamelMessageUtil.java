@@ -116,8 +116,8 @@ public class CarbonCamelMessageUtil {
             Map.Entry pair = (Map.Entry) it.next();
 
             if (!Constants.HTTP_CONTENT_TYPE.equals(pair.getKey()) &&
-                    !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
-                    !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
+                !Constants.HTTP_SOAP_ACTION.equals(pair.getKey()) &&
+                !Constants.HTTP_CONTENT_ENCODING.equals(pair.getKey())) {
                 headers.put((String) pair.getKey(), pair.getValue());
             }
             it.remove();
@@ -158,13 +158,13 @@ public class CarbonCamelMessageUtil {
                 String key = (String) pair.getKey();
                 if (key.equals(Exchange.CONTENT_TYPE)) {
                     carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_TYPE,
-                            pair.getValue().toString());
+                                                    pair.getValue().toString());
                 } else if (key.equals(Exchange.SOAP_ACTION)) {
                     carbonBackEndRequestHeaders.put(Constants.HTTP_SOAP_ACTION,
-                            pair.getValue().toString());
+                                                    pair.getValue().toString());
                 } else if (key.equals(Exchange.CONTENT_ENCODING)) {
                     carbonBackEndRequestHeaders.put(Constants.HTTP_CONTENT_ENCODING,
-                            pair.getValue().toString());
+                                                    pair.getValue().toString());
                 } else if (key.equals(Exchange.HTTP_METHOD)) {
                     request.setProperty(Constants.HTTP_METHOD, pair.getValue());
                 } else if (key.equals(Exchange.HTTP_PROTOCOL_VERSION)) {
@@ -231,16 +231,26 @@ public class CarbonCamelMessageUtil {
      * @param code         Error Code of the Http response.
      * @return Http Error Response as a Carbon message.
      */
-    public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code) {
+    public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code, String contentType) {
 
         DefaultCarbonMessage response = new DefaultCarbonMessage();
-        response.setStringMessageBody(errorMessage);
-        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
+        String payload = errorMessage;
+
+        if ((contentType != null && (contentType.equals(Constants.TEXT_XML) || contentType.equals
+                   (Constants.APPLICATION_XML)))) {
+            payload = "<errorMessage>" + errorMessage + "</errorMessage>";
+        }
+        response.setStringMessageBody(payload);
+        byte[] errorMessageBytes = payload.getBytes(Charset.defaultCharset());
 
         Map<String, String> transportHeaders = new HashMap<>();
         transportHeaders.put(Constants.HTTP_CONNECTION, Constants.KEEP_ALIVE);
         transportHeaders.put(Constants.HTTP_CONTENT_ENCODING, Constants.GZIP);
-        transportHeaders.put(Constants.HTTP_CONTENT_TYPE, Constants.TEXT_PLAIN);
+        if (contentType != null) {
+            transportHeaders.put(Constants.HTTP_CONTENT_TYPE, contentType);
+        } else {
+            transportHeaders.put(Constants.HTTP_CONTENT_TYPE, Constants.TEXT_PLAIN);
+        }
         transportHeaders.put(Constants.HTTP_CONTENT_LENGTH, (String.valueOf(errorMessageBytes.length)));
 
         response.setHeaders(transportHeaders);
