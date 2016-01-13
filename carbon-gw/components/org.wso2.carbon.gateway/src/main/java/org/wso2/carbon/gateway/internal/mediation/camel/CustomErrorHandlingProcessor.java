@@ -73,7 +73,7 @@ public class CustomErrorHandlingProcessor implements Processor {
                 exchange.setProperty(Constants.HTTP_CONTENT_TYPE, contentType);
             }
             if (errorMessage != null) {
-                throwable = new RuntimeException(errorMessage);
+                throwable = new Exception(errorMessage, throwable);
             }
             exchange.setException(throwable);
         }
