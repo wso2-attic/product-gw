@@ -37,7 +37,8 @@ public class CamelMediationConsumer extends DefaultConsumer {
     @Override
     protected void doStop() throws Exception {
         super.doStop();
-        engine.removeConsumer(getEndpoint().getEndpointKey());
+        String endPointUrlOnly = ObjectHelper.after(getEndpoint().getEndpointKey(), "://");
+        engine.removeConsumer(endPointUrlOnly);
     }
 
     @Override
