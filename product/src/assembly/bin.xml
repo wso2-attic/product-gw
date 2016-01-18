@@ -66,6 +66,11 @@
             <outputDirectory>resources/security</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
 
     <files>
