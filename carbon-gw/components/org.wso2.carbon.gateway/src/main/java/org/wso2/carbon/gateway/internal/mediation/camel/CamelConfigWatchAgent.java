@@ -73,13 +73,15 @@ public class CamelConfigWatchAgent {
                 FileSystem fs = directoryPath.getFileSystem();
                 try (WatchService service = fs.newWatchService()) {
                     directoryPath.register(service, ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE, OVERFLOW);
+                    log.info("Watch service running ...");
                     WatchKey key;
                     while (true) {
-                        log.info("Watch service running ...");
+                        //todo debug log
+                        log.debug("Watch service running ...");
                         key = service.take();
                         WatchEvent.Kind<?> kind;
 
-                        log.info("FileWatcher event detected!");
+                        log.debug("FileWatcher event detected!");
                         List<WatchEvent<?>> watchEvents = key.pollEvents();
                         WatchEvent createdEvent = null;
 
@@ -92,16 +94,17 @@ public class CamelConfigWatchAgent {
                                 continue;
                             } else if (ENTRY_CREATE == kind) {
 
-                                log.info("New File creation Event Fired!");
+                                log.debug("New File creation Event Fired!");
                                 createdEvent = watchEvent;
                                 customRouteManger.addRoutesFromCustomConfigs(fileName);
 
                             } else if (ENTRY_DELETE == kind) {
-                                log.info("File deleted Event Fired!");
+                                log.debug("File deleted Event Fired!");
                                 customRouteManger.removeRoutesFromCustomConfigs(fileName);
                             } else if (ENTRY_MODIFY == kind) {
                                 if (createdEvent != null) {
-                                    // file creation is non-atomic in some operating systems
+                                    // new file creation or copying is non-atomic in some operating systems.
+                                    // Both created and modified events will be triggered so ignore the modified event
                                     if (!fileName.equals(createdEvent.context().toString())) {
                                         log.info("File modification Event Fired!");
                                         customRouteManger.modifyRoutesFromCustomConfigs(fileName);
