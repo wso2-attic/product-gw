@@ -16,6 +16,8 @@
   ~ */
   -->
   
+<! -- This sample covers the http traffic failover use case -->
+  
 <routes xmlns="http://camel.apache.org/schema/spring">
 
        <route id="failover">

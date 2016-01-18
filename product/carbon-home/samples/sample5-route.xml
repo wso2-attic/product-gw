@@ -16,10 +16,13 @@
   ~ */
   -->
   
+<! -- This sample covers the error handling use case where it catches the 
+java.net.ConnectException and handles that error with a custom message -->
+  
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-       <route id="simple-ptt">
-            <from uri="wso2-gw:/ptt"/>
+       <route id="error-handling">
+            <from uri="wso2-gw:/errorhandling"/>
                <onException>
 		<exception>java.net.ConnectException</exception>
 		<handled><constant>true</constant></handled>

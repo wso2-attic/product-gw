@@ -16,9 +16,11 @@
   ~ */
   -->
   
+<! -- This sample covers the header based routing use case -->
+  
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-        <route id="http-routes">
+        <route id="header-routing">
             <from uri="wso2-gw:/headerrouting"/>
             <choice>
                 <when>
