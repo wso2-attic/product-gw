@@ -16,7 +16,7 @@
   ~ */
   -->
   
-<! -- This sample covers the simple message passthrough use case -->
+<!-- This sample covers the simple message passthrough use case -->
   
 <routes xmlns="http://camel.apache.org/schema/spring">
 

@@ -16,7 +16,7 @@
   ~ */
   -->
   
-<! -- This sample covers the error handling use case where it catches the 
+<!-- This sample covers the error handling use case where it catches the 
 java.net.ConnectException and handles that error with a custom message -->
   
 <routes xmlns="http://camel.apache.org/schema/spring">

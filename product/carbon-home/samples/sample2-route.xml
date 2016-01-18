@@ -16,7 +16,7 @@
   ~ */
   -->
   
-<! -- This sample covers the header based routing use case -->
+<!-- This sample covers the header based routing use case -->
   
 <routes xmlns="http://camel.apache.org/schema/spring">
 

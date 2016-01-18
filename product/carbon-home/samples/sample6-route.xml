@@ -16,7 +16,7 @@
   ~ */
   -->
   
-<! -- This sample covers the REST API definition use case  -->
+<!-- This sample covers the REST API definition use case  -->
 
 <routes xmlns="http://camel.apache.org/schema/spring">
 
