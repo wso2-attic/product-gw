@@ -25,7 +25,7 @@ import org.wso2.carbon.messaging.Constants;
 
 
 /**
- * A class responsible for handle custom error messages
+ * A class responsible for handle custom error messages.
  */
 public class CustomErrorHandlingProcessor implements Processor {
 

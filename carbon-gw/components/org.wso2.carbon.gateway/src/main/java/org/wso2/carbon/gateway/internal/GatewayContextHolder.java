@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Context holder
+ * Context holder.
  */
 public class GatewayContextHolder {
 

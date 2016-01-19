@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Mange the custom routes
+ * Mange the custom routes.
  */
 public class CamelCustomRouteManager {
 
@@ -48,7 +48,7 @@ public class CamelCustomRouteManager {
     }
 
     /**
-     * Adding the routes from custom configuration files
+     * Adding the routes from custom configuration files.
      *
      * @param fileName custom configuration file name
      */
@@ -125,7 +125,7 @@ public class CamelCustomRouteManager {
     }
 
     /**
-     * Adding the routes from the files listed under the directory given by the path
+     * Adding the routes from the files listed under the directory given by the path.
      *
      * @param path location of the particular directory
      */

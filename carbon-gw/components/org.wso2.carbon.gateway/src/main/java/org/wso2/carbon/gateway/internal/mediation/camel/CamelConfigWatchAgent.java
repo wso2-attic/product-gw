@@ -42,7 +42,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 /**
- * Camel configuration file watching agent implementation
+ * Camel configuration file watching agent implementation.
  */
 public class CamelConfigWatchAgent {
     private static final Logger log = LoggerFactory.getLogger(CamelConfigWatchAgent.class);
@@ -51,7 +51,7 @@ public class CamelConfigWatchAgent {
     private int eventCount = 0;
 
     /**
-     * Start watching the specified directory for file modifications, adding new files, etc
+     * Start watching the specified directory for file modifications, adding new files, etc.
      *
      * @param customRouteManger customRouteManger
      * @throws Exception

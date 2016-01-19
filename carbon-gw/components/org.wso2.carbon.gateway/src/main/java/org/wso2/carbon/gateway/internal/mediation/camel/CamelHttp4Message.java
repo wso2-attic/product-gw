@@ -19,7 +19,7 @@ import org.apache.camel.impl.DefaultMessage;
 import org.wso2.carbon.messaging.CarbonMessage;
 
 /**
- * Wrapper class which represents the camel message to the mediation engine
+ * Wrapper class which represents the camel message to the mediation engine.
  */
 public class CamelHttp4Message extends DefaultMessage {
 
