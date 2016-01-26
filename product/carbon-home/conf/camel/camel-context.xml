@@ -31,9 +31,12 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         <property name="contentType" value="application/xml"/>
     </bean>
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
+
         <onException>
             <exception>java.lang.Exception</exception>
-            <handled><constant>true</constant></handled>
+            <handled>
+                <constant>true</constant>
+            </handled>
             <process ref="failureResponse"/>
         </onException>
 
@@ -52,7 +55,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         <!-- sample routes corresponding to the rest interfaces -->
         <route>
             <from uri="direct:getNews"/>
-            <to uri="wso2-gw:http://isurur-ThinkPad-T540p:8281/services/TestProxy"/>
+            <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
         </route>
         <route>
             <from uri="direct:getNewsById"/>
@@ -72,18 +75,9 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
                     <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
                 </when>
                 <otherwise>
-                    <to uri="wso2-gw:http://localhost:9004/service"/>
+                    <to uri="wso2-gw:http://localhost:9004/services/SimpleStockQuoteService"/>
                 </otherwise>
             </choice>
-        </route>
-
-        <route id="failover">
-            <from uri="wso2-gw:/failover"/>
-            <loadBalance inheritErrorHandler="false">
-                <failover roundRobin="true"/>
-                <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
-                <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
-            </loadBalance>
         </route>
 
     </camelContext>

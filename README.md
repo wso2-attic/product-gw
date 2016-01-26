@@ -73,9 +73,7 @@ and follwoing is the corresponding routes
     </route>
     <route>
         <from uri="direct:getNewsById"/>
-        <recipientList>
-            <simple>wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}</simple>
-        </recipientList>
+        <toD uri="wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}"/>
     </route>
 ```
 
