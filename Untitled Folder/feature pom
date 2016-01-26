@@ -16,8 +16,7 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -48,6 +47,8 @@
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
+
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -67,6 +68,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
+            <version>${org.wso2.carbon.transport}</version>
         </dependency>
     </dependencies>
 
@@ -130,14 +136,6 @@
                                     <symbolicName>org.wso2.carbon.gateway</symbolicName>
                                     <version>${carbon.gateway.version}</version>
                                 </bundle>
-                                <!--<bundle>
-                                    <symbolicName>org.wso2.carbon.metrics.manager</symbolicName>
-                                    <version>${carbon.metrics.version}</version>
-                                </bundle>
-                                <bundle>
-                                    <symbolicName>org.wso2.carbon.metrics.impl</symbolicName>
-                                    <version>${carbon.metrics.version}</version>
-                                </bundle>-->
                             </bundles>
                         </configuration>
                     </execution>
@@ -147,3 +145,4 @@
     </build>
 
 </project>
+

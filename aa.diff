@@ -1,0 +1,153 @@
+diff --git a/carbon-gw/components/org.wso2.carbon.gateway/pom.xml b/carbon-gw/components/org.wso2.carbon.gateway/pom.xml
+index 84218ad..45a1e9f 100644
+--- a/carbon-gw/components/org.wso2.carbon.gateway/pom.xml
++++ b/carbon-gw/components/org.wso2.carbon.gateway/pom.xml
+@@ -64,6 +64,7 @@
+         <dependency>
+             <groupId>org.wso2.carbon.transport</groupId>
+             <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
++            <version>2.0.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+             <groupId>org.wso2.eclipse.osgi</groupId>
+diff --git a/carbon-gw/components/org.wso2.carbon.gateway/src/main/java/org/wso2/carbon/gateway/internal/mediation/camel/CamelMediationEngine.java b/carbon-gw/components/org.wso2.carbon.gateway/src/main/java/org/wso2/carbon/gateway/internal/mediation/camel/CamelMediationEngine.java
+index 6db0b29..04e3367 100644
+--- a/carbon-gw/components/org.wso2.carbon.gateway/src/main/java/org/wso2/carbon/gateway/internal/mediation/camel/CamelMediationEngine.java
++++ b/carbon-gw/components/org.wso2.carbon.gateway/src/main/java/org/wso2/carbon/gateway/internal/mediation/camel/CamelMediationEngine.java
+@@ -26,16 +26,15 @@ import org.apache.camel.Exchange;
+ import org.apache.camel.ExchangePattern;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+-import org.wso2.carbon.gateway.internal.common.CarbonCallback;
+-import org.wso2.carbon.gateway.internal.common.CarbonMessage;
+-import org.wso2.carbon.gateway.internal.common.CarbonMessageProcessor;
+-import org.wso2.carbon.gateway.internal.common.Pipe;
+-import org.wso2.carbon.gateway.internal.common.TransportSender;
++import org.wso2.carbon.gateway.internal.common.*;
+ import org.wso2.carbon.gateway.internal.transport.common.Constants;
+ import org.wso2.carbon.gateway.internal.transport.common.HTTPContentChunk;
+ import org.wso2.carbon.gateway.internal.transport.common.PipeImpl;
+ import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
+ import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
++import org.wso2.carbon.transport.http.netty.latency.metrics.ConnectionMetricsHolder;
++import org.wso2.carbon.transport.http.netty.latency.metrics.RequestMetricsHolder;
++import org.wso2.carbon.transport.http.netty.latency.metrics.ResponseMetricsHolder;
+ 
+ import java.io.UnsupportedEncodingException;
+ import java.net.URLDecoder;
+@@ -132,6 +131,67 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
+             try {
+                 requestCallback.done(mediatedResponse);
+             } finally {
++                if (mediatedResponse != null) {
++                    ResponseMetricsHolder clientResponseMetricsDataHolder = (ResponseMetricsHolder)
++                            mediatedResponse.getProperty(Constants.CLIENT_RESPONSE_METRICS_HOLDER);
++                    ResponseMetricsHolder serverResponseMetricsDataHolder = (ResponseMetricsHolder)
++                            mediatedResponse.getProperty(Constants.SERVER_RESPONSE_METRICS_HOLDER);
++                    RequestMetricsHolder serverRequestMetricsHolder = (RequestMetricsHolder)
++                            mediatedResponse.getProperty(Constants.SERVER_REQUEST_METRICS_HOLDER);
++                    RequestMetricsHolder clientRequestMetricsHolder = (RequestMetricsHolder)
++                            mediatedResponse.getProperty(Constants.CLIENT_REQUEST_METRICS_HOLDER);
++                    ConnectionMetricsHolder serverConnectionMetricsHolder = (ConnectionMetricsHolder)
++                            mediatedResponse.getProperty(Constants.SERVER_CONNECTION_METRICS_HOLDER);
++                    ConnectionMetricsHolder clientConnectionMetricsHolder = (ConnectionMetricsHolder)
++                            mediatedResponse.getProperty(Constants.CLIENT_CONNECTION_METRICS_HOLDER);
++
++                    log.info("===============================================");
++                    log.info("Type: " + clientResponseMetricsDataHolder.getType());
++                    log.info("Response Life Time: " +
++                            String.valueOf(clientResponseMetricsDataHolder.getResponseLifeTime().getCount()));
++                    log.info("Response Body Read Time: " +
++                            String.valueOf(clientResponseMetricsDataHolder.getResponseBodyReadTime().getCount()));
++                    log.info("Response Header Read Time: " +
++                            String.valueOf(clientResponseMetricsDataHolder.getResponseHeaderReadTime().getCount()));
++                    log.info("===============================================\n");
++
++                    log.info("Type: " + serverResponseMetricsDataHolder.getType());
++                    log.info("Response Life Time" +
++                            String.valueOf(serverResponseMetricsDataHolder.getResponseLifeTime().getCount()));
++                    log.info("Response Header Read Time: " +
++                            String.valueOf(serverResponseMetricsDataHolder.getResponseHeaderReadTime().getCount()));
++                    log.info("Response Body Read Time: " +
++                            String.valueOf(serverResponseMetricsDataHolder.getResponseBodyReadTime().getCount()));
++                    log.info("===============================================\n");
++
++                    log.info("Type: " + serverRequestMetricsHolder.getType());
++                    log.info("Request Header Read Time: " +
++                            String.valueOf(serverRequestMetricsHolder.getRequestHeaderReadTimer().getCount()));
++                    log.info("Request Body Read Time: " +
++                            String.valueOf(serverRequestMetricsHolder.getRequestBodyReadTimer().getCount()));
++                    log.info("Request Read Time: " +
++                            String.valueOf(serverRequestMetricsHolder.getRequestLifeTimer().getCount()));
++                    log.info("===============================================\n");
++
++                    log.info("Type: " + clientRequestMetricsHolder.getType());
++                    log.info("Request Read Time: " +
++                            String.valueOf(clientRequestMetricsHolder.getRequestLifeTimer().getCount()));
++                    log.info("Request Header Read Time: " +
++                            String.valueOf(clientRequestMetricsHolder.getRequestHeaderReadTimer().getCount()));
++                    log.info("Request Body Read Time: " +
++                            String.valueOf(clientRequestMetricsHolder.getRequestBodyReadTimer().getCount()));
++                    log.info("===============================================\n");
++
++                    log.info("Type: " + "Client Connection");
++                    log.info("Connection Life Time: " +
++                            String.valueOf(clientConnectionMetricsHolder.getConnectionTimer().getCount()));
++                    log.info("===============================================\n");
++
++                    log.info("Type: Server Connection");
++                    log.info("Connection Life Time: " +
++                            String.valueOf(serverConnectionMetricsHolder.getConnectionTimer().getCount()));
++                    log.info("===============================================\n");
++                }
+                 consumer.doneUoW(exchange);
+             }
+         });
+diff --git a/pom.xml b/pom.xml
+index 7d78962..358fd3d 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -70,6 +70,16 @@
+                 <version>${carbon.kernel.version}</version>
+             </dependency>
+             <dependency>
++            <groupId>org.wso2.carbon.transport</groupId>
++            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
++            <version>${org.wso2.carbon.transport.version}</version>
++        </dependency>
++            <dependency>
++                <groupId>org.wso2.carbon.messaging</groupId>
++                <artifactId>org.wso2.carbon.messaging</artifactId>
++                <version>${org.wso2.carbon.messaging.version}</version>
++            </dependency>
++            <dependency>
+                 <groupId>org.wso2.carbon</groupId>
+                 <artifactId>wso2carbon-kernel</artifactId>
+ 				<version>${carbon.kernel.version}</version>
+@@ -88,11 +98,11 @@
+ 				 <type>zip</type>
+             </dependency>
+ 
+-            <dependency>
+-                <groupId>org.wso2.carbon.transport</groupId>
+-                <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
+-                <version>${org.wso2.carbon.transport.http.netty.version}</version>
+-            </dependency>
++            <!--<dependency>-->
++                <!--<groupId>org.wso2.carbon.transport</groupId>-->
++                <!--<artifactId>org.wso2.carbon.transport.http.netty</artifactId>-->
++                <!--<version>${carbon.transport.version}</version>-->
++            <!--</dependency>-->
+ 
+             <dependency>
+                 <groupId>org.osgi</groupId>
+@@ -281,6 +291,9 @@
+         <commons.pool.version>1.5.6.wso2v1</commons.pool.version>
+         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
+         <carbon.feature.plugin.version>2.0.0-alpha</carbon.feature.plugin.version>
++        <org.wso2.carbon.transport.version>2.0.0-SNAPSHOT</org.wso2.carbon.transport.version>
++        <org.wso2.carbon.messaging.version>1.0.0-SNAPSHOT</org.wso2.carbon.messaging.version>
++
+     </properties>
+ 
+     <modules>

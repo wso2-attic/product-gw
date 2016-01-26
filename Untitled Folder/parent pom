@@ -16,7 +16,8 @@
   ~ * limitations under the License.
   ~ */
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -60,8 +61,8 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>wso2carbon-kernel</artifactId>
-				<version>${carbon.kernel.version}</version>
-				 <type>zip</type>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.gateway</groupId>
@@ -73,11 +74,6 @@
                 <artifactId>org.wso2.carbon.gateway.feature</artifactId>
                 <version>${carbon.gateway.version}</version>
                 <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.transport</groupId>
-                <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
-                <version>${carbon.transport.version}</version>
             </dependency>
 
             <dependency>
@@ -118,6 +114,7 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
@@ -221,7 +218,6 @@
         <osgi.api.version>6.0.0</osgi.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
-        <carbon.metrics.version>1.2.0-SNAPSHOT</carbon.metrics.version>
 
         <camel.version>2.16.0</camel.version>
         <camel.import.package.version>[2.16.0, 2.17.0)</camel.import.package.version>
@@ -244,7 +240,7 @@
         <osgi.service.tracker.import.version.range>[1.5.1, 2.0.0)</osgi.service.tracker.import.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
-
+        <org.wso2.carbon.transport>2.0.0-SNAPSHOT</org.wso2.carbon.transport>
     </properties>
 
     <modules>
@@ -253,3 +249,4 @@
         <module>product</module>
     </modules>
 </project>
+

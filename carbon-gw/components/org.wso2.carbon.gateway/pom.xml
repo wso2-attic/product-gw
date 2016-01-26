@@ -94,6 +94,11 @@
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -372,7 +377,8 @@
             org.apache.camel.*;version="${camel.import.package.version}",
             org.springframework.context.*;version="${spring.framework.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}"
+            org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
+            org.wso2.carbon.transport.*;version="${carbon.transport.package.import.version.range}",
         </import.package>
     </properties>
 

@@ -32,6 +32,10 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
 import org.wso2.carbon.messaging.MessageProcessorException;
 import org.wso2.carbon.messaging.TransportSender;
+import org.wso2.carbon.transport.http.netty.common.TransportConstants;
+import org.wso2.carbon.transport.http.netty.latency.metrics.ConnectionMetricsHolder;
+import org.wso2.carbon.transport.http.netty.latency.metrics.RequestMetricsHolder;
+import org.wso2.carbon.transport.http.netty.latency.metrics.ResponseMetricsHolder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -65,8 +69,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         }
         Map<String, String> transportHeaders = cMsg.getHeaders();
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
-                                                         cMsg.getProperty(Constants.HTTP_METHOD).toString(),
-                                                         transportHeaders);
+                cMsg.getProperty(Constants.HTTP_METHOD).toString(),
+                transportHeaders);
         if (consumer != null) {
 
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
@@ -78,7 +82,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             } catch (Exception e) {
                 String msg = "Unit of Work creation failed" + e.getMessage();
                 CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
-                           (msg, 500, Constants.TEXT_PLAIN);
+                        (msg, 500, Constants.TEXT_PLAIN);
                 requestCallback.done(carbonMessage);
             }
             processAsynchronously(exchange, consumer, requestCallback);
@@ -86,7 +90,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             String msg = "Message consumer not found.";
             log.error(msg);
             CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
-                       (msg, 404, Constants.TEXT_PLAIN);
+                    (msg, 404, Constants.TEXT_PLAIN);
             requestCallback.done(carbonMessage);
         }
         return true;
@@ -131,7 +135,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                         mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
                         log.info("Response Http Status code is invalid. response code : " +
-                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+                                mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                     mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
@@ -154,20 +158,81 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 }
 
                 if (exchange.getProperty(Constants.HTTP_STATUS_CODE) == null && exchange.getOut() instanceof
-                           CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
-                           getCarbonMessage().
-                           getProperty(Constants.HTTP_STATUS_CODE) != null) {
+                        CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
+                        getCarbonMessage().
+                        getProperty(Constants.HTTP_STATUS_CODE) != null) {
                     String value = (String) ((CamelHttp4Message) exchange.getOut()).getCarbonMessage().
-                               getProperty(Constants.HTTP_STATUS_CODE);
+                            getProperty(Constants.HTTP_STATUS_CODE);
                     code = Integer.parseInt(value);
                 }
                 mediatedResponse =
-                           CarbonCamelMessageUtil.createHttpCarbonResponse
-                                      (exchange.getException().getMessage(), code, contentType);
+                        CarbonCamelMessageUtil.createHttpCarbonResponse
+                                (exchange.getException().getMessage(), code, contentType);
             }
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
+                if (mediatedResponse != null) {
+                    ResponseMetricsHolder clientResponseMetricsDataHolder = (ResponseMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.CLIENT_RESPONSE_METRICS_HOLDER);
+                    ResponseMetricsHolder serverResponseMetricsDataHolder = (ResponseMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.SERVER_REQUEST_METRICS_HOLDER);
+                    RequestMetricsHolder serverRequestMetricsHolder = (RequestMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.SERVER_REQUEST_METRICS_HOLDER);
+                    RequestMetricsHolder clientRequestMetricsHolder = (RequestMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.CLIENT_REQUEST_METRICS_HOLDER);
+                    ConnectionMetricsHolder serverConnectionMetricsHolder = (ConnectionMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.SERVER_CONNECTION_METRICS_HOLDER);
+                    ConnectionMetricsHolder clientConnectionMetricsHolder = (ConnectionMetricsHolder)
+                            mediatedResponse.getProperty(TransportConstants.CLIENT_CONNECTION_METRICS_HOLDER);
+
+                    log.info("===============================================");
+                    log.info("Type: " + clientResponseMetricsDataHolder.getType());
+                    log.info("Response Life Time: " +
+                            String.valueOf(clientResponseMetricsDataHolder.getResponseLifeTime().getCount()));
+                    log.info("Response Body Read Time: " +
+                            String.valueOf(clientResponseMetricsDataHolder.getResponseBodyReadTime().getCount()));
+                    log.info("Response Header Read Time: " +
+                            String.valueOf(clientResponseMetricsDataHolder.getResponseHeaderReadTime().getCount()));
+                    log.info("===============================================\n");
+
+                    log.info("Type: " + serverResponseMetricsDataHolder.getType());
+                    log.info("Response Life Time" +
+                            String.valueOf(serverResponseMetricsDataHolder.getResponseLifeTime().getCount()));
+                    log.info("Response Header Read Time: " +
+                            String.valueOf(serverResponseMetricsDataHolder.getResponseHeaderReadTime().getCount()));
+                    log.info("Response Body Read Time: " +
+                            String.valueOf(serverResponseMetricsDataHolder.getResponseBodyReadTime().getCount()));
+                    log.info("===============================================\n");
+
+                    log.info("Type: " + serverRequestMetricsHolder.getType());
+                    log.info("Request Header Read Time: " +
+                            String.valueOf(serverRequestMetricsHolder.getRequestHeaderReadTimer().getCount()));
+                    log.info("Request Body Read Time: " +
+                            String.valueOf(serverRequestMetricsHolder.getRequestBodyReadTimer().getCount()));
+                    log.info("Request Read Time: " +
+                            String.valueOf(serverRequestMetricsHolder.getRequestLifeTimer().getCount()));
+                    log.info("===============================================\n");
+
+                    log.info("Type: " + clientRequestMetricsHolder.getType());
+                    log.info("Request Read Time: " +
+                            String.valueOf(clientRequestMetricsHolder.getRequestLifeTimer().getCount()));
+                    log.info("Request Header Read Time: " +
+                            String.valueOf(clientRequestMetricsHolder.getRequestHeaderReadTimer().getCount()));
+                    log.info("Request Body Read Time: " +
+                            String.valueOf(clientRequestMetricsHolder.getRequestBodyReadTimer().getCount()));
+                    log.info("===============================================\n");
+
+                    log.info("Type: " + "Client Connection");
+                    log.info("Connection Life Time: " +
+                            String.valueOf(clientConnectionMetricsHolder.getConnectionTimer().getCount()));
+                    log.info("===============================================\n");
+
+                    log.info("Type: Server Connection");
+                    log.info("Connection Life Time: " +
+                            String.valueOf(serverConnectionMetricsHolder.getConnectionTimer().getCount()));
+                    log.info("===============================================\n");
+                }
                 consumer.doneUoW(exchange);
             }
         });
