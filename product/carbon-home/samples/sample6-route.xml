@@ -26,9 +26,7 @@
         </route>
         <route>
             <from uri="direct:getNewsById"/>
-            <recipientList>
-                <simple>wso2-gw:http://localhost:8280/news/getNews/${header.id}</simple>
-            </recipientList>
+            <toD uri="wso2-gw:http://localhost:8280/news/getNews/${header.id}"/>
         </route>
         <route>
             <from uri="direct:updateNews"/>

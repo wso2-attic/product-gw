@@ -56,9 +56,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         </route>
         <route>
             <from uri="direct:getNewsById"/>
-            <recipientList>
-                <simple>wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}</simple>
-            </recipientList>
+            <toD uri="wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}"/>
         </route>
 
         <!-- sample routes based on http header (custom header routeId)-->
@@ -67,7 +65,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
             <choice>
                 <when>
                     <simple>${header.routeId} regex 'r1'</simple>
-                    <to uri="wso2-gw:http://localhost:9000/"/>
+                    <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
                 </when>
                 <when>
                     <simple>${header.routeId} regex 'r2'</simple>
