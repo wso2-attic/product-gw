@@ -378,7 +378,10 @@
             org.springframework.context.*;version="${spring.framework.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             org.wso2.carbon.messaging.*;version="${carbon.messaging.package.import.version.range}",
-            org.wso2.carbon.transport.*;version="${carbon.transport.package.import.version.range}"
+            org.wso2.carbon.transport.*;version="${carbon.transport.package.import.version.range}",
+            org.wso2.carbon.metrics.manager.*;version="[1.2.0, 2.0.0)",
+            org.wso2.carbon.metrics.impl.*;version="[1.2.0, 2.0.0)",
+            org.wso2.carbon.metrics.common.*;version="[1.2.0, 2.0.0)"
         </import.package>
     </properties>
 

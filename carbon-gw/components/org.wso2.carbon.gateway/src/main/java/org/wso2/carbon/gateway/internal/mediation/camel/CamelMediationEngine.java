@@ -32,6 +32,10 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
 import org.wso2.carbon.messaging.MessageProcessorException;
 import org.wso2.carbon.messaging.TransportSender;
+import org.wso2.carbon.transport.http.netty.common.TransportConstants;
+import org.wso2.carbon.transport.http.netty.latency.metrics.ConnectionMetricsHolder;
+import org.wso2.carbon.transport.http.netty.latency.metrics.RequestMetricsHolder;
+import org.wso2.carbon.transport.http.netty.latency.metrics.ResponseMetricsHolder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -39,9 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*import org.wso2.carbon.transport.http.netty.latency.metrics.ConnectionMetricsHolder;
-import org.wso2.carbon.transport.http.netty.latency.metrics.RequestMetricsHolder;
-import org.wso2.carbon.transport.http.netty.latency.metrics.ResponseMetricsHolder;*/
+
 
 /**
  * Responsible for receive the client message and send it in to camel
@@ -172,7 +174,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
-                /*if (mediatedResponse != null) {
+                if (mediatedResponse != null) {
                     ResponseMetricsHolder clientResponseMetricsDataHolder = (ResponseMetricsHolder)
                             mediatedResponse.getProperty(TransportConstants.CLIENT_RESPONSE_METRICS_HOLDER);
                     ResponseMetricsHolder serverResponseMetricsDataHolder = (ResponseMetricsHolder)
@@ -232,7 +234,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                     log.info("Connection Life Time: " +
                             String.valueOf(serverConnectionMetricsHolder.getConnectionTimer().getCount()));
                     log.info("===============================================\n");
-                }*/
+                }
                 consumer.doneUoW(exchange);
             }
         });
