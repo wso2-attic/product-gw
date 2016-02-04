@@ -51,17 +51,16 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
     }
 
     private void assertHeaderParameters(HttpClientResponseProcessorContext processorContext) {
-
-        if(processorContext.getExpectedResponseContext().getHeaders() == null || processorContext.getExpectedResponseContext().getHeaders().isEmpty()) {
+        if (processorContext.getExpectedResponseContext().getHeaders() == null || processorContext.getExpectedResponseContext().getHeaders().isEmpty()) {
             return;
         }
         Map<String, List<String>> receivedHeaders = processorContext.getReceivedResponseContext().getHeaderParameters();
-        Operation operation = processorContext.getClientInformationContext().getExpectedResponse().getOperations();;
+        Operation operation = processorContext.getClientInformationContext().getExpectedResponse().getOperations();
 
         boolean value = false;
         if (operation == Operation.AND) {
 
-            for(Map.Entry<String, List<String>> entry : processorContext.getReceivedResponseContext().getHeaderParameters().entrySet()) {
+            for (Map.Entry<String, List<String>> entry : processorContext.getReceivedResponseContext().getHeaderParameters().entrySet()) {
                 entry.getKey();
             }
 
@@ -71,26 +70,43 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
                 if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues.contains(header.getValue())) {
                     System.out.print("Header not present");
                     break;
+                }else{
+                    System.out.println("Headers are present");
                 }
             }
-        }else{
+        } else if (operation == operation.OR) {
             for (Header header : processorContext.getExpectedResponseContext().getHeaders()) {
                 List<String> receivedHeaderValues = receivedHeaders.get(header.getName());
 
                 if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues.contains(header.getValue())) {
-                   ;
-                }else{
+                    ;
+                } else {
                     value = true;
                 }
             }
-            if (value){
+            if (value) {
                 System.out.println("Headers are present");
-            }else {
+            } else {
                 System.out.println("Non of the Headers present");
+            }
+        } else {
+            boolean match = false;
+            for (Map.Entry<String, List<String>> header : receivedHeaders.entrySet()){
+
+                List<String> value1 = header.getValue();
+                for (String val : value1){
+                    Header header1 = new Header(header.getKey(),val);
+                    if(processorContext.getExpectedResponseContext().getHeaders().get(0).getValue().equals(header1.getValue())
+                            && processorContext.getExpectedResponseContext().getHeaders().get(0).getName().equals(header1.getName())){
+                        match = true;
+                    }
+                }
+            }
+            if (match){
+                System.out.println("Header Present");
+            }else{
+                System.out.println("Header is not present");
             }
         }
     }
-
-
-
 }

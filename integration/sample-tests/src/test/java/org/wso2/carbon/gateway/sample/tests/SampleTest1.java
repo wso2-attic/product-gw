@@ -76,7 +76,7 @@ public class SampleTest1 {
 
         Assert.assertEquals(HttpResponseStatus.OK, response.getReceivedResponseContext().getResponseStatus(),
                             "Expected response code not found");
-        Assert.assertEquals("TestRequest", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals("TestResponse1", response.getReceivedResponseContext().getResponseBody(),
                             "Expected response not found");
         Assert.assertEquals("value1", response.getReceivedResponseContext().getHeaderParameters().get("Header1").get(0),
                             "Expected response header not found");

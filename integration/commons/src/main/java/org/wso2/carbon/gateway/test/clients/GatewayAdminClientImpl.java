@@ -39,9 +39,7 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
     }
 
     public void startGateway() throws Exception{
-        carbonZip = "/home/dilshank/product/product-gw/product/target/wso2gw-1.0.0-SNAPSHOT.zip";
-        //carbonZip = System.getProperty("wso2gw-1.0.0-SNAPSHOT.zip");
-        // System.setProperty("JAVA_HOME","/home/dilshank/installs/java/jdk1.8.0_65");
+        carbonZip = System.getProperty("carbon.zip");
         carbonHome = serverManager.setUpCarbonHome(carbonZip);
         if(carbonHome != null) {
             serverManager.startServerUsingCarbonHome(carbonHome);
