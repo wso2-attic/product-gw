@@ -68,8 +68,8 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
         try {
             File file = new File(fullPath);
-            String dstFileName = carbonHome + "/repository/conf/camel/"+FileManipulator.getFileName(file);
-            FileManipulator.backupFile(new File(dstFileName));
+            String dstFileName = carbonHome + "/conf/camel/"+FileManipulator.getFileName(file);
+            //FileManipulator.backupFile(new File(dstFileName));
             FileManipulator.copyFileToDir(file, dstFileName);
             artifacts.add(dstFileName);
             log.info("Successfully Deployed");
@@ -80,7 +80,8 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
 
     public void cleanArtifacts() {
         for(String artifact : artifacts) {
-            FileManipulator.restoreBackup(new File(artifact));
+           // FileManipulator.restoreBackup(new File(artifact));
+            FileManipulator.removeFile(new File(artifact));
         }
         log.info("Restored Successfully");
     }

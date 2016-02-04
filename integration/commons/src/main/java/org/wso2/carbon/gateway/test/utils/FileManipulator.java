@@ -187,6 +187,12 @@ public class FileManipulator {
         }
     }
 
+    public static void removeFile(File file) {
+        if (file.exists()) {
+            FileManipulator.deleteFile(file);
+        }
+    }
+
     public static String getFileName(File file) {
         return file.getName();
     }
