@@ -33,17 +33,17 @@
     <netty.version>4.0.30.Final</netty.version>
     <slf4j.version>1.7.5</slf4j.version>
     <alpn-boot-version>8.1.4.v20150727</alpn-boot-version>
+    <testng.version>6.9.8</testng.version>
   </properties>
 
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-common</artifactId>
@@ -89,8 +89,6 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-
-
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
@@ -102,11 +100,5 @@
       <artifactId>alpn-api</artifactId>
       <version>1.0.0</version>
     </dependency>
-
-
-
-
-
-
   </dependencies>
 </project>

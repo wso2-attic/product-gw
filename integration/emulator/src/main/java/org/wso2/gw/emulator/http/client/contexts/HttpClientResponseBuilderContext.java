@@ -21,6 +21,7 @@
 package org.wso2.gw.emulator.http.client.contexts;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
 import org.wso2.gw.emulator.util.FileRead;
 import org.wso2.gw.emulator.http.params.Cookie;
@@ -39,6 +40,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
     private List<Cookie> cookies;
     private String body;
     private boolean isIgnored;
+    private Operation operations;
 
     private static HttpClientResponseBuilderContext getInstance() {
         clientResponseBuilderContext = new HttpClientResponseBuilderContext();
@@ -62,7 +64,8 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         return this;
     }
 
-    public HttpClientResponseBuilderContext withHeaders(Header... headers) {
+    public HttpClientResponseBuilderContext withHeaders(Operation operation, Header... headers) {
+        this.operations = operation;
         if (this.headers == null) {
             this.headers = new ArrayList<Header>();
         }
@@ -131,4 +134,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         return body;
     }
 
+    public Operation getOperations() {
+        return operations;
+    }
 }

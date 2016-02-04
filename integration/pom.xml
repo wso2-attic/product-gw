@@ -57,8 +57,8 @@
 
 
     <modules>
-        <module>commons</module>
         <module>emulator</module>
+        <module>commons</module>
         <module>sample-tests</module>
     </modules>
 </project>

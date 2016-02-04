@@ -17,6 +17,7 @@ package org.wso2.carbon.gateway.sample.tests;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,17 +27,19 @@ import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
+
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
 public class SampleTest2 {
-    private static GatewayAdminClient gwClient;
-    private static HttpServerOperationBuilderContext emulator;
+    private GatewayAdminClient gwClient;
+    private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
         gwClient.deployArtifact("artifacts/camel-context.xml");
@@ -46,38 +49,64 @@ public class SampleTest2 {
 
     @Test
     public void test1() {
-        Emulator.getHttpEmulator()
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
                                .host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request()
                               .withPath("/default").withMethod(HttpMethod.GET).withHeader
                                 ("routeId", "r1"))
-                .then(HttpClientResponseBuilderContext.response().withBody("User1"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
+
+        Assert.assertEquals(HttpResponseStatus.OK, response.getReceivedResponseContext().getResponseStatus(),
+                            "Expected response code not found");
+        Assert.assertEquals("User1", response.getReceivedResponseContext().getResponseBody(),
+                            "Expected response not found");
     }
 
     @Test
-    public void test2() throws Exception{
-        Emulator.getHttpEmulator()
+    public void test2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
                                .host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request()
                               .withPath("/default").withMethod(HttpMethod.GET).withHeader
-                                ("routeId", "r1"))
-                .then(HttpClientResponseBuilderContext.response().withBody("User1"))
+                                ("routeId", "r2"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
+
+        Assert.assertEquals(HttpResponseStatus.OK, response.getReceivedResponseContext().getResponseStatus(),
+                            "Expected response code not found");
+        Assert.assertEquals("User2", response.getReceivedResponseContext().getResponseBody(),
+                            "Expected response not found");
+    }
+
+    @Test
+    public void test3() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
+                .client()
+                .given(HttpClientConfigBuilderContext.configure()
+                               .host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request()
+                              .withPath("/default1").withMethod(HttpMethod.GET).withHeader
+                                ("routeId", "r2"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
+
+        Assert.assertEquals(HttpResponseStatus.NOT_FOUND, response.getReceivedResponseContext().getResponseStatus(),
+                            "Expected response code not found");
     }
 
     @AfterClass(alwaysRun = true)
-    public static void after() throws Exception {
+    public void cleanup() throws Exception {
         gwClient.stopGateway();
         emulator.stop();
         gwClient.cleanArtifacts();
     }
 
-    private static HttpServerOperationBuilderContext startHttpEmulator() {
+    private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator()
                 .server()
                 .given(configure()
@@ -100,24 +129,4 @@ public class SampleTest2 {
                               .withStatusCode(HttpResponseStatus.OK))
                 .operation().start();
     }
-
-    private static HttpServerOperationBuilderContext startHttpEmulator1() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                               .host("127.0.0.1").port(6065).context("/user").readingDelay(1000).writingDelay(1000)
-                )
-                .when(request()
-                              .withMethod(HttpMethod.GET))
-                .then(response()
-                              .withBody("Test Response1")
-                              .withStatusCode(HttpResponseStatus.OK))
-                .when(request()
-                              .withMethod(HttpMethod.POST).withBody("test"))
-                .then(response()
-                              .withBody("Test Response2")
-                              .withStatusCode(HttpResponseStatus.OK))
-                .operation().start();
-    }
-
 }

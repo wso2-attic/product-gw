@@ -26,20 +26,16 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractConfigurationBuilderContext;
 import java.io.File;
 
 public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilderContext {
-
     private static HttpClientConfigBuilderContext clientConfigBuilderContext;
     private String host;
     private int port;
     private int readingDelay;
     private Protocol protocol;
-
-    //////////
     private File keyStore;
     private String keyStorePass;
     private String certPass;
     private File trustStore;
     private String trustStorePass;
-    //////////
 
     public HttpClientConfigBuilderContext keyStore(File keyStore){
         this.keyStore = keyStore;
@@ -87,10 +83,6 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
         return trustStorePass;
     }
 
-
-
-
-
     private static HttpClientConfigBuilderContext getInstance() {
         clientConfigBuilderContext = new HttpClientConfigBuilderContext();
         return clientConfigBuilderContext;
@@ -116,8 +108,7 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
         return protocol;
     }
 
-   // public HttpClientConfigBuilderContext readingDelay(int readingDelay){
-    public HttpClientConfigBuilderContext WithReadingDelay(int readingDelay){
+    public HttpClientConfigBuilderContext withReadingDelay(int readingDelay){
         this.readingDelay = readingDelay;
         return this;
     }
