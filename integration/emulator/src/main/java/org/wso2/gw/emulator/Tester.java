@@ -33,6 +33,7 @@ import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.params.QueryParameter;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
@@ -45,13 +46,13 @@ public class Tester {
     public static void main(String[] args) throws Exception {
         HttpServerOperationBuilderContext serverOperationBuilderContext = startHttpEmulator();
         Thread.sleep(1000);
-        //testProducer1();
-        //testProducer2();
-        testProducer3();
-        //testProducer4();
-        //testProducer5();
+        //testProducer3();
+        //testProducer10(); //asert header AND
+        //testProducer11(); //asert header OR
+        testProducer12(); //one header one query
+        //testProducer13(); //body, headrs, queries in response body
+        //testProducer14(); //read from files
         serverOperationBuilderContext.stop();
-
     }
 
     private static HttpServerOperationBuilderContext startHttpEmulator() throws FileNotFoundException {
@@ -64,34 +65,124 @@ public class Tester {
                                 .withReadingDelay(1000)
                                 .withWritingDelay(1000)
                                 .randomConnectionClose(false)
-                        //.withLogicDelay(1000)
-                        //.withCustomProcessor(true)
                 )
-                //test producer1
-                /*.when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest")
-                        .withHeader("Header1", "value1")
-                        .withPath("/wso2")
-                )
-                .then(response()
-                        .withBody("TestResponse")
-                        .withHeader("Header1", "value1")
-                        .withStatusCode(HttpResponseStatus.OK)
-                )
-               ////////////////////////////////test producer2
+        /*////////////////////////test producer 10  ---- with Header OR
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withBody("TestRequest1")
-                        .withHeader("Header1","value1")
                         .withPath("/wso2")
+                        .withHeaders(
+                                Operation.OR,
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                ).then(response()
+                        .withBody("TestResponse1")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                        .withStatusCode(HttpResponseStatus.OK)
+                )
+
+        ////////////////////////test producer 10  ---- with Header AND
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest1")
+                        .withPath("/wso2")
+                        .withHeaders(
+                                Operation.AND,
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                ).then(response()
+                        .withBody("TestResponse1")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                        .withStatusCode(HttpResponseStatus.OK)
+                )
+
+        ////////////////////test producer 11  ---- with Query OR
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest1")
+                        .withPath("/wso2")
+                        .withQueryParameters(
+                                QueryParameterOperation.OR,
+                                new QueryParameter("Query1", "value1"),
+                                new QueryParameter("Query2", "value2")
+                        )
+                )
+                .then(response()
+                        .withBody("TestResponse1")
+                        .withStatusCode(HttpResponseStatus.OK)
+                )
+
+        /////////////////////test producer 11  ---- with Query AND
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest1")
+                        .withPath("/wso2")
+                        .withQueryParameters(
+                                QueryParameterOperation.AND,
+                                new QueryParameter("Query1", "value1"),
+                                new QueryParameter("Query2", "value2")
+                        )
+                )
+                .then(response()
+                        .withBody("TestResponse1")
+                        .withStatusCode(HttpResponseStatus.OK)
+                )
+*/
+        ////////////////////test producer 12 with one header and query parameter
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest1")
+                        .withPath("/wso2")
+                        .withHeader("Header1", "value1")
+                        .withQueryParameter("Query1", "value1")
                 )
                 .then(response()
                         .withBody("TestResponse1")
                         .withHeader("Header1", "value1")
+                        .withStatusCode(HttpResponseStatus.OK))
+
+/*
+        /////////////////////test producer 13 body, header, query in Response body
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest1")
+                        .withPath("/wso2")
+                        .withHeaders(
+                                Operation.OR,
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                        .withQueryParameters(
+                                QueryParameterOperation.OR,
+                                new QueryParameter("Query1", "value1"),
+                                new QueryParameter("Query2", "value2")
+                        )
+                )
+                .then(response()
+                        .withBody("This is response for @{body} with @{header.Header1} @{query.Query1}")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                        .withStatusCode(HttpResponseStatus.OK))
+
+        //////////////////test producer 14 -- read from files
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withBody("TestRequest2")
+                        .withPath("/wso2")
+                        .withHeader("Header1", "value1")
+                        .withQueryParameter("Query1", "value1")
+                )
+                .then(response()
+                        .withBody("TestResponse2")
+                        //.withHeader("Header1", "value1")
                         .withStatusCode(HttpResponseStatus.OK)
-                )*/
-                //test producer3
+                )
+
+       /////////////////test producer3
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withBody("TestRequest1")
@@ -114,71 +205,21 @@ public class Tester {
                                 new Header("Header2", "value2"))
                         .withStatusCode(HttpResponseStatus.OK))
 
-                ///////////////////////////////
+                //test producer 5
                 .when(request()
-                        .withMethod(HttpMethod.POST).withBody("test")
-                )
-                .then(response()
-                        .withBody("Test Response2").withStatusCode(HttpResponseStatus.OK))
-               /* .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest1")
-                        .withHeaders(
-                                Operation.AND,
-                                new Header("Header1", "value1"),
-                                new Header("Header2", "value2"))
-                        .withPath("")
-
-                )
-                .then(response()
-                        .withBody("TestResponse1")
-                        .withHeaders(
-                                new Header("Header1", "value1"),
-                                new Header("Header2", "value2"))
-                        .withStatusCode(HttpResponseStatus.OK))
-
-                ////////////////////////////////
-                .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest111")
-                        .withHeaders(
-                                Operation.AND,
-                                new Header("header1", "value1"),
-                                new Header("header2", "value2"))
-                        .withQueryParameter("query1", "value1")
-                )
-                .then(response()
-                        .withBody("This is response for @{body} with @{header.name2} @{header.name2}")
-                        .withHeaders(
-                                new Header("header1", "value1"),
-                                new Header("header2", "value2"))
-                        .withStatusCode(HttpResponseStatus.OK))
-                /////////////////////////////////////
-                .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest1")
-                        .withHeader("Header1", "value1")
-                        .withQueryParameter("Query1", "value1")
-                )
-                .then(response()
-                        .withBody("TestResponse1")
-                        .withHeader("Header1","value1")
-                        .withStatusCode(HttpResponseStatus.OK)
-                )
-               */ //test producer 5
-                /*.when(request()
                         .withMethod(HttpMethod.GET))
-                .then(response().withBody("Test Response1").withStatusCode(HttpResponseStatus.OK))
-*/
-                /*.when(request()
-                        //.withPath("/wso2")
+                .then(response()
+                        .withBody("Test Response1")
+                        .withStatusCode(HttpResponseStatus.OK))
+
+                .when(request()
                         .withMethod(HttpMethod.POST)
                         .withBody("test"))
                 .then(response()
                         .withBody("Test Response2")
                         .withStatusCode(HttpResponseStatus.OK))
-
-                */.operation().start();
+*/
+                .operation().start();
     }
 
     private static HttpClientResponseProcessorContext testProducer3() throws FileNotFoundException {
@@ -201,11 +242,39 @@ public class Tester {
                                 new QueryParameter("Query1", "value1"),
                                 new QueryParameter("Query2", "value2")
                                 )
-
-                        //.withQueryParameter("q1","q1")
                 )
                 .then(HttpClientResponseBuilderContext.response()
                         .withBody("This is response for TestRequest1 with value1 value1")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                )
+                .operation().send();
+    }
+
+
+    //assert Header AND operation
+    private static HttpClientResponseProcessorContext testProducer10() throws FileNotFoundException {
+        return Emulator.getHttpEmulator()
+                .client()
+                .given(HttpClientConfigBuilderContext.configure()
+                        .host("127.0.0.1")
+                        .port(6065)
+                        .WithReadingDelay(1000)
+                )
+                .when(HttpClientRequestBuilderContext.request()
+                                .withPath("/user/wso2")
+                                .withMethod(HttpMethod.POST)
+                                .withBody("TestRequest1")
+                                .withHeaders(
+                                        Operation.AND,
+                                        new Header("Header1", "value1"),
+                                        new Header("Header2", "value2")
+                                )
+
+                )
+                .then(HttpClientResponseBuilderContext.response()
+                        .withBody("TestResponse1")
                         .withHeaders(
                                 new Header("Header1", "value1"),
                                 new Header("Header2", "value3"))
@@ -213,21 +282,8 @@ public class Tester {
                 .operation().send();
     }
 
-    /*private static HttpClientResponseProcessorContext testProducer() {
-        return Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                                .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/user").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().withBody("Test Response1"))
-                .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/user").withMethod(HttpMethod.POST).withBody("test"))
-                .then(HttpClientResponseBuilderContext.response().withBody("Test Response2").assertionIgnore())
-                .operation().send();
-    }*/
-
-    private static HttpClientResponseProcessorContext testProducer1() throws FileNotFoundException {
+    //assert Header OR operation
+    private static HttpClientResponseProcessorContext testProducer11() throws FileNotFoundException {
         return Emulator.getHttpEmulator()
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
@@ -236,73 +292,39 @@ public class Tester {
                         .WithReadingDelay(1000)
                 )
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/user/wso2")
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest")
-                        .withHeader("Header1", "value1")
-
-                )
-                .then(HttpClientResponseBuilderContext.response()
-                        .withBody("TestResponse")
-                        .withHeader("Header1", "value1")
-
-                )
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/user/wso2")
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest1")
-                        .withHeader("Header1", "value1")
-
-                )
-                .then(HttpClientResponseBuilderContext.response()
-                        .withBody("TestResponse1")
-                        .withHeader("Header1", "value1")
-                        .assertionIgnore()
-
-                )
-                .operation().send();
-    }
-
-
-
-    private static HttpClientResponseProcessorContext testProducer2() throws FileNotFoundException {
-        return Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1")
-                        .port(6065)
-                        .WithReadingDelay(1000)
-                )
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/user/wso2")
-                        .withMethod(HttpMethod.POST)
-                        .withBody("TestRequest1")
-                        .withHeader("Header1", "value1")
-                )
-                .then(HttpClientResponseBuilderContext.response()
-                        .withBody("TestResponse1")
-                        .withHeader("Header1", "value1")
-                )
-                .operation().send();
-    }
-
-
-
-    private static HttpClientResponseProcessorContext testProducer4() throws FileNotFoundException {
-        return Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1")
-                        .port(6065)
-                        .WithReadingDelay(1000)
-                )
-                .when(HttpClientRequestBuilderContext.request()
-                                .withPath("*")
+                                .withPath("/user/wso2")
                                 .withMethod(HttpMethod.POST)
                                 .withBody("TestRequest1")
-                                .withHeader("Heder1","value1")
-                                .withQueryParameter("q1","q1")
+                                .withHeaders(
+                                        Operation.OR,
+                                        new Header("Header1", "value1"),
+                                        new Header("Header2", "value2")
+                                )
+                )
+                .then(HttpClientResponseBuilderContext.response()
+                        .withBody("TestResponse1")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value3"))
+                )
+                .operation().send();
+    }
+
+    //One Header parameter and a query parameter
+    private static HttpClientResponseProcessorContext testProducer12() throws FileNotFoundException {
+        return Emulator.getHttpEmulator()
+                .client()
+                .given(HttpClientConfigBuilderContext.configure()
+                        .host("127.0.0.1")
+                        .port(6065)
+                        .WithReadingDelay(1000)
+                )
+                .when(HttpClientRequestBuilderContext.request()
+                                .withPath("/user/wso2")
+                                .withMethod(HttpMethod.POST)
+                                .withBody("TestRequest1")
+                                .withHeader("Header1", "value1")
+                                .withQueryParameter("Query1", "value1")
                 )
                 .then(HttpClientResponseBuilderContext.response()
                         .withBody("TestResponse1")
@@ -311,29 +333,87 @@ public class Tester {
                 .operation().send();
     }
 
+    //Header, Query, Body in Response
+    private static HttpClientResponseProcessorContext testProducer13() throws FileNotFoundException {
+        return Emulator.getHttpEmulator()
+                .client()
+                .given(HttpClientConfigBuilderContext.configure()
+                        .host("127.0.0.1")
+                        .port(6065)
+                        .WithReadingDelay(1000)
+                )
+                .when(HttpClientRequestBuilderContext.request()
+                                .withPath("/user/wso2")
+                                .withMethod(HttpMethod.POST)
+                                .withBody("TestRequest1")
+                                .withHeaders(
+                                        Operation.OR,
+                                        new Header("Header1", "value1"),
+                                        new Header("Header2", "value2")
+                                ).withQueryParameters(
+                                new QueryParameter("Query1", "value1"),
+                                new QueryParameter("Query2", "value2")
+                                )
+
+                )
+                .then(HttpClientResponseBuilderContext.response()
+                        .withBody("This is response for TestRequest1 with value1 value1")
+                        .withHeaders(
+                                new Header("Header1", "value1"),
+                                new Header("Header2", "value2"))
+                )
+                .operation().send();
+    }
+    //reading body from a file
+    private static HttpClientResponseProcessorContext testProducer14() throws FileNotFoundException {
+        return Emulator.getHttpEmulator()
+                .client()
+                .given(HttpClientConfigBuilderContext.configure()
+                        .host("127.0.0.1")
+                        .port(6065)
+                        .WithReadingDelay(1000)
+                )
+                .when(HttpClientRequestBuilderContext.request()
+                        .withPath("/user/wso2")
+                        .withMethod(HttpMethod.POST)
+                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/clientRequest.txt"))
+                        .withHeader("Header1", "value1")
+                        .withQueryParameter("Query1", "value1")
+                )
+                .then(HttpClientResponseBuilderContext.response()
+                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/clientResponse.txt"))
+                        //.withHeader("Header1", "value")
+                )
+                .operation().send();
+    }
+
+
+    //context path
     private static HttpClientResponseProcessorContext testProducer5() throws FileNotFoundException {
         return Emulator.getHttpEmulator()
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
-                                .host("127.0.0.1")
-                                .port(6065)
-                        //.withReadingDelay(1000)
+                        .host("127.0.0.1")
+                        .port(6065)
                 )
-               /* .when(HttpClientRequestBuilderContext.request()
+
+                .when(HttpClientRequestBuilderContext.request()
                         .withPath("/user")
                         .withMethod(HttpMethod.GET)
                 )
                 .then(HttpClientResponseBuilderContext.response()
                         .withBody("Test Response1")
-                )*/
+                )
+
                 .when(HttpClientRequestBuilderContext.request().withPath("")
-                        //.withPath("/user/wso2")
+                        .withPath("/user/wso2")
                         .withMethod(HttpMethod.POST)
                         .withBody("test")
                 )
                 .then(HttpClientResponseBuilderContext.response()
-                        .withBody("Test Response2")
+                        .withBody("Test Response1")
                 )
                 .operation().send();
     }
+
 }
