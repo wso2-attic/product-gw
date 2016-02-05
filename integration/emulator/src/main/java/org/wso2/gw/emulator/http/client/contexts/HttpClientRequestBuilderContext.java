@@ -41,7 +41,6 @@ public class HttpClientRequestBuilderContext extends AbstractRequestBuilderConte
     private List<Header> headers;
     private List<QueryParameter> queryParameters;
     private List<Cookie> cookies;
-    private Operation operations;
 
     private static HttpClientRequestBuilderContext getInstance() {
         clientRequest = new HttpClientRequestBuilderContext();
@@ -88,10 +87,7 @@ public class HttpClientRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-    public HttpClientRequestBuilderContext withHeaders(Operation operation, Header... headerList){
-
-
-        this.operations = operation;
+    public HttpClientRequestBuilderContext withHeaders(Header... headerList){
         if(headers == null) {
             headers = new ArrayList<Header>();
         }
@@ -170,7 +166,4 @@ public class HttpClientRequestBuilderContext extends AbstractRequestBuilderConte
         return cookies;
     }
 
-    public Operation getOperations() {
-        return operations;
-    }
 }

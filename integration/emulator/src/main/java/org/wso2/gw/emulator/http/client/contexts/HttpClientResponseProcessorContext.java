@@ -28,7 +28,7 @@ public class HttpClientResponseProcessorContext extends HttpClientProcessorConte
     private HttpResponseContext receivedResponseContext;
     private HttpResponse receivedResponse;
 
-    public HttpClientResponseBuilderContext getExpectedResponse() {
+    public HttpClientResponseBuilderContext getExpectedResponseContext() {
         return expectedResponse;
     }
 

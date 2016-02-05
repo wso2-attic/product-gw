@@ -50,21 +50,15 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private HttpServerInformationContext serverInformationContext;
     private HttpServerProcessorContext httpProcessorContext;
     private HttpRequestResponseMatchingProcessor requestResponseMatchingProcessor;
-    private ScheduledExecutorService scheduledReadingExecutorService, scheduledWritingExecutorService, scheduledLogicExecutorService;
+    private ScheduledExecutorService scheduledReadingExecutorService, scheduledLogicExecutorService;
     private int index, corePoolSize = 10;
-    private HttpServerOperationBuilderContext serverOperationBuilderContext;
-/////////////////////////
-    private HttpRequest request;
     private int DELAY = 0;
-    private String responseContentType = "text/plain; charset=UTF-8";
     private MockServerThread[] handlers;
     private static ExecutorService executorService = Executors.newFixedThreadPool(160);
-/////////////////////////
 
     public HttpServerHandler(HttpServerInformationContext serverInformationContext) {
         this.serverInformationContext = serverInformationContext;
         scheduledReadingExecutorService = Executors.newScheduledThreadPool(corePoolSize);
-        scheduledWritingExecutorService = Executors.newScheduledThreadPool(corePoolSize);
         scheduledLogicExecutorService = Executors.newScheduledThreadPool(corePoolSize);
     }
 
@@ -84,9 +78,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             this.httpProcessorContext.setServerInformationContext(serverInformationContext);
 
             HttpRequest httpRequest = (HttpRequest) msg;
-            ////////
-            this.request = httpRequest;
-            ////////
             this.httpProcessorContext.setHttpRequest(httpRequest);
 
             if (HttpHeaders.is100ContinueExpected(httpRequest)) {
@@ -234,14 +225,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             index = (rn.nextInt(100) + 1) % 6;
         } else
             index = -1;
-    }
-
-    public void setDelay(int delay) {
-        this.DELAY = delay;
-    }
-
-    public void setResponseContentType(String responseContentType) {
-        this.responseContentType = responseContentType;
     }
 
     public MockServerThread[] getHandlers() {

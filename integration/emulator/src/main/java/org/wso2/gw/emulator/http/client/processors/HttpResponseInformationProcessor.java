@@ -42,6 +42,7 @@ public class HttpResponseInformationProcessor extends AbstractClientProcessor<Ht
         processorContext.setExpectedResponse(processorContext.getClientInformationContext().getExpectedResponse());
         populateResponseHeaders(processorContext);
         populateResponseCookies(processorContext);
+        populateResponseStatusCode(processorContext);
     }
 
     private void populateResponseHeaders(HttpClientResponseProcessorContext processorContext) {
@@ -66,6 +67,10 @@ public class HttpResponseInformationProcessor extends AbstractClientProcessor<Ht
             }
         }
 */
+    }
+
+    private void populateResponseStatusCode(HttpClientResponseProcessorContext processorContext) {
+        processorContext.getReceivedResponseContext().setResponseStatus(processorContext.getReceivedResponse().getStatus());
     }
 
     public void appendDecoderResult(HttpResponseContext responseContext, HttpObject httpObject, ByteBuf content) {
