@@ -135,9 +135,8 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     }
 
     public boolean isMatch(HttpRequestContext requestContext) {
-        
         if (isContextMatch(requestContext) && isHttpMethodMatch(requestContext) && isQueryParameterMatch(requestContext) && isRequestContentMatch(requestContext) &&
-                isHeadersMatch(requestContext)  ) {//
+                isHeadersMatch(requestContext)) {
             return true;
         }
         return false;
@@ -185,37 +184,28 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         Map<String, List<String>> headerParameters = requestContext.getHeaderParameters();
 
         if (operation == Operation.OR) {
+            if((headerParameters == null || headerParameters.isEmpty()) && (headers != null || !headers.isEmpty())) {
+                return false;
+            }
             for (Header header : headers) {
-                if (headerParameters.get(header.getName()) == null){
-                    return false;
-                }
                 List<String> headerValues = headerParameters.get(header.getName());
                 String value = header.getValue();
-
-                if (headerValues.contains(value)) {
+                if (headerValues != null && headerValues.contains(value)) {
                     return true;
                 }
             }
         }else {
-            List<String> headerValues = null;
-            String value = null;
-
             for (Header header : headers) {
-
-                if (headerParameters.get(header.getName()) != null) {
-                    headerValues = headerParameters.get(header.getName());
-                    value = header.getValue();
-                } else {
+                if(headerParameters.get(header.getName()) == null) {
                     return false;
                 }
 
-                if (!headerValues.contains(value)) {
+                if (!headerParameters.get(header.getName()).contains(header.getValue())) {
                     return false;
                 }
             }
             return true;
         }
-
         return false;
     }
 

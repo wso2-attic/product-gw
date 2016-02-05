@@ -245,7 +245,7 @@
     <modules>
         <module>carbon-gw/components/org.wso2.carbon.gateway</module>
         <module>carbon-gw/features/org.wso2.carbon.gateway.feature</module>
-        <module>integration</module>
         <module>product</module>
+        <module>integration</module>
     </modules>
 </project>
