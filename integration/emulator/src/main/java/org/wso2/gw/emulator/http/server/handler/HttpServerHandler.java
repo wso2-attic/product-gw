@@ -177,20 +177,23 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void readingDelay(int delay,ChannelHandlerContext ctx) {
-        ScheduledFuture scheduledFuture =
-                scheduledReadingExecutorService.schedule(new Callable() {
-                    public Object call() throws Exception {
-                        return "Reading";
-                    }
-                }, delay, TimeUnit.MILLISECONDS);
-        try {
-            log.info("result = " + scheduledFuture.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (delay != 0) {
+            ScheduledFuture scheduledFuture =
+                    scheduledReadingExecutorService.schedule(new Callable() {
+                        public Object call() throws Exception {
+                            return "Reading";
+                        }
+                    }, delay, TimeUnit.MILLISECONDS);
+            try {
+                log.info("result = " + scheduledFuture.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            scheduledReadingExecutorService.shutdown();
         }
-        scheduledReadingExecutorService.shutdown();
     }
 
     private void businessLogicDelay(int delay, ChannelHandlerContext ctx) {
