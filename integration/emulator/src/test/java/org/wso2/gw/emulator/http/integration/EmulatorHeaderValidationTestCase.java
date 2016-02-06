@@ -17,6 +17,7 @@
  *  * under the License.
  *
  */
+
 package org.wso2.gw.emulator.http.integration;
 
 import io.netty.handler.codec.http.HttpMethod;
@@ -56,6 +57,7 @@ public class EmulatorHeaderValidationTestCase {
                               .withPath("/users/user1").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
+
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                             "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User1",
@@ -267,3 +269,4 @@ public class EmulatorHeaderValidationTestCase {
                 .operation().start();
     }
 }
+
