@@ -215,17 +215,23 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         }
 
         Map<String, List<String>> queryParametersMap = requestContext.getQueryParameters();
-
-        if (operation == Operation.OR) {
+        boolean x = false;
+        if (queryOperation == QueryParameterOperation.OR) {
             for (QueryParameter query : queryParameters) {
                 List<String> queryParameterValues = queryParametersMap.get(query.getName());
                 String value = query.getValue();
                 if (queryParameterValues == null) {
-                    return false;
+                    //continue;
                 }
-                if (queryParameterValues.contains(value)) {
-                    return true;
+                else if (queryParameterValues.contains(value)) {
+                    x = true;
+                    break;
                 }
+            }
+            if (x == true){
+                return true;
+            }else{
+                return false;
             }
         }else {
             List<String> queryParameterValues = null;
@@ -258,7 +264,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
                 return true;
             }
         }*/
-        return false;
+
     }
 
     private String buildRegex(String context, String path) {
