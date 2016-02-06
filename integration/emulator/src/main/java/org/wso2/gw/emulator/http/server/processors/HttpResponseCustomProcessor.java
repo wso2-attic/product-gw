@@ -20,14 +20,20 @@
 
 package org.wso2.gw.emulator.http.server.processors;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.HttpContent;
 import org.apache.log4j.Logger;
+import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 
 public class HttpResponseCustomProcessor  {
     private static Logger log = Logger.getLogger("InfoLogging");
 
     public HttpServerProcessorContext process(HttpServerProcessorContext responseContext) {
+
         log.info("server response custom processor");
+        responseContext.getFinalResponse().headers().add("Header4","value4");
         return responseContext;
     }
 }

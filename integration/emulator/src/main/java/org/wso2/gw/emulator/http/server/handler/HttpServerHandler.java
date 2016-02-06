@@ -119,13 +119,8 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             }
 
 
-            //////////////////
-            //
-            // methanadi balanna backend is enableda kiyala
-
             int queues = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getQueues();
             DELAY = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getDelay();
-
 
             if (DELAY != 0 && queues > 0) {
                 try {
@@ -146,7 +141,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                     System.out.println("CAUGHT ################ " + throwable);
                 }
             }
-            //////////////////
+
 
             else {
                 FullHttpResponse response = httpProcessorContext.getFinalResponse();

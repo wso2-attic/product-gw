@@ -28,6 +28,7 @@ public class HttpRequestCustomProcessor {
 
     public HttpServerProcessorContext process(HttpServerProcessorContext requestContext) {
         log.info("server request custom processor");
+        requestContext.getHttpRequestContext().setUri("/users/user2");
         return requestContext;
     }
 }
