@@ -23,7 +23,21 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19</version>
+        <configuration>
+          <systemProperties>
+            <framework.resource.location>
+              ${basedir}/src/test/resources/
+            </framework.resource.location>
+          </systemProperties>
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <name>emulator</name>
@@ -35,7 +49,6 @@
     <alpn-boot-version>8.1.4.v20150727</alpn-boot-version>
     <testng.version>6.9.8</testng.version>
   </properties>
-
 
   <dependencies>
     <dependency>
