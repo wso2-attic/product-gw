@@ -39,7 +39,6 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     private HttpClientResponseProcessorContext processorContext;
     private HttpClientInformationContext clientInformationContext;
     private ScheduledExecutorService scheduledReadingExecutorService;
-    private boolean isReadComplete = false;
     private int corePoolSize = 10;
 
     public HttpClientHandler(HttpClientInformationContext clientInformationContext) {
@@ -57,7 +56,6 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
             HttpResponse response = (HttpResponse) msg;
             processorContext.setReceivedResponse(response);
             responseInformationProcessor.process(processorContext);
-            isReadComplete = false;
         }
 
         if (msg instanceof HttpContent) {
@@ -69,22 +67,17 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
             }
         }
         if (msg instanceof LastHttpContent) {
-            isReadComplete = true;
+            if (responseAssertProcessor != null) {
+                this.responseAssertProcessor.process(processorContext);
+                this.clientInformationContext.setReceivedResponseProcessContext(processorContext);
+            }
+            ctx.close();
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        ctx.close();
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        if (responseAssertProcessor != null && isReadComplete) {
-            this.responseAssertProcessor.process(processorContext);
-            this.clientInformationContext.setReceivedResponseProcessContext(processorContext);
-        }
         ctx.close();
     }
 
