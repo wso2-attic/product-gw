@@ -36,9 +36,8 @@ public class CustomProcessorValidationTestCase {
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
                         .host("127.0.0.1").port(6065))
-
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user1").withMethod(HttpMethod.GET))
+                              .withPath("/users/user1").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
@@ -54,9 +53,8 @@ public class CustomProcessorValidationTestCase {
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
                         .host("127.0.0.1").port(6065))
-
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user2").withMethod(HttpMethod.GET))
+                              .withPath("/users/user2").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
@@ -74,9 +72,8 @@ public class CustomProcessorValidationTestCase {
                 .client()
                 .given(HttpClientConfigBuilderContext.configure()
                         .host("127.0.0.1").port(6065))
-
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user1").withMethod(HttpMethod.GET))
+                              .withPath("/users/user1").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
@@ -115,7 +112,7 @@ public class CustomProcessorValidationTestCase {
         return Emulator.getHttpEmulator()
                 .server()
                 .given(configure()
-                        .host("127.0.0.1").port(6065).context("/users").withCustomProcessor(true))
+                        .host("127.0.0.1").port(6065).context("/users").withCustomRequestProcessor(new CustomRequestProcessor()))
 
                 .when(request()
                         .withMethod(HttpMethod.GET).withPath("/user1"))
@@ -134,12 +131,9 @@ public class CustomProcessorValidationTestCase {
                 .when(request()
                         .withMethod(HttpMethod.GET).withPath("user4"))
                 .then(response()
-                        .withBody("User4")
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header4", "value4")))
-
-
-
+                              .withBody("User4")
+                              .withStatusCode(HttpResponseStatus.OK)
+                              .withHeaders(new Header("Header4", "value4")))
                 .operation().start();
     }
 }

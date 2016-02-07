@@ -44,7 +44,6 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
 
     @Override
     public void process(HttpClientRequestProcessorContext processorContext) {
-
         HttpClientConfigBuilderContext clientConfigBuilderContext = processorContext.getClientInformationContext()
                 .getClientConfigBuilderContext();
         String uri = getURI(clientConfigBuilderContext.getHost(), clientConfigBuilderContext.getPort(),
@@ -147,8 +146,6 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
         String path = requestBuilderContext.getPath();
         String uri = host + ":" + port;
 
-
-
         if (path == null){
             uri = httpSchema + uri + "/";
             return uri;
@@ -165,5 +162,4 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
         }
         return uri;
     }
-
 }

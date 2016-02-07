@@ -96,9 +96,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             }
 
             if (msg instanceof LastHttpContent) {
-                boolean customProcessor = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().isCustomProcessor();
-                if (customProcessor) {
-                    httpProcessorContext = new HttpRequestCustomProcessor().process(httpProcessorContext);
+                HttpRequestCustomProcessor customProcessor = httpProcessorContext.getServerInformationContext()
+                        .getServerConfigBuilderContext().getHttpRequestCustomProcessor();
+                if (customProcessor != null) {
+                    httpProcessorContext = customProcessor.process(httpProcessorContext);
                 }
                 this.requestResponseMatchingProcessor = new HttpRequestResponseMatchingProcessor();
                 this.requestResponseMatchingProcessor.process(httpProcessorContext);
@@ -113,20 +114,13 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             randomConnectionClose(ctx, this.index, 1);
             businessLogicDelay(serverInformationContext.getServerConfigBuilderContext().getLogicDelay(), ctx);
             this.httpResponseProcessor.process(httpProcessorContext);
-            boolean customProcessor = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().isCustomProcessor();
-            if (customProcessor) {
-                httpProcessorContext = new HttpResponseCustomProcessor().process(httpProcessorContext);
-            }
-
 
             int queues = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getQueues();
             DELAY = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getDelay();
 
             if (DELAY != 0 && queues > 0) {
                 try {
-
                     executorService.execute(new Runnable() {
-
                         public ChannelHandlerContext getCtx() {
                             return ctx;
                         }
@@ -145,8 +139,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
             else {
                 FullHttpResponse response = httpProcessorContext.getFinalResponse();
-
-
                 if (httpProcessorContext.getHttpRequestContext().isKeepAlive()) {
                     randomConnectionClose(ctx, this.index, 2);
                     ctx.write(response);
@@ -157,6 +149,12 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
             }
             randomConnectionClose(ctx, this.index, 3);
+
+            HttpResponseCustomProcessor customProcessor = httpProcessorContext.getServerInformationContext()
+                    .getServerConfigBuilderContext().getCustomResponseProcessor();
+            if (customProcessor != null) {
+                httpProcessorContext = customProcessor.process(httpProcessorContext);
+            }
             ctx.flush();
         }
     }
