@@ -21,11 +21,11 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import org.wso2.gw.emulator.http.server.HttpServerInitializer;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpServerInformationContext {
-
     private HttpServerConfigBuilderContext serverConfigBuilderContext;
     private Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> correlation;
     private HttpServerInitializer httpServerInitializer;
@@ -47,7 +47,8 @@ public class HttpServerInformationContext {
         return correlation;
     }
 
-    public void addCorrelation(HttpServerRequestBuilderContext httpServerRequestBuilderContext, HttpServerResponseBuilderContext httpServerResponseBuilderContext) {
+    public void addCorrelation(HttpServerRequestBuilderContext httpServerRequestBuilderContext,
+                               HttpServerResponseBuilderContext httpServerResponseBuilderContext) {
         if (correlation == null) {
             this.correlation = new HashMap<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext>();
         }

@@ -37,14 +37,15 @@ import org.wso2.gw.emulator.dsl.Protocol;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 import org.wso2.gw.emulator.http.server.contexts.MockServerThread;
+import org.wso2.gw.emulator.util.ValidationUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class HttpServerInitializer extends Thread {
-    private static boolean SSL = false;
     private static final Logger log = Logger.getLogger(HttpServerInitializer.class);
+    private static boolean SSL = false;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private HttpServerInformationContext serverInformationContext;
@@ -52,14 +53,10 @@ public class HttpServerInitializer extends Thread {
     private int workerCount;
     private Properties prop;
     private InputStream inputStream;
-/////////////
-    static int queues;
+    private static int queues;
 
-/////////////
-
-    public HttpServerInitializer(HttpServerInformationContext serverInformationContext/*, HttpServerOperationBuilderContext serverOperationBuilderContext */){
+    public HttpServerInitializer(HttpServerInformationContext serverInformationContext) {
         this.serverInformationContext = serverInformationContext;
-        //this.serverOperationBuilderContext = serverOperationBuilderContext;
         prop = new Properties();
         String propFileName = "server.properties";
         inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
@@ -67,7 +64,7 @@ public class HttpServerInitializer extends Thread {
             try {
                 prop.load(inputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Exception occurred while loading properties", e);
             }
         }
         setBossCount();
@@ -75,23 +72,23 @@ public class HttpServerInitializer extends Thread {
     }
 
     public void run() {
-
         queues = serverInformationContext.getServerConfigBuilderContext().getQueues();
         final MockServerThread[] handlers = new MockServerThread[queues];
-        if (queues > 0){
+        if (queues > 0) {
 
-            for (int i = 0; i< queues; i++) {
+            for (int i = 0; i < queues; i++) {
                 MockServerThread handler = new MockServerThread();
                 handlers[i] = handler;
                 handler.start();
             }
-        }else{
+        } else {
             queues = 0;
         }
 
         Protocol protocol = serverInformationContext.getServerConfigBuilderContext().getProtocol();
-        if (protocol == Protocol.HTTPS)
+        if (protocol == Protocol.HTTPS) {
             SSL = true;
+        }
 
         SslContext sslCtx = null;
 
@@ -119,46 +116,26 @@ public class HttpServerInitializer extends Thread {
 
         bossGroup = new NioEventLoopGroup(bossCount);
         workerGroup = new NioEventLoopGroup(workerCount);
+        ValidationUtil.validateMandatoryParameters(serverInformationContext.getServerConfigBuilderContext());
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
-                    EmulatorType.HTTP_SERVER,handlers);
+                                                                                                   EmulatorType.HTTP_SERVER, handlers);
             channelPipelineInitializer.setServerInformationContext(serverInformationContext);
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(channelPipelineInitializer);
-            if (serverInformationContext.getServerConfigBuilderContext().getHost() != null && serverInformationContext.getServerConfigBuilderContext().getPort() != 0){
-                ChannelFuture f = serverBootstrap.bind(serverInformationContext.getServerConfigBuilderContext().getHost()
-                        , serverInformationContext.getServerConfigBuilderContext().getPort()).sync();
+            ChannelFuture f = serverBootstrap.bind(serverInformationContext.getServerConfigBuilderContext().getHost()
+                    , serverInformationContext.getServerConfigBuilderContext().getPort()).sync();
             f.channel().closeFuture().sync();
 
-                }
-            else{
-                if (serverInformationContext.getServerConfigBuilderContext().getHost() == null) {
-                    try {
-                        throw new Exception("Host is not given");
-                    } catch (Exception e) {
-                        log.info(e);
-                        System.exit(0);
-                    }
-                }
-                else {
-                    try {
-                        throw new Exception("Port is not given");
-                    } catch (Exception e) {
-                        log.info(e);
-                        System.exit(0);
-                    }
-                }
-
-            }
 
         } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
+            log.error("Exception occurred while initializing Emulator server", e);
+        } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
@@ -173,25 +150,11 @@ public class HttpServerInitializer extends Thread {
         return Runtime.getRuntime().availableProcessors();
     }
 
-
     public void setBossCount() {
-        this.bossCount = Integer.parseInt(prop.getProperty("boss_count"));;
+        this.bossCount = Integer.parseInt(prop.getProperty("boss_count"));
     }
 
     public void setWorkerCount() {
-        this.workerCount = Integer.parseInt(prop.getProperty("worker_count"));;
+        this.workerCount = Integer.parseInt(prop.getProperty("worker_count"));
     }
-
-   /* public int getBossCount() throws IOException {
-
-        String boss_count = prop.getProperty("boss_count");
-        return Integer.parseInt(boss_count);
-    }
-
-    public int getWorkerCount() {
-
-        String worker_count = prop.getProperty("worker_count");
-        return Integer.parseInt(worker_count);
-    }*/
-
 }

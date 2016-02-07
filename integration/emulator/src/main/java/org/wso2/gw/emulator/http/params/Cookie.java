@@ -21,7 +21,6 @@
 package org.wso2.gw.emulator.http.params;
 
 public class Cookie {
-
     private String name;
     private String value;
 

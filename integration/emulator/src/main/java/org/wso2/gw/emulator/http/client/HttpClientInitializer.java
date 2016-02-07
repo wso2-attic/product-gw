@@ -26,19 +26,16 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
-import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.EmulatorType;
-import org.wso2.gw.emulator.dsl.Protocol;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
 import org.wso2.gw.emulator.http.client.contexts.*;
 import org.wso2.gw.emulator.http.client.processors.HttpRequestInformationProcessor;
+import org.wso2.gw.emulator.util.ValidationUtil;
 
 import java.util.Map;
 
 public class HttpClientInitializer {
-
     private HttpClientInformationContext clientInformationContext;
-    private static final Logger log = Logger.getLogger(HttpClientInitializer.class);
     private EventLoopGroup group;
     private Bootstrap bootstrap;
 
@@ -48,14 +45,11 @@ public class HttpClientInitializer {
     }
 
     public void initialize() throws Exception {
-
         SslContext sslCtx = null;
-
-
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
-                                                                                               EmulatorType.HTTP_CLIENT,null);
+                                                                                               EmulatorType.HTTP_CLIENT, null);
         channelPipelineInitializer.setClientInformationContext(clientInformationContext);
         bootstrap.group(group).channel(NioSocketChannel.class).handler(channelPipelineInitializer);
 
@@ -73,32 +67,14 @@ public class HttpClientInitializer {
 
     private void sendMessage(HttpClientRequestProcessorContext httpClientProcessorContext) throws Exception {
         new HttpRequestInformationProcessor().process(httpClientProcessorContext);
-            HttpClientConfigBuilderContext clientConfigBuilderContext = httpClientProcessorContext.getClientInformationContext()
-                    .getClientConfigBuilderContext();
-        if (clientConfigBuilderContext.getHost() != null && clientConfigBuilderContext.getPort() != 0) {
-            Channel ch = bootstrap.connect(clientConfigBuilderContext.getHost(), clientConfigBuilderContext.getPort()).sync().channel();
-            ch.isWritable();
-            ch.writeAndFlush(httpClientProcessorContext.getRequest());
-            ch.closeFuture().sync();
-        }
-        else{
-            if (clientConfigBuilderContext.getHost() == null) {
-                try {
-                    throw new Exception("Host is not given");
-                } catch (Exception e) {
-                    log.info(e);
-                    System.exit(0);
-                }
-            }
-            else {
-                try {
-                    throw new Exception("Port is not given");
-                } catch (Exception e) {
-                    log.info(e);
-                    System.exit(0);
-                }
-            }
-        }
+        HttpClientConfigBuilderContext clientConfigBuilderContext = httpClientProcessorContext.getClientInformationContext()
+                .getClientConfigBuilderContext();
+        ValidationUtil.validateMandatoryParameters(clientConfigBuilderContext);
+
+        Channel ch = bootstrap.connect(clientConfigBuilderContext.getHost(), clientConfigBuilderContext.getPort()).sync().channel();
+        ch.isWritable();
+        ch.writeAndFlush(httpClientProcessorContext.getRequest());
+        ch.closeFuture().sync();
     }
 
     public void shutdown() {

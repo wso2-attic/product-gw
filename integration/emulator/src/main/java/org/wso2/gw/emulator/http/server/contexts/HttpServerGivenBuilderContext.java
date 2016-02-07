@@ -21,11 +21,11 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import org.wso2.gw.emulator.dsl.contexts.AbstractGivenBuilderContext;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HttpServerGivenBuilderContext extends AbstractGivenBuilderContext<HttpServerConfigBuilderContext> {
-
     private final HttpServerInformationContext httpServerInformationContext;
     private HttpServerConfigBuilderContext configurationContext;
     private HttpServerWhenBuilderContext whenBuilderContext;
@@ -47,6 +47,4 @@ public class HttpServerGivenBuilderContext extends AbstractGivenBuilderContext<H
     public HttpServerConfigBuilderContext getConfigurationContext() {
         return configurationContext;
     }
-
-
 }

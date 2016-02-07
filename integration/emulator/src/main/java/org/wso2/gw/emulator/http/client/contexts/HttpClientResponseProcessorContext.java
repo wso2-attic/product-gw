@@ -23,7 +23,6 @@ package org.wso2.gw.emulator.http.client.contexts;
 import io.netty.handler.codec.http.HttpResponse;
 
 public class HttpClientResponseProcessorContext extends HttpClientProcessorContext {
-
     private HttpClientResponseBuilderContext expectedResponse;
     private HttpResponseContext receivedResponseContext;
     private HttpResponse receivedResponse;
