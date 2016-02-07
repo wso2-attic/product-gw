@@ -21,7 +21,6 @@
 package org.wso2.gw.emulator.http.client.contexts;
 
 public class HttpClientProcessorContext {
-
     private HttpClientInformationContext clientInformationContext;
 
     public HttpClientInformationContext getClientInformationContext() {

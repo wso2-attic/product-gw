@@ -24,7 +24,6 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractGivenBuilderContext;
 import java.util.ArrayList;
 
 public class HttpClientGivenBuilderContext extends AbstractGivenBuilderContext<HttpClientConfigBuilderContext>{
-
     private final ArrayList<HttpClientWhenBuilderContext> whenBuilderContextList;
     private HttpClientInformationContext httpClientInformationContext;
     private HttpClientConfigBuilderContext configurationContext;

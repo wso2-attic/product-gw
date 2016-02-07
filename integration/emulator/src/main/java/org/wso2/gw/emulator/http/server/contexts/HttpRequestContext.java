@@ -22,13 +22,13 @@ package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HttpRequestContext {
-
     private Map<String, List<String>> headerParameters;
     private Map<String, List<String>> queryParameters;
     private StringBuffer requestBody;
@@ -54,7 +54,6 @@ public class HttpRequestContext {
         return queryParameters;
     }
 
-    //set query parameters
     public void setQueryParameters(Map<String, List<String>> queryParameters) {
         this.queryParameters = queryParameters;
     }

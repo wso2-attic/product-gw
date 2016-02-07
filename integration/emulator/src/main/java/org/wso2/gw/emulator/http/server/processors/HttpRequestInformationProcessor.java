@@ -26,9 +26,9 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.CharsetUtil;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpRequestContext;
+
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class HttpRequestInformationProcessor extends AbstractServerProcessor {
         populateHttpVersion(request, requestContext);
         populateConnectionKeepAlive(request, requestContext);
 
-        if(processorContext.getHttpContent() != null) {
+        if (processorContext.getHttpContent() != null) {
             appendDecoderResult(processorContext.getHttpContent(), requestContext);
         }
     }
@@ -89,6 +89,5 @@ public class HttpRequestInformationProcessor extends AbstractServerProcessor {
     private void populateConnectionKeepAlive(HttpRequest request, HttpRequestContext requestContext) {
         requestContext.setKeepAlive(HttpHeaders.isKeepAlive(request));
     }
-
 
 }

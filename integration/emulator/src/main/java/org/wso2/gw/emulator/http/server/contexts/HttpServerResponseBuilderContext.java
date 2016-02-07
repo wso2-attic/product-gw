@@ -21,8 +21,9 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
-import org.wso2.gw.emulator.util.FileRead;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
 
@@ -33,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class HttpServerResponseBuilderContext extends AbstractResponseBuilderContext {
-
+    private static final Logger log = Logger.getLogger(HttpServerResponseBuilderContext.class);
     private static HttpServerResponseBuilderContext serverResponse;
     private HttpResponseStatus statusCode = HttpResponseStatus.OK;
     private List<Cookie> cookies;
@@ -102,11 +103,10 @@ public class HttpServerResponseBuilderContext extends AbstractResponseBuilderCon
     }
 
     public HttpServerResponseBuilderContext withBody(File filePath) {
-
         try {
-            this.body = FileRead.getFileBody(filePath);
+            this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception occurred while reading file", e);
         }
         return this;
     }

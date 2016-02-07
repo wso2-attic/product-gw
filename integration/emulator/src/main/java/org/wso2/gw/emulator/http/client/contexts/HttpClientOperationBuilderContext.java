@@ -20,10 +20,11 @@
 
 package org.wso2.gw.emulator.http.client.contexts;
 
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractClientOperationBuilderContext;
 
 public class HttpClientOperationBuilderContext extends AbstractClientOperationBuilderContext {
-
+    private static final Logger log = Logger.getLogger(HttpClientOperationBuilderContext.class);
     private HttpClientInformationContext httpClientInformationContext;
 
     public HttpClientOperationBuilderContext(HttpClientInformationContext httpClientInformationContext) {
@@ -35,7 +36,7 @@ public class HttpClientOperationBuilderContext extends AbstractClientOperationBu
         try {
             this.httpClientInformationContext.getClientInitializer().initialize();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception occurred while sending message" + e);
         }
         return httpClientInformationContext.getReceivedResponseProcessContext();
     }
