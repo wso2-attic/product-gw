@@ -67,7 +67,7 @@ public class SampleTest1 {
                             "Expected response not found");
     }
 
-    @Test
+    @Test(invocationCount = 10)
     public void test2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
                 .client()
