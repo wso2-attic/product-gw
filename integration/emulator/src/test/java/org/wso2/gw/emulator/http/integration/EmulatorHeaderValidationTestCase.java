@@ -125,7 +125,6 @@ public class EmulatorHeaderValidationTestCase {
                                                                                               "value-req1"))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
-
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                             "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User4",

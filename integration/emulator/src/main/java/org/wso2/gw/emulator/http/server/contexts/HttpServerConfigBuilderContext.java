@@ -24,6 +24,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.wso2.gw.emulator.dsl.Protocol;
 import org.wso2.gw.emulator.dsl.contexts.AbstractConfigurationBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
+import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
+import org.wso2.gw.emulator.http.server.processors.HttpResponseCustomProcessor;
 
 import java.io.File;
 import java.util.Random;
@@ -39,7 +41,8 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
     private boolean randomConnectionClose;
     private ChannelInboundHandlerAdapter logicHandler;
     private int logicDelay;
-    private boolean customProcessor;
+    private HttpRequestCustomProcessor customRequestProcessor;
+    private HttpResponseCustomProcessor customResponseProcessor;
     private int queues;
     private int delay;
     private Protocol protocol;
@@ -94,17 +97,19 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
     public HttpServerConfigBuilderContext trustStorePass(String trustStorePass){
         this.trustStorePass = trustStorePass;
         return this;
-
     }
-    ////////
 
     private static HttpServerConfigBuilderContext getInstance() {
         config = new HttpServerConfigBuilderContext();
         return config;
     }
 
-    public boolean isCustomProcessor() {
-        return customProcessor;
+    public HttpRequestCustomProcessor getHttpRequestCustomProcessor() {
+        return customRequestProcessor;
+    }
+
+    public HttpResponseCustomProcessor getCustomResponseProcessor() {
+        return customResponseProcessor;
     }
 
     public static HttpServerConfigBuilderContext configure() {
@@ -112,11 +117,6 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
     }
 
     public HttpServerConfigBuilderContext host(String host) {
-        /*if(host == null){
-            try{
-
-            }
-        }else*/
         this.host = host;
         return this;
     }
@@ -156,8 +156,13 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
         return this;
     }
 
-    public HttpServerConfigBuilderContext withCustomProcessor(boolean customProcessor){
-        this.customProcessor = customProcessor;
+    public HttpServerConfigBuilderContext withCustomRequestProcessor(HttpRequestCustomProcessor customProcessor){
+        this.customRequestProcessor = customProcessor;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withCustomResponseProcessor(HttpResponseCustomProcessor customProcessor){
+        this.customResponseProcessor = customProcessor;
         return this;
     }
 

@@ -1,6 +1,6 @@
 /*
  * *
- *  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *  *
  *  * WSO2 Inc. licenses this file to you under the Apache License,
  *  * Version 2.0 (the "License"); you may not use this file except
@@ -17,17 +17,17 @@
  *  * under the License.
  *
  */
+package org.wso2.gw.emulator.http.integration;
 
-package org.wso2.gw.emulator.http.server.processors;
 
-import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
+import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
 
-public class HttpRequestCustomProcessor {
-    private static Logger log = Logger.getLogger("InfoLogging");
+public class CustomRequestProcessor extends HttpRequestCustomProcessor {
 
+    @Override
     public HttpServerProcessorContext process(HttpServerProcessorContext requestContext) {
-        log.info("server request custom processor");
+        requestContext.getHttpRequestContext().setUri("/users/user2");
         return requestContext;
     }
 }
