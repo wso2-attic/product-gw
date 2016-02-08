@@ -20,10 +20,12 @@
 
 package org.wso2.gw.emulator.http.server.contexts;
 
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractServerOperationBuilderContext;
+import org.wso2.gw.emulator.util.ValidationUtil;
 
 public class HttpServerOperationBuilderContext extends AbstractServerOperationBuilderContext {
-
+    private static final Logger log = Logger.getLogger(HttpServerOperationBuilderContext.class);
     private HttpServerInformationContext httpServerInformationContext;
 
     public HttpServerOperationBuilderContext(HttpServerInformationContext httpServerInformationContext) {
@@ -32,21 +34,14 @@ public class HttpServerOperationBuilderContext extends AbstractServerOperationBu
 
     @Override
     public HttpServerOperationBuilderContext start() {
+        ValidationUtil.validateMandatoryParameters(httpServerInformationContext.getServerConfigBuilderContext());
 
-        boolean b = parameterValidation();
-
-        if (!b){
-            System.out.println("server parameters were not set");
-            return null;
-        }else{
-
-            try {
-                httpServerInformationContext.getHttpServerInitializer().start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return this;
+        try {
+            httpServerInformationContext.getHttpServerInitializer().start();
+        } catch (Exception e) {
+            log.error("Exception occurred while starting the Emulator server", e);
         }
+        return this;
     }
 
     @Override
@@ -54,20 +49,8 @@ public class HttpServerOperationBuilderContext extends AbstractServerOperationBu
         try {
             httpServerInformationContext.getHttpServerInitializer().shutdown();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception occurred while stopping the Emulator server", e);
         }
         return this;
-    }
-
-    public boolean parameterValidation(){
-        String host = httpServerInformationContext.getServerConfigBuilderContext().getHost();
-        Integer port = httpServerInformationContext.getServerConfigBuilderContext().getPort();
-
-        if (host == null){
-            if (port.toString() == null){
-                return false;
-            }
-        }
-        return true;
     }
 }

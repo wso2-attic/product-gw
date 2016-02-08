@@ -1,17 +1,11 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.LastHttpContent;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by dilshank on 1/6/16.
- */
 public class DelayedElement implements Delayed {
-
     private long DELAY;
     private ChannelHandlerContext ctx;
     private HttpServerProcessorContext context;
@@ -32,10 +26,9 @@ public class DelayedElement implements Delayed {
     @Override
     public int compareTo(Delayed other) {
         long comparison = ((DelayedElement) other).timestamp - this.timestamp;
-
-        if(comparison > 0) {
+        if (comparison > 0) {
             return -1;
-        } else if(comparison < 0) {
+        } else if (comparison < 0) {
             return 1;
         } else {
             return 0;
@@ -49,7 +42,4 @@ public class DelayedElement implements Delayed {
     public HttpServerProcessorContext getProcessorContext() {
         return this.context;
     }
-
-
-
 }

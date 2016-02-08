@@ -47,7 +47,7 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         if (processorContext.getSelectedResponseContext() == null) {
             populate404NotFoundResponse(processorContext);
         } else {
-           populateResponse(processorContext);
+            populateResponse(processorContext);
         }
     }
 
@@ -56,11 +56,10 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         HttpServerResponseBuilderContext responseContext = processorContext.getSelectedResponseContext();
         boolean keepAlive = requestContext.isKeepAlive();
         Pattern pattern = processorContext.getServerInformationContext().getUtilityContext().getPattern();
-        //patternMatcher(requestContext,responseContext);
         HttpResponseStatus httpResponseStatus = responseContext.getStatusCode();
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, httpResponseStatus,
-                Unpooled.copiedBuffer(patternMatcher(requestContext,responseContext,pattern), CharsetUtil.UTF_8));
+                Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8));
         populateHttpHeaders(response, responseContext);
         populateCookies(response, responseContext);
         response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
@@ -72,8 +71,8 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         processorContext.setFinalResponse(response);
     }
 
-    private String patternMatcher(HttpRequestContext requestContext, HttpServerResponseBuilderContext responseContext, Pattern pathRegex) {
-
+    private String patternMatcher(HttpRequestContext requestContext, HttpServerResponseBuilderContext responseContext,
+                                  Pattern pathRegex) {
         String responseBody = responseContext.getBody();
         String requestBody = requestContext.getRequestBody();
         Matcher matcher = pathRegex.matcher(responseBody);

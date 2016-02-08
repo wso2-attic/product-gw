@@ -26,6 +26,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.client.processors.HttpResponseAssertProcessor;
@@ -34,6 +35,7 @@ import org.wso2.gw.emulator.http.client.processors.HttpResponseInformationProces
 import java.util.concurrent.*;
 
 public class HttpClientHandler extends ChannelInboundHandlerAdapter {
+    private static final Logger log = Logger.getLogger(HttpClientHandler.class);
     private HttpResponseInformationProcessor responseInformationProcessor;
     private HttpResponseAssertProcessor responseAssertProcessor;
     private HttpClientResponseProcessorContext processorContext;
@@ -77,7 +79,7 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        log.error(cause);
         ctx.close();
     }
 
@@ -91,9 +93,9 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
         try {
             System.out.println("result = " + scheduledFuture.get());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         scheduledReadingExecutorService.shutdown();
     }

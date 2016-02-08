@@ -21,14 +21,13 @@
 package org.wso2.gw.emulator.http.params;
 
 public class QueryParameter {
+    private String name;
+    private String value;
 
     public QueryParameter(String name, String value) {
         this.name = name;
         this.value = value;
     }
-
-    private String name;
-    private String value;
 
     public String getName() {
         return name;

@@ -39,11 +39,11 @@ import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.*;
+
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
-
     private static final Logger log = Logger.getLogger(HttpServerHandler.class);
     private HttpRequestInformationProcessor httpRequestInformationProcessor;
     private HttpResponseProcessor httpResponseProcessor;
@@ -132,12 +132,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                     });
 
                 } catch (Throwable throwable) {
-                    System.out.println("CAUGHT ################ " + throwable);
+                    log.error(throwable);
                 }
-            }
-
-
-            else {
+            } else {
                 FullHttpResponse response = httpProcessorContext.getFinalResponse();
                 if (httpProcessorContext.getHttpRequestContext().isKeepAlive()) {
                     randomConnectionClose(ctx, this.index, 2);
@@ -158,6 +155,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             ctx.flush();
         }
     }
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error("Exception occurred while processing the response", cause);
@@ -169,8 +167,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         ctx.write(response);
     }
 
-    private void readingDelay(int delay,ChannelHandlerContext ctx) {
-
+    private void readingDelay(int delay, ChannelHandlerContext ctx) {
         if (delay != 0) {
             ScheduledFuture scheduledFuture =
                     scheduledReadingExecutorService.schedule(new Callable() {
@@ -181,9 +178,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             try {
                 log.info("result = " + scheduledFuture.get());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             } catch (ExecutionException e) {
-                e.printStackTrace();
+                log.error(e);
             }
             //scheduledReadingExecutorService.shutdown();
         }
@@ -200,9 +197,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             try {
                 log.info("result = " + scheduledLogicFuture.get());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             } catch (ExecutionException e) {
                 e.printStackTrace();
+                log.error(e);
             }
                 //scheduledLogicExecutorService.shutdown();
 
@@ -211,7 +209,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private void randomConnectionClose(ChannelHandlerContext ctx, int randomIndex, int pointIndex) {
         if (randomIndex == pointIndex) {
-            log.info("Random close");
+            log.debug("Random close");
             ctx.close();
         }
     }
@@ -220,8 +218,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         if (randomConnectionClose) {
             Random rn = new Random();
             index = (rn.nextInt(100) + 1) % 6;
-        } else
+        } else {
             index = -1;
+        }
     }
 
     public MockServerThread[] getHandlers() {

@@ -23,9 +23,10 @@ package org.wso2.gw.emulator.http.client.contexts;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
-import org.wso2.gw.emulator.util.FileRead;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class HttpClientResponseBuilderContext extends AbstractResponseBuilderContext {
-
     private static HttpClientResponseBuilderContext clientResponseBuilderContext;
     private HttpResponseStatus statusCode;
     private List<Header> headers;
@@ -76,20 +76,20 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         return this;
     }
 
-    public HttpClientResponseBuilderContext withCookie(String name, String value){
-        if(cookies == null){
+    public HttpClientResponseBuilderContext withCookie(String name, String value) {
+        if (cookies == null) {
             this.cookies = new ArrayList<Cookie>();
         }
-        cookies.add(new Cookie(name,value));
+        cookies.add(new Cookie(name, value));
         return this;
     }
 
-    public HttpClientResponseBuilderContext withCookies(Cookie...cookies){
-        if (this.cookies == null){
+    public HttpClientResponseBuilderContext withCookies(Cookie... cookies) {
+        if (this.cookies == null) {
             this.cookies = new ArrayList<Cookie>();
         }
 
-        if (cookies != null && cookies.length > 0){
+        if (cookies != null && cookies.length > 0) {
             this.cookies.addAll(Arrays.asList(cookies));
         }
         return this;
@@ -102,7 +102,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
 
     public HttpClientResponseBuilderContext withBody(File filePath) {
         try {
-            this.body = FileRead.getFileBody(filePath);
+            this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }

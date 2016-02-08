@@ -27,21 +27,15 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslHandler;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.handler.HttpClientHandler;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext;
 import org.wso2.gw.emulator.http.server.contexts.MockServerThread;
 import org.wso2.gw.emulator.http.server.handler.HttpChunkedWriteHandler;
 import org.wso2.gw.emulator.http.server.handler.HttpServerHandler;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 
-import javax.net.ssl.SSLContext;
-import java.io.File;
-
 public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel> {
-
     private SslContext sslCtx;
     private EmulatorType emulatorType;
     private HttpServerInformationContext serverInformationContext;
@@ -56,56 +50,28 @@ public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel
 
     @Override
     public void initChannel(SocketChannel ch) {
-        if(EmulatorType.HTTP_SERVER.equals(emulatorType)) {
+        if (EmulatorType.HTTP_SERVER.equals(emulatorType)) {
             initializeHttpServerChannel(ch);
-        } else if(EmulatorType.HTTP_CLIENT.equals(emulatorType)) {
+        } else if (EmulatorType.HTTP_CLIENT.equals(emulatorType)) {
             initializeHttpClientChannel(ch);
         }
     }
 
     private void initializeHttpServerChannel(SocketChannel ch) {
-
-       /* SSLConfig sslConfig = new SSLConfig(new File("/home/dilshank/A-Certificate/emulator.jks"),"abc123","abc123",new File("/home/dilshank/A-Certificate/clientTrustStore"),"abc123");
-        SslHandler sslHandler = new SSLHandlerFactory(sslConfig).create();*/
-
         ChannelPipeline pipeline = ch.pipeline();
 
-        /*if (sslHandler != null) {
-            pipeline.addLast("sslHandler", sslHandler);
-        }*/
         pipeline.addLast(new HttpServerCodec());
-        //pipeline.addLast(new HttpContentDecompressor());
         pipeline.addLast(new HttpChunkedWriteHandler(serverInformationContext));
-        ///////////////////////
         HttpServerHandler httpServerHandler = new HttpServerHandler(serverInformationContext);
         httpServerHandler.setHandlers(handlers);
-        //////////////////////
-
-
         pipeline.addLast("httpResponseHandler", httpServerHandler);
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-
-
     }
 
     private void initializeHttpClientChannel(SocketChannel ch) {
-
         ChannelPipeline pipeline = ch.pipeline();
-        /*SSLConfig sslConfig = new SSLConfig(new File("/home/dilshank/A-Certificate/emulator.jks"),"abc123","abc123",new File("/home/dilshank/A-Certificate/clientTrustStore"),"abc123");
-        SslHandler sslHandler = new SSLHandlerFactory(sslConfig).create();
-        sslHandler.engine().setUseClientMode(true);*/
-
-        // Enable HTTPS if necessary.
-        /*if (sslHandler != null) {
-            pipeline.addLast("ssl",sslHandler);
-        }*/
-
         pipeline.addLast(new HttpClientCodec());
-        //pipeline.addLast(new HttpContentDecompressor());
-
         pipeline.addLast(new HttpClientHandler(clientInformationContext));
-
-
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
     }
 

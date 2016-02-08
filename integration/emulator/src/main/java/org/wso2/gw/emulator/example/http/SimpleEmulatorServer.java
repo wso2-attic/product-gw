@@ -19,7 +19,6 @@
  */
 package org.wso2.gw.emulator.example.http;
 
-
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.wso2.gw.emulator.dsl.Emulator;

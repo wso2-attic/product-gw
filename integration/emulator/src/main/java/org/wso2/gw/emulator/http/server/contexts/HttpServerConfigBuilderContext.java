@@ -23,15 +23,12 @@ package org.wso2.gw.emulator.http.server.contexts;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.wso2.gw.emulator.dsl.Protocol;
 import org.wso2.gw.emulator.dsl.contexts.AbstractConfigurationBuilderContext;
-import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
 import org.wso2.gw.emulator.http.server.processors.HttpResponseCustomProcessor;
 
 import java.io.File;
-import java.util.Random;
 
 public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilderContext {
-
     private static HttpServerConfigBuilderContext config;
     private String host = null;
     private int port;
@@ -46,30 +43,28 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
     private int queues;
     private int delay;
     private Protocol protocol;
-
-    /////////
     private File keyStore;
     private String keyStorePass;
     private String certPass;
     private File trustStore;
     private String trustStorePass;
 
-    public HttpServerConfigBuilderContext keyStore(File keyStore){
+    public HttpServerConfigBuilderContext keyStore(File keyStore) {
         this.keyStore = keyStore;
         return this;
     }
 
-    public HttpServerConfigBuilderContext keyStorePass(String keyStorePass){
+    public HttpServerConfigBuilderContext keyStorePass(String keyStorePass) {
         this.keyStorePass = keyStorePass;
         return this;
     }
 
-    public HttpServerConfigBuilderContext certPass(String certPass){
+    public HttpServerConfigBuilderContext certPass(String certPass) {
         this.certPass = certPass;
         return this;
     }
 
-    public HttpServerConfigBuilderContext trustStore(File trustStore){
+    public HttpServerConfigBuilderContext trustStore(File trustStore) {
         this.trustStore = trustStore;
         return this;
     }
@@ -94,7 +89,7 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
         return trustStorePass;
     }
 
-    public HttpServerConfigBuilderContext trustStorePass(String trustStorePass){
+    public HttpServerConfigBuilderContext trustStorePass(String trustStorePass) {
         this.trustStorePass = trustStorePass;
         return this;
     }
@@ -156,23 +151,23 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
         return this;
     }
 
-    public HttpServerConfigBuilderContext withCustomRequestProcessor(HttpRequestCustomProcessor customProcessor){
+    public HttpServerConfigBuilderContext withCustomRequestProcessor(HttpRequestCustomProcessor customProcessor) {
         this.customRequestProcessor = customProcessor;
         return this;
     }
 
-    public HttpServerConfigBuilderContext withCustomResponseProcessor(HttpResponseCustomProcessor customProcessor){
+    public HttpServerConfigBuilderContext withCustomResponseProcessor(HttpResponseCustomProcessor customProcessor) {
         this.customResponseProcessor = customProcessor;
         return this;
     }
 
-    public HttpServerConfigBuilderContext withFastBackend(int queues, int delay){
+    public HttpServerConfigBuilderContext withFastBackend(int queues, int delay) {
         this.queues = queues;
         this.delay = delay;
         return this;
     }
 
-    public HttpServerConfigBuilderContext withProtocol(Protocol protocol){
+    public HttpServerConfigBuilderContext withProtocol(Protocol protocol) {
         this.protocol = protocol;
         return this;
     }

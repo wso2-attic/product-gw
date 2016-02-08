@@ -18,16 +18,25 @@
  *
  */
 
-package org.wso2.gw.emulator.http.server.contexts;
+package org.wso2.gw.emulator.util;
 
-import org.wso2.gw.emulator.dsl.contexts.AbstractEmulatorBuilderContext;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-public class HttpServerEmulatorBuilderContext extends AbstractEmulatorBuilderContext {
+public class FileReaderUtil {
 
-    private Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> requestResponseCorrelation = new HashMap<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext>();
-    private HttpServerConfigBuilderContext serverConfigurationBuilderContext;
+    public static String getFileBody(File filePath) throws IOException {
 
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+        int c;
+        String content = "";
 
+        while ((c = fileInputStream.read()) != -1) {
+            content += (char)c;
+        }
+        content = content.replace("\n", "").replace("\r", "");
+
+        return content;
+    }
 }

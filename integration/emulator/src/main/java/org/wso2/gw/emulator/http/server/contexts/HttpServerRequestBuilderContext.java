@@ -1,3 +1,23 @@
+/*
+ * *
+ *  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  *
+ *  * WSO2 Inc. licenses this file to you under the Apache License,
+ *  * Version 2.0 (the "License"); you may not use this file except
+ *  * in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  * http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing,
+ *  * software distributed under the License is distributed on an
+ *  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  * KIND, either express or implied.  See the License for the
+ *  * specific language governing permissions and limitations
+ *  * under the License.
+ *
+ */
+
 package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
@@ -5,7 +25,7 @@ import org.wso2.gw.emulator.dsl.CookieOperation;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.QueryParameterOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
-import org.wso2.gw.emulator.util.FileRead;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.params.QueryParameter;
@@ -19,7 +39,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class HttpServerRequestBuilderContext extends AbstractRequestBuilderContext {
-
     private static HttpServerRequestBuilderContext serverRequest;
     private HttpMethod method;
     private String path;
@@ -35,8 +54,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     private Operation operation;
     private CookieOperation cookieOperation;
     private QueryParameterOperation queryOperation;
-
-
 
     private static HttpServerRequestBuilderContext getInstance() {
         serverRequest = new HttpServerRequestBuilderContext();
@@ -64,11 +81,10 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
 
     public HttpServerRequestBuilderContext withBody(File filePath) {
         try {
-            this.body = FileRead.getFileBody(filePath);
+            this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //this.body = body;
         return this;
     }
 
@@ -110,7 +126,8 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return queryOperation;
     }
 
-    public HttpServerRequestBuilderContext withQueryParameters(QueryParameterOperation queryOperation, QueryParameter... queryParameters) {
+    public HttpServerRequestBuilderContext withQueryParameters(QueryParameterOperation queryOperation,
+                                                               QueryParameter... queryParameters) {
         this.queryOperation = queryOperation;
         this.queryParameters = Arrays.asList(queryParameters);
         return this;
@@ -136,7 +153,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
 
     public boolean isMatch(HttpRequestContext requestContext) {
         if (isContextMatch(requestContext) && isHttpMethodMatch(requestContext) && isQueryParameterMatch(requestContext) && isRequestContentMatch(requestContext) &&
-                isHeadersMatch(requestContext)) {
+            isHeadersMatch(requestContext)) {
             return true;
         }
         return false;
@@ -176,7 +193,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     }
 
     private boolean isHeadersMatch(HttpRequestContext requestContext) {
-
         if (headers == null) {
             return true;
         }
@@ -184,7 +200,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         Map<String, List<String>> headerParameters = requestContext.getHeaderParameters();
 
         if (operation == Operation.OR) {
-            if((headerParameters == null || headerParameters.isEmpty()) && (headers != null || !headers.isEmpty())) {
+            if ((headerParameters == null || headerParameters.isEmpty()) && (headers != null || !headers.isEmpty())) {
                 return false;
             }
             for (Header header : headers) {
@@ -194,9 +210,9 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
                     return true;
                 }
             }
-        }else {
+        } else {
             for (Header header : headers) {
-                if(headerParameters.get(header.getName()) == null) {
+                if (headerParameters.get(header.getName()) == null) {
                     return false;
                 }
 
@@ -222,27 +238,26 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
                 String value = query.getValue();
                 if (queryParameterValues == null) {
                     //continue;
-                }
-                else if (queryParameterValues.contains(value)) {
+                } else if (queryParameterValues.contains(value)) {
                     x = true;
                     break;
                 }
             }
-            if (x == true){
+            if (x == true) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
-        }else {
+        } else {
             List<String> queryParameterValues = null;
             String value = null;
 
             for (QueryParameter query : queryParameters) {
 
-                if (queryParametersMap.get(query.getName()) != null){
+                if (queryParametersMap.get(query.getName()) != null) {
                     queryParameterValues = queryParametersMap.get(query.getName());
                     value = query.getValue();
-                }else {
+                } else {
                     return false;
                 }
 
@@ -271,10 +286,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
             if (!fullPath.startsWith("/")) {
                 fullPath = "/" + fullPath;
             }
-
-            /*if (!fullPath.endsWith("/")) {
-                fullPath = fullPath + "/";
-            }*/
 
             fullPath = fullPath + ".*";
             return fullPath;
@@ -318,26 +329,18 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     }
 
     private String extractContext(String uri) {
-
-
         if (uri == null || uri.isEmpty()) {
             return null;
         }
         if (!uri.contains("?")) {
-            /*if (!uri.endsWith("/")) {
-                uri = uri + "/";
-            }*/
-
-            if (path == null || path.isEmpty()){
+            if (path == null || path.isEmpty()) {
                 uri = uri + "/";
             }
             return uri;
         }
         uri = uri.split("\\?")[0];
-        /*if (!uri.endsWith("/")) {
-            uri = uri + "/";
-        }*/
-        if (path == null || path.isEmpty()){
+
+        if (path == null || path.isEmpty()) {
             uri = uri + "/";
         }
         return uri;

@@ -1,37 +1,50 @@
+/*
+ * *
+ *  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  *
+ *  * WSO2 Inc. licenses this file to you under the Apache License,
+ *  * Version 2.0 (the "License"); you may not use this file except
+ *  * in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  * http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing,
+ *  * software distributed under the License is distributed on an
+ *  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  * KIND, either express or implied.  See the License for the
+ *  * specific language governing permissions and limitations
+ *  * under the License.
+ *
+ */
 package org.wso2.gw.emulator.http.server.contexts;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.DelayQueue;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-/**
- * Created by dilshank on 1/6/16.
- */
 public class MockServerThread extends Thread {
+    private static final Logger log = Logger.getLogger(MockServerThread.class);
+
 
     private final DelayQueue<DelayedElement> queue = new DelayQueue<DelayedElement>();
 
     public void run() {
-        DelayedElement elem = null;
+        DelayedElement elem;
 
-        while(true) {
+        while (true) {
             try {
-                elem = (DelayedElement) queue.take();
+                elem = queue.take();
                 beginResponse(elem.getContext(), elem.getProcessorContext());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }
@@ -51,7 +64,7 @@ public class MockServerThread extends Thread {
         future.addListener(ChannelFutureListener.CLOSE);
     }
 
-    private void writeResponse( ChannelHandlerContext ctx, HttpServerProcessorContext context) {
+    private void writeResponse(ChannelHandlerContext ctx, HttpServerProcessorContext context) {
         // Decide whether to close the connection or not.
         HttpRequest request = context.getHttpRequest();
 
@@ -61,7 +74,7 @@ public class MockServerThread extends Thread {
 
         if (keepAlive) {
             ctx.write(response);
-        }else{
+        } else {
             ctx.write(response).addListener(ChannelFutureListener.CLOSE);
         }
         ctx.channel().flush();

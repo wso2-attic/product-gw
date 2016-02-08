@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpResponseContext {
-
     private Map<String, List<String>> headerParameters;
     private Map<String, List<String>> cookieParameters;
     private StringBuffer responseBody;
@@ -47,12 +46,12 @@ public class HttpResponseContext {
         this.headerParameters.put(key, headerValues);
     }
 
-    public void addCookieParameter(String key, String value){
+    public void addCookieParameter(String key, String value) {
         if (cookieParameters == null) {
             this.cookieParameters = new HashMap<String, List<String>>();
         }
         List<String> cookieValues = this.cookieParameters.get(key);
-        if (cookieValues == null){
+        if (cookieValues == null) {
             cookieValues = new ArrayList<String>();
         }
         cookieValues.add(value);
