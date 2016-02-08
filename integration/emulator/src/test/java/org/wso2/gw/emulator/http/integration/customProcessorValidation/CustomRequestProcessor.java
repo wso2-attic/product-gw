@@ -17,7 +17,7 @@
  *  * under the License.
  *
  */
-package org.wso2.gw.emulator.http.integration;
+package org.wso2.gw.emulator.http.integration.customProcessorValidation;
 
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
