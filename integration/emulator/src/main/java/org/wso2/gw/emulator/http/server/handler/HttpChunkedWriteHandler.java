@@ -40,7 +40,7 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            scheduledWritingExecutorService.shutdown();
+            //scheduledWritingExecutorService.shutdown();
         }
     }
 }

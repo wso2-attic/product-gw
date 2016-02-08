@@ -38,7 +38,6 @@ public class MockServerThread extends Thread {
 
     public void delayEvent(ChannelHandlerContext ctx, HttpServerProcessorContext processorContext, int delay, int id) {
         DelayedElement delayedElement = new DelayedElement(ctx, processorContext, System.currentTimeMillis(), delay);
-        System.out.println("delay element is working");
         queue.add(delayedElement);
     }
 

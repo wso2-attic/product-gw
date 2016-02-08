@@ -37,28 +37,28 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
     private File trustStore;
     private String trustStorePass;
 
-    public HttpClientConfigBuilderContext keyStore(File keyStore){
+    public HttpClientConfigBuilderContext keyStore(File keyStore) {
         this.keyStore = keyStore;
         return this;
     }
 
-    public HttpClientConfigBuilderContext keyStorePass(String keyStorePass){
+    public HttpClientConfigBuilderContext keyStorePass(String keyStorePass) {
         this.keyStorePass = keyStorePass;
         return this;
     }
 
-    public HttpClientConfigBuilderContext certPass(String certPass){
+    public HttpClientConfigBuilderContext certPass(String certPass) {
         this.certPass = certPass;
         return this;
     }
 
-    public HttpClientConfigBuilderContext trustStore(File trustStore){
+    public HttpClientConfigBuilderContext trustStore(File trustStore) {
         this.trustStore = trustStore;
         return this;
 
     }
 
-    public HttpClientConfigBuilderContext trustStorePass(String trustStorePass){
+    public HttpClientConfigBuilderContext trustStorePass(String trustStorePass) {
         this.trustStorePass = trustStorePass;
         return this;
     }
@@ -94,13 +94,13 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
 
     @Override
     public HttpClientConfigBuilderContext host(String host) {
-        this.host=host;
+        this.host = host;
         return this;
     }
 
     @Override
     public HttpClientConfigBuilderContext port(int port) {
-        this.port=port;
+        this.port = port;
         return this;
     }
 
@@ -108,12 +108,12 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
         return protocol;
     }
 
-    public HttpClientConfigBuilderContext withReadingDelay(int readingDelay){
+    public HttpClientConfigBuilderContext withReadingDelay(int readingDelay) {
         this.readingDelay = readingDelay;
         return this;
     }
 
-    public HttpClientConfigBuilderContext withProtocol(Protocol protocol){
+    public HttpClientConfigBuilderContext withProtocol(Protocol protocol) {
         this.protocol = protocol;
         return this;
     }

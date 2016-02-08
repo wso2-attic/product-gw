@@ -252,19 +252,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
             }
             return true;
         }
-
-        /*List<String> queryValues = queryParameters.get(queryParameter.getName());
-
-        if (queryParameters == null || queryValues == null || queryValues.isEmpty()) {
-            return false;
-        }
-
-        for (String value : queryValues) {
-            if (value.equalsIgnoreCase(queryParameter.getValue())) {
-                return true;
-            }
-        }*/
-
     }
 
     private String buildRegex(String context, String path) {
