@@ -176,7 +176,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                         }
                     }, delay, TimeUnit.MILLISECONDS);
             try {
-                log.info("result = " + scheduledFuture.get());
+              scheduledFuture.get();
             } catch (InterruptedException e) {
                 log.error(e);
             } catch (ExecutionException e) {
@@ -195,7 +195,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                         }
                     }, delay, TimeUnit.MILLISECONDS);
             try {
-                log.info("result = " + scheduledLogicFuture.get());
+                scheduledLogicFuture.get();
             } catch (InterruptedException e) {
                 log.error(e);
             } catch (ExecutionException e) {

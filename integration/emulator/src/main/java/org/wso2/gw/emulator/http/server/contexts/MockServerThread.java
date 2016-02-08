@@ -71,7 +71,6 @@ public class MockServerThread extends Thread {
         boolean keepAlive = HttpHeaders.isKeepAlive(request);
         // Build the response object.
         FullHttpResponse response = context.getFinalResponse();
-
         if (keepAlive) {
             ctx.write(response);
         } else {

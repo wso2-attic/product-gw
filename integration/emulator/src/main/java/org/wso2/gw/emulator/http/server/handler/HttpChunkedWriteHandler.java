@@ -34,7 +34,7 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
                         }
                     }, delay, TimeUnit.MILLISECONDS);
             try {
-                log.debug("result = " + scheduledWaitingFuture.get());
+               scheduledWaitingFuture.get();
             } catch (InterruptedException e) {
                 log.error(e);
             } catch (ExecutionException e) {
