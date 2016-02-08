@@ -43,8 +43,9 @@ public class EmulatorHeaderValidationTestCase {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
-    public void setEnvironment() {
+    public void setEnvironment() throws InterruptedException {
         this.emulator = startHttpEmulator();
+        Thread.sleep(1000);
     }
 
     @Test

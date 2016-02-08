@@ -19,7 +19,6 @@
  */
 package org.wso2.gw.emulator.http.integration;
 
-
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
 
