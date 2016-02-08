@@ -18,7 +18,7 @@
  *
  */
 
-package org.wso2.gw.emulator.http.integration.ContextPathValidation;
+package org.wso2.gw.emulator.http.integration.contextPathValidation;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
