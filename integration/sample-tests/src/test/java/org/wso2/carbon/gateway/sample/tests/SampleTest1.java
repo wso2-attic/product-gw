@@ -63,7 +63,7 @@ public class SampleTest1 {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                             "Expected response code not found");
-        Assert.assertEquals("User3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals("User1", response.getReceivedResponseContext().getResponseBody(),
                             "Expected response not found");
     }
 
@@ -92,7 +92,7 @@ public class SampleTest1 {
                 .given(HttpClientConfigBuilderContext.configure()
                                .host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/new-route").withMethod(HttpMethod.GET).withHeader
+                              .withPath("/wrong-route").withMethod(HttpMethod.GET).withHeader
                                 ("routeId", "r2"))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
