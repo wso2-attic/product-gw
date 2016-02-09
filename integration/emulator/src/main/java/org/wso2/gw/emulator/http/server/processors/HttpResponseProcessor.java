@@ -62,10 +62,11 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
                 Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8));
         populateHttpHeaders(response, responseContext);
         populateCookies(response, responseContext);
-        response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
+        if(!response.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)) {
+            response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
+        }
 
         if (keepAlive) {
-            response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
             response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
         processorContext.setFinalResponse(response);
