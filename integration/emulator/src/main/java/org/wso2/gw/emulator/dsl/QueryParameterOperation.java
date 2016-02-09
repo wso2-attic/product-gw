@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.dsl;
 
+/**
+ * Query parameter operation
+ * */
 public enum QueryParameterOperation {
-    OR,AND
+    OR, AND
 }

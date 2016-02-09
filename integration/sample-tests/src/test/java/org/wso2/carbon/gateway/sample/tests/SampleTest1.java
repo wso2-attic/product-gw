@@ -15,7 +15,6 @@
 
 package org.wso2.carbon.gateway.sample.tests;
 
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.testng.Assert;
@@ -35,6 +34,9 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * SampleTest1
+ */
 public class SampleTest1 {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
@@ -51,54 +53,42 @@ public class SampleTest1 {
 
     @Test(invocationCount = 10)
     public void test1() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                               .host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/new-route").withMethod(HttpMethod.GET)
-                              .withHeader("routeId", "r1"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/new-route").withMethod(HttpMethod.GET)
+                        .withHeader("routeId", "r1"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
-                            "Expected response code not found");
+                "Expected response code not found");
         Assert.assertEquals("User1", response.getReceivedResponseContext().getResponseBody(),
-                            "Expected response not found");
+                "Expected response not found");
     }
 
     @Test(invocationCount = 10)
     public void test2() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                               .host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/new-route").withMethod(HttpMethod.GET).withHeader
-                                ("routeId", "r2"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/new-route").withMethod(HttpMethod.GET)
+                        .withHeader("routeId", "r2"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
-                            "Expected response code not found");
+                "Expected response code not found");
         Assert.assertEquals("User2", response.getReceivedResponseContext().getResponseBody(),
-                            "Expected response not found");
+                "Expected response not found");
     }
 
     @Test
     public void test3() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                               .host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request()
-                              .withPath("/wrong-route").withMethod(HttpMethod.GET).withHeader
-                                ("routeId", "r2"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/wrong-route").withMethod(HttpMethod.GET)
+                        .withHeader("routeId", "r2"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
-                            "Expected response code not found");
+                "Expected response code not found");
     }
 
     @AfterClass(alwaysRun = true)
@@ -109,29 +99,15 @@ public class SampleTest1 {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                               .host("127.0.0.1").port(6065).context("/users")
-                )
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
-                .when(request()
-                              .withMethod(HttpMethod.GET).withPath("/user1"))
-                .then(response()
-                              .withBody("User1")
-                              .withStatusCode(HttpResponseStatus.OK))
+                .when(request().withMethod(HttpMethod.GET).withPath("/user1"))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK))
 
-                .when(request()
-                              .withMethod(HttpMethod.GET).withPath("/user2"))
-                .then(response()
-                              .withBody("User2")
-                              .withStatusCode(HttpResponseStatus.OK))
+                .when(request().withMethod(HttpMethod.GET).withPath("/user2"))
+                .then(response().withBody("User2").withStatusCode(HttpResponseStatus.OK))
 
-                .when(request()
-                              .withMethod(HttpMethod.GET).withPath("/user3"))
-                .then(response()
-                              .withBody("User3")
-                              .withStatusCode(HttpResponseStatus.OK))
-                .operation().start();
+                .when(request().withMethod(HttpMethod.GET).withPath("/user3"))
+                .then(response().withBody("User3").withStatusCode(HttpResponseStatus.OK)).operation().start();
     }
 }

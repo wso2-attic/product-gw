@@ -23,12 +23,15 @@ package org.wso2.gw.emulator.http.integration.customProcessorValidation;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.processors.HttpResponseCustomProcessor;
 
+/**
+ * CustomResponseProcessor
+ * */
 public class CustomResponseProcessor extends HttpResponseCustomProcessor {
 
     @Override
     public HttpServerProcessorContext process(HttpServerProcessorContext responseContext) {
 
-        responseContext.getFinalResponse().headers().add("Header2","value2");
+        responseContext.getFinalResponse().headers().add("Header2", "value2");
         return responseContext;
     }
 }

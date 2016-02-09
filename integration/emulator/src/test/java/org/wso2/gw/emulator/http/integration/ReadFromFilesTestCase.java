@@ -40,6 +40,9 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * ReadFromFilesTestCase
+ * */
 public class ReadFromFilesTestCase {
 
     private HttpServerOperationBuilderContext emulator;
@@ -51,18 +54,14 @@ public class ReadFromFilesTestCase {
     }
 
     @Test
-    public void testClientANDServerRequestFromTestFile(){
+    public void testClientANDServerRequestFromTestFile() {
 
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user1").withMethod(HttpMethod.POST)
-                        .withBody("User1")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1clientRequest.txt")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user1").withMethod(HttpMethod.POST)
+                        .withBody("User1").withBody(new File(
+                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1clientRequest.txt")))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -71,15 +70,12 @@ public class ReadFromFilesTestCase {
     }
 
     @Test
-    public void testServerResponseFromFile(){
+    public void testServerResponseFromFile() {
 
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user2").withMethod(HttpMethod.POST).withBody("User2"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user2").withMethod(HttpMethod.POST)
+                        .withBody("User2")).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
@@ -89,16 +85,12 @@ public class ReadFromFilesTestCase {
     }
 
     @Test
-    public void testServerRequestResponseFromTestFile(){
+    public void testServerRequestResponseFromTestFile() {
 
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user3").withMethod(HttpMethod.POST)
-                        .withBody("User3"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user3").withMethod(HttpMethod.POST)
+                        .withBody("User3")).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
@@ -108,17 +100,14 @@ public class ReadFromFilesTestCase {
     }
 
     @Test
-    public void testServerRequestResponseANDClientRequestFromTestFile(){
+    public void testServerRequestResponseANDClientRequestFromTestFile() {
 
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user4").withMethod(HttpMethod.POST)
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4clientRequest.txt")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user4").withMethod(HttpMethod.POST)
+                        .withBody(new File(
+                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4clientRequest.txt")))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -128,47 +117,29 @@ public class ReadFromFilesTestCase {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                        .host("127.0.0.1").port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
-                .when(request()
-                        .withMethod(HttpMethod.POST).withPath("/user1")
-                        .withBody("User1")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1serverRequest.txt")))
-                .then(response()
-                        .withBody("User1")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.POST).withPath("/user1").withBody("User1").withBody(new File(
+                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1serverRequest.txt")))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header1", "value1"))
 
+                .when(request().withMethod(HttpMethod.POST).withPath("/user2").withBody("User2")).then(response()
+                        .withBody(new File(
+                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test2serverResponse.txt"))
+                        .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header2", "value2")))
 
-                .when(request()
-                        .withMethod(HttpMethod.POST).withPath("/user2").withBody("User2"))
-                .then(response()
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test2serverResponse.txt"))
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header2", "value2")))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user3").withBody(new File(
+                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverRequest.txt")))
+                .then(response().withBody("User3").withBody(new File(
+                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverResponse.txt"))
+                        .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header3", "value3")))
 
-
-                .when(request()
-                        .withMethod(HttpMethod.POST).withPath("/user3")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverRequest.txt")))
-                .then(response()
-                        .withBody("User3")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverResponse.txt"))
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header3", "value3")))
-
-
-                .when(request()
-                        .withMethod(HttpMethod.POST).withPath("/user4")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverRequest.txt")))
-                .then(response()
-                        .withBody("User4")
-                        .withBody(new File("/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverResponse.txt"))
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header4", "value4")))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user4").withBody(new File(
+                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverRequest.txt")))
+                .then(response().withBody("User4").withBody(new File(
+                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverResponse.txt"))
+                        .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header4", "value4")))
 
                 .operation().start();
     }

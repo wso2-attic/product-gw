@@ -30,8 +30,10 @@ import org.wso2.gw.emulator.http.client.contexts.HttpResponseContext;
 
 import java.util.Map;
 
+/**
+ * Process the received response
+ */
 public class HttpResponseInformationProcessor extends AbstractClientProcessor<HttpClientResponseProcessorContext> {
-
 
     @Override
     public void process(HttpClientResponseProcessorContext processorContext) {
@@ -70,7 +72,8 @@ public class HttpResponseInformationProcessor extends AbstractClientProcessor<Ht
     }
 
     private void populateResponseStatusCode(HttpClientResponseProcessorContext processorContext) {
-        processorContext.getReceivedResponseContext().setResponseStatus(processorContext.getReceivedResponse().getStatus());
+        processorContext.getReceivedResponseContext()
+                .setResponseStatus(processorContext.getReceivedResponse().getStatus());
     }
 
     public void appendDecoderResult(HttpResponseContext responseContext, HttpObject httpObject, ByteBuf content) {

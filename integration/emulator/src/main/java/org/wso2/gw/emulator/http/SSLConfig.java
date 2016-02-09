@@ -22,6 +22,9 @@ package org.wso2.gw.emulator.http;
 
 import java.io.File;
 
+/**
+ * SSLConfiguration
+ * */
 public class SSLConfig {
     private File keyStore;
     private String keyStorePass;
@@ -41,16 +44,13 @@ public class SSLConfig {
         return certPass;
     }
 
-
     public File getTrustStore() {
         return trustStore;
     }
 
-
     public String getTrustStorePass() {
         return trustStorePass;
     }
-
 
     public File getKeyStore() {
         return keyStore;

@@ -6,8 +6,16 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * HttpChunkedWriteHandler
+ * */
 public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
     private static final Logger log = Logger.getLogger(HttpChunkedWriteHandler.class);
     private final HttpServerInformationContext serverInformationContext;
@@ -27,14 +35,13 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
 
     private void waitingDelay(int delay) {
         if (delay != 0) {
-            ScheduledFuture scheduledWaitingFuture =
-                    scheduledWritingExecutorService.schedule(new Callable() {
-                        public Object call() throws Exception {
-                            return "Writing";
-                        }
-                    }, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledWaitingFuture = scheduledWritingExecutorService.schedule(new Callable() {
+                public Object call() throws Exception {
+                    return "Writing";
+                }
+            }, delay, TimeUnit.MILLISECONDS);
             try {
-               scheduledWaitingFuture.get();
+                scheduledWaitingFuture.get();
             } catch (InterruptedException e) {
                 log.error(e);
             } catch (ExecutionException e) {

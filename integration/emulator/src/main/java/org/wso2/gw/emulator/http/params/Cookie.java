@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.http.params;
 
+/**
+ *Cookies
+ * */
 public class Cookie {
     private String name;
     private String value;

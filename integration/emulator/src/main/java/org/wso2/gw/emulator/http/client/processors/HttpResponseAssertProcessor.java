@@ -27,23 +27,26 @@ import org.wso2.gw.emulator.http.params.Header;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Assert the received response with expected response
+ */
 public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpClientResponseProcessorContext> {
 
     @Override
     public void process(HttpClientResponseProcessorContext processorContext) {
 
-        if(!processorContext.getExpectedResponseContext().getAssertionStatus()){
+        if (!processorContext.getExpectedResponseContext().getAssertionStatus()) {
             assertResponseContent(processorContext);
             assertHeaderParameters(processorContext);
-        }else{
+        } else {
             System.out.println("Assertion ignored");
         }
     }
 
     private void assertResponseContent(HttpClientResponseProcessorContext processorContext) {
 
-        if (processorContext.getExpectedResponseContext().getBody().equalsIgnoreCase(processorContext.getReceivedResponseContext()
-                                                                                      .getResponseBody())) {
+        if (processorContext.getExpectedResponseContext().getBody()
+                .equalsIgnoreCase(processorContext.getReceivedResponseContext().getResponseBody())) {
             System.out.println("Equal content");
         } else {
             System.out.println("Wrong content");
@@ -51,7 +54,8 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
     }
 
     private void assertHeaderParameters(HttpClientResponseProcessorContext processorContext) {
-        if (processorContext.getExpectedResponseContext().getHeaders() == null || processorContext.getExpectedResponseContext().getHeaders().isEmpty()) {
+        if (processorContext.getExpectedResponseContext().getHeaders() == null || processorContext
+                .getExpectedResponseContext().getHeaders().isEmpty()) {
             return;
         }
         Map<String, List<String>> receivedHeaders = processorContext.getReceivedResponseContext().getHeaderParameters();
@@ -60,17 +64,19 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
         boolean value = false;
         if (operation == Operation.AND) {
 
-            for (Map.Entry<String, List<String>> entry : processorContext.getReceivedResponseContext().getHeaderParameters().entrySet()) {
+            for (Map.Entry<String, List<String>> entry : processorContext.getReceivedResponseContext()
+                    .getHeaderParameters().entrySet()) {
                 entry.getKey();
             }
 
             for (Header header : processorContext.getExpectedResponseContext().getHeaders()) {
                 List<String> receivedHeaderValues = receivedHeaders.get(header.getName());
 
-                if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues.contains(header.getValue())) {
+                if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues
+                        .contains(header.getValue())) {
                     System.out.print("Header not present");
                     break;
-                }else{
+                } else {
                     System.out.println("Headers are present");
                 }
             }
@@ -78,7 +84,8 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
             for (Header header : processorContext.getExpectedResponseContext().getHeaders()) {
                 List<String> receivedHeaderValues = receivedHeaders.get(header.getName());
 
-                if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues.contains(header.getValue())) {
+                if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues
+                        .contains(header.getValue())) {
                     ;
                 } else {
                     value = true;
@@ -91,20 +98,21 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
             }
         } else {
             boolean match = false;
-            for (Map.Entry<String, List<String>> header : receivedHeaders.entrySet()){
+            for (Map.Entry<String, List<String>> header : receivedHeaders.entrySet()) {
 
                 List<String> value1 = header.getValue();
-                for (String val : value1){
-                    Header header1 = new Header(header.getKey(),val);
-                    if(processorContext.getExpectedResponseContext().getHeaders().get(0).getValue().equals(header1.getValue())
-                            && processorContext.getExpectedResponseContext().getHeaders().get(0).getName().equals(header1.getName())){
+                for (String val : value1) {
+                    Header header1 = new Header(header.getKey(), val);
+                    if (processorContext.getExpectedResponseContext().getHeaders().get(0).getValue()
+                            .equals(header1.getValue()) && processorContext.getExpectedResponseContext().getHeaders()
+                            .get(0).getName().equals(header1.getName())) {
                         match = true;
                     }
                 }
             }
-            if (match){
+            if (match) {
                 System.out.println("Header Present");
-            }else{
+            } else {
                 System.out.println("Header is not present");
             }
         }

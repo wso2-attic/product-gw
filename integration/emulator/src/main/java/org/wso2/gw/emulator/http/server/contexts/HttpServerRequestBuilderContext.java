@@ -25,10 +25,10 @@ import org.wso2.gw.emulator.dsl.CookieOperation;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.QueryParameterOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
-import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.params.QueryParameter;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ *HttpServerRequestBuilderContext
+ * */
 public class HttpServerRequestBuilderContext extends AbstractRequestBuilderContext {
     private static HttpServerRequestBuilderContext serverRequest;
     private HttpMethod method;
@@ -111,7 +114,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-
     public HttpServerRequestBuilderContext withQueryParameter(String name, String value) {
         this.queryParameter = new QueryParameter(name, value);
         if (queryParameters == null) {
@@ -121,13 +123,12 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-
     public QueryParameterOperation getQueryOperation() {
         return queryOperation;
     }
 
     public HttpServerRequestBuilderContext withQueryParameters(QueryParameterOperation queryOperation,
-                                                               QueryParameter... queryParameters) {
+            QueryParameter... queryParameters) {
         this.queryOperation = queryOperation;
         this.queryParameters = Arrays.asList(queryParameters);
         return this;
@@ -152,8 +153,9 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     }
 
     public boolean isMatch(HttpRequestContext requestContext) {
-        if (isContextMatch(requestContext) && isHttpMethodMatch(requestContext) && isQueryParameterMatch(requestContext) && isRequestContentMatch(requestContext) &&
-            isHeadersMatch(requestContext)) {
+        if (isContextMatch(requestContext) && isHttpMethodMatch(requestContext) && isQueryParameterMatch(requestContext)
+                && isRequestContentMatch(requestContext) &&
+                isHeadersMatch(requestContext)) {
             return true;
         }
         return false;

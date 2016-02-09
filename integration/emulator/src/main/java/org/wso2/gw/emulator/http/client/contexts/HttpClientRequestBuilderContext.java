@@ -23,16 +23,19 @@ package org.wso2.gw.emulator.http.client.contexts;
 import io.netty.handler.codec.http.HttpMethod;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
-import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.params.QueryParameter;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Client request information
+ */
 public class HttpClientRequestBuilderContext extends AbstractRequestBuilderContext {
     private static final Logger log = Logger.getLogger(HttpClientRequestBuilderContext.class);
     private static HttpClientRequestBuilderContext clientRequest;

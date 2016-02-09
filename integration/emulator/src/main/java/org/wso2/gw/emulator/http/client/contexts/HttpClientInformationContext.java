@@ -21,13 +21,13 @@
 package org.wso2.gw.emulator.http.client.contexts;
 
 import org.wso2.gw.emulator.http.client.HttpClientInitializer;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Client request response information context
+ */
 public class HttpClientInformationContext {
     private HttpClientConfigBuilderContext clientConfigBuilderContext;
     private Map<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> correlation;
@@ -49,8 +49,8 @@ public class HttpClientInformationContext {
     }
 
     public void addCorrelation(HttpClientRequestBuilderContext httpClientRequestBuilderContext,
-                               HttpClientResponseBuilderContext httpClientResponseBuilderContext){
-        if(correlation == null){
+            HttpClientResponseBuilderContext httpClientResponseBuilderContext) {
+        if (correlation == null) {
             this.correlation = new HashMap<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext>();
         }
         correlation.put(httpClientRequestBuilderContext, httpClientResponseBuilderContext);
@@ -80,11 +80,11 @@ public class HttpClientInformationContext {
         this.expectedResponse = expectedResponse;
     }
 
-    public void setReceivedResponseProcessContext(HttpClientResponseProcessorContext receivedProcessContext){
+    public void setReceivedResponseProcessContext(HttpClientResponseProcessorContext receivedProcessContext) {
         this.receivedProcessContext = receivedProcessContext;
     }
 
-    public HttpClientResponseProcessorContext getReceivedResponseProcessContext(){
+    public HttpClientResponseProcessorContext getReceivedResponseProcessContext() {
         return receivedProcessContext;
     }
 }

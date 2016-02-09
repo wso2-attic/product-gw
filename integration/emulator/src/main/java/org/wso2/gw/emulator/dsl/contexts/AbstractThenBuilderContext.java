@@ -20,7 +20,10 @@
 
 package org.wso2.gw.emulator.dsl.contexts;
 
-public abstract class AbstractThenBuilderContext<T extends AbstractResponseBuilderContext>{
+/**
+ * AbstractThenBuilderContext
+ * */
+public abstract class AbstractThenBuilderContext<T extends AbstractResponseBuilderContext> {
 
     public abstract AbstractWhenBuilderContext then(T responseBuilderContext);
 }

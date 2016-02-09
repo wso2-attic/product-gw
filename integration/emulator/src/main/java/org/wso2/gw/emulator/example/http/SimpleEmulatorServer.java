@@ -22,28 +22,22 @@ package org.wso2.gw.emulator.example.http;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.wso2.gw.emulator.dsl.Emulator;
+
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * Simple emulator server
+ * */
 public class SimpleEmulatorServer {
 
     public static void main(String args[]) {
 
-        Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                               .host("127.0.0.1").port(6065).context("/users"))
-                .when(request()
-                              .withMethod(HttpMethod.GET).withPath("user1/"))
-                .then(response()
-                              .withBody("User1")
-                              .withStatusCode(HttpResponseStatus.OK)
-                              .withHeader("Header1", "value1"))
-                .when(request()
-                              .withMethod(HttpMethod.GET).withPath("user2/"))
-                .then(response()
-                              .withStatusCode(HttpResponseStatus.NOT_FOUND))
-                .operation().start();
+        Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+                .when(request().withMethod(HttpMethod.GET).withPath("user1/"))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
+                        .withHeader("Header1", "value1")).when(request().withMethod(HttpMethod.GET).withPath("user2/"))
+                .then(response().withStatusCode(HttpResponseStatus.NOT_FOUND)).operation().start();
     }
 }

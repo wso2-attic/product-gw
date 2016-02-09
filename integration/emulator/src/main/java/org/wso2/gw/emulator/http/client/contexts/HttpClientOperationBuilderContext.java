@@ -23,6 +23,9 @@ package org.wso2.gw.emulator.http.client.contexts;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractClientOperationBuilderContext;
 
+/**
+ * Request sending operation of client
+ */
 public class HttpClientOperationBuilderContext extends AbstractClientOperationBuilderContext {
     private static final Logger log = Logger.getLogger(HttpClientOperationBuilderContext.class);
     private HttpClientInformationContext httpClientInformationContext;

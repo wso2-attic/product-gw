@@ -41,6 +41,9 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * EmulatorQueryParameterValidationTestCase
+ * */
 public class EmulatorQueryParameterValidationTestCase {
 
     private HttpServerOperationBuilderContext emulator;
@@ -53,16 +56,11 @@ public class EmulatorQueryParameterValidationTestCase {
 
     @Test
     public void testSingleRequestQueryParameterFields() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user4").withMethod(HttpMethod.GET).withQueryParameter("Query-req-1","value-req1")
-                                .withHeader("Header-req-1",
-                                "value-req1"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user4").withMethod(HttpMethod.GET)
+                        .withQueryParameter("Query-req-1", "value-req1").withHeader("Header-req-1", "value-req1"))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -70,114 +68,91 @@ public class EmulatorQueryParameterValidationTestCase {
                 "Expected response content not found");
         Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().size(), 2,
                 "Expected response headers count is wrong");
-        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get
-                        ("Header5").get(0), "value5",
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Header5").get(0), "value5",
                 "Expected response header not found");
     }
 
     @Test
     public void testMultipleRequestQueryFieldsWithANDOperation() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user5").withMethod(HttpMethod.GET).withQueryParameters(new QueryParameter
-                                ("Query-req2", "value-req2"), new QueryParameter("Query-req3", "value-req3"), new QueryParameter
-                                ("Query-req4", "value-req4")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user5").withMethod(HttpMethod.GET)
+                        .withQueryParameters(new QueryParameter("Query-req2", "value-req2"),
+                                new QueryParameter("Query-req3", "value-req3"),
+                                new QueryParameter("Query-req4", "value-req4")))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User5",
                 "Expected response content not found");
         Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().size(), 2,
                 "Expected response headers count is wrong");
-        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get
-                        ("Header6").get(0), "value6",
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Header6").get(0), "value6",
                 "Expected response header not found");
     }
 
     @Test
     public void testMultipleRequestQueryFieldsWithOROperation() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user6").withMethod(HttpMethod.GET).withQueryParameters(new QueryParameter("Query-req5", "value-req5"), new QueryParameter
-                                ("Query-req6", "value-req6")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user6").withMethod(HttpMethod.GET)
+                        .withQueryParameters(new QueryParameter("Query-req5", "value-req5"),
+                                new QueryParameter("Query-req6", "value-req6")))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User7",
                 "Expected response content not found");
         Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().size(), 2,
                 "Expected response headers count is wrong");
-        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get
-                        ("Header7").get(0), "value7",
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Header7").get(0), "value7",
                 "Expected response header not found");
     }
 
     @Test
     public void testMultipleRequestQueryFieldsWithOROperationErrorScenario() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user6").withMethod(HttpMethod.GET)
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user6").withMethod(HttpMethod.GET)
                         .withQueryParameter("Header-req15", "value-req15"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response status code not found");
     }
 
     @Test
     public void testMultipleRequestQueryFieldsWithANDOperationErrorScenario() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user5").withMethod(HttpMethod.GET).withQueryParameters(new QueryParameter
-                                ("Query-req2", "value-req2"), new QueryParameter("Query-req3", "value-req3"), new QueryParameter
-                                ("Query-req14", "value-req14"), new QueryParameter
-                                ("Query-req5", "value-req5")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user5").withMethod(HttpMethod.GET)
+                        .withQueryParameters(new QueryParameter("Query-req2", "value-req2"),
+                                new QueryParameter("Query-req3", "value-req3"),
+                                new QueryParameter("Query-req14", "value-req14"),
+                                new QueryParameter("Query-req5", "value-req5")))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response status code not found");
     }
 
     @Test
     public void testMultipleRequestQueryHeaderFieldsWithANDOperation() {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user8").withMethod(HttpMethod.GET)
-                        .withHeaders(new Header("Header8","value8"), new Header("Header9","value9"))
-                        .withQueryParameters(
-                                new QueryParameter("Query-req8", "value-req8"),
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user8").withMethod(HttpMethod.GET)
+                        .withHeaders(new Header("Header8", "value8"), new Header("Header9", "value9"))
+                        .withQueryParameters(new QueryParameter("Query-req8", "value-req8"),
                                 new QueryParameter("Query-req9", "value-req9"),
                                 new QueryParameter("Query-req10", "value-req10")))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User8",
                 "Expected response content not found");
         Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().size(), 2,
                 "Expected response headers count is wrong");
-        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get
-                        ("Header8").get(0), "value8",
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Header8").get(0), "value8",
                 "Expected response header not found");
     }
-
 
     @AfterClass
     public void cleanup() {
@@ -185,68 +160,41 @@ public class EmulatorQueryParameterValidationTestCase {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                        .host("127.0.0.1").port(6065).context("/users"))
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user1/"))
-                .then(response()
-                        .withBody("User1")
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeader("Header1", "value1"))
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user2/"))
-                .then(response()
-                        .withBody("User2")
-                        .withStatusCode(HttpResponseStatus.OK)
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+                .when(request().withMethod(HttpMethod.GET).withPath("user1/"))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
+                        .withHeader("Header1", "value1")).when(request().withMethod(HttpMethod.GET).withPath("user2/"))
+                .then(response().withBody("User2").withStatusCode(HttpResponseStatus.OK)
                         .withHeaders(new Header("Header2", "value2")))
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user3/"))
-                .then(response()
-                        .withBody("User3")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.GET).withPath("user3/"))
+                .then(response().withBody("User3").withStatusCode(HttpResponseStatus.OK)
                         .withHeaders(new Header("Header3", "value3"), new Header("Header4", "value4")))
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user4/").withQueryParameter("Query-req-1", "value-req1"))
-                .then(response()
-                        .withBody("User4")
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeader("Header5", "value5"))
-                .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("user5/")
-                        .withQueryParameters(
-                                QueryParameterOperation.AND,
+                .when(request().withMethod(HttpMethod.GET).withPath("user4/")
+                        .withQueryParameter("Query-req-1", "value-req1"))
+                .then(response().withBody("User4").withStatusCode(HttpResponseStatus.OK)
+                        .withHeader("Header5", "value5")).when(request().withMethod(HttpMethod.GET).withPath("user5/")
+                        .withQueryParameters(QueryParameterOperation.AND,
                                 new QueryParameter("Query-req2", "value-req2"),
                                 new QueryParameter("Query-req3", "value-req3"),
                                 new QueryParameter("Query-req4", "value-req4")))
                 .then(response().withBody("User5").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header6", "value6"))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("user8/")
-                        .withHeaders(Operation.AND,
-                                new Header("Header8","value8"),
-                                new Header("Header9","value9"))
-                        .withQueryParameters(
-                                QueryParameterOperation.AND,
+                .when(request().withMethod(HttpMethod.GET).withPath("user8/")
+                        .withHeaders(Operation.AND, new Header("Header8", "value8"), new Header("Header9", "value9"))
+                        .withQueryParameters(QueryParameterOperation.AND,
                                 new QueryParameter("Query-req8", "value-req8"),
                                 new QueryParameter("Query-req9", "value-req9"),
                                 new QueryParameter("Query-req10", "value-req10")))
                 .then(response().withBody("User8").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header8", "value8"))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user6/").withQueryParameters(QueryParameterOperation.OR, new QueryParameter
-                                ("Query-req3", "value-req3"), new QueryParameter("Query-req5", "value-req5"), new QueryParameter
-                                ("Query-req6", "value-req6")))
-                .then(response()
-                        .withBody("User7")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.GET).withPath("user6/")
+                        .withQueryParameters(QueryParameterOperation.OR, new QueryParameter("Query-req3", "value-req3"),
+                                new QueryParameter("Query-req5", "value-req5"),
+                                new QueryParameter("Query-req6", "value-req6")))
+                .then(response().withBody("User7").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header7", "value7"))
-
 
                 .operation().start();
     }

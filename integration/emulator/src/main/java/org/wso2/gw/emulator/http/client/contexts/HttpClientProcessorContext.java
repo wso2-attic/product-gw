@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.http.client.contexts;
 
+/**
+ * To set and get client information context
+ */
 public class HttpClientProcessorContext {
     private HttpClientInformationContext clientInformationContext;
 

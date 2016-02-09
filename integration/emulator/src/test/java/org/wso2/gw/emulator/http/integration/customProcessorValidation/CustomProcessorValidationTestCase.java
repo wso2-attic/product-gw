@@ -38,48 +38,41 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * CustomProcessorValidationTestCase
+ * */
 public class CustomProcessorValidationTestCase {
 
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
-    public void setEnvironment() throws Exception{
+    public void setEnvironment() throws Exception {
         this.emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     @Test
-    public void testServerRequestCustomProcessor(){
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user1").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+    public void testServerRequestCustomProcessor() {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user1").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "ChangedBody",
                 "Expected response content not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get
-                        ("Header2").get(0), "ChangedHeaderValue2",
-                "Expected response header not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Header2").get(0),
+                "ChangedHeaderValue2", "Expected response header not found");
     }
 
-
     @Test
-    public void testServerRequestResponseCustomProcessorsErrorScenario(){
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
+    public void testServerRequestResponseCustomProcessorsErrorScenario() {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
 
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user5").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user5").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -91,33 +84,20 @@ public class CustomProcessorValidationTestCase {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                        .host("127.0.0.1").port(6065).context("/users")
-                        .withCustomRequestProcessor(new CustomRequestProcessor())
-                        .withCustomResponseProcessor(new CustomResponseProcessor()))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users")
+                .withCustomRequestProcessor(new CustomRequestProcessor())
+                .withCustomResponseProcessor(new CustomResponseProcessor()))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("/user1"))
-                .then(response()
-                        .withBody("User1")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.GET).withPath("/user1"))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header1", "value1"))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("/user2"))
-                .then(response()
-                        .withBody("ChangedBody")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.GET).withPath("/user2"))
+                .then(response().withBody("ChangedBody").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header2", "ChangedHeaderValue2"))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("user4"))
-                .then(response()
-                        .withBody("User4")
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header4", "value4")))
-                .operation().start();
+                .when(request().withMethod(HttpMethod.GET).withPath("user4"))
+                .then(response().withBody("User4").withStatusCode(HttpResponseStatus.OK)
+                        .withHeaders(new Header("Header4", "value4"))).operation().start();
     }
 }

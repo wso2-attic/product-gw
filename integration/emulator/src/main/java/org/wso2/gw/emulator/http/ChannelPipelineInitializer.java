@@ -23,18 +23,22 @@ package org.wso2.gw.emulator.http;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.handler.HttpClientHandler;
+import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 import org.wso2.gw.emulator.http.server.contexts.MockServerThread;
 import org.wso2.gw.emulator.http.server.handler.HttpChunkedWriteHandler;
 import org.wso2.gw.emulator.http.server.handler.HttpServerHandler;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 
+/**
+ * ChannelPipelineInitializer
+ * */
 public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel> {
     private SslContext sslCtx;
     private EmulatorType emulatorType;

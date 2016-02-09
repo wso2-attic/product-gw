@@ -4,9 +4,9 @@
 
     <test name="Basic-Test" preserve-order="true" verbose="2">
         <classes>
-            <class name="org.wso2.gw.emulator.http.integration.ContextPathValidation.EmulatorWithContextValidationTestCase"/>
-            <class name="org.wso2.gw.emulator.http.integration.ContextPathValidation.EmulatorWithPathValidationTestCase"/>
-            <class name="org.wso2.gw.emulator.http.integration.CustomProcessorValidationTestCase"/>
+            <class name="org.wso2.gw.emulator.http.integration.contextPathValidation.EmulatorWithContextValidationTestCase"/>
+            <class name="org.wso2.gw.emulator.http.integration.contextPathValidation.EmulatorWithPathValidationTestCase"/>
+            <class name="org.wso2.gw.emulator.http.integration.customProcessorValidation.CustomProcessorValidationTestCase"/>
             <class name="org.wso2.gw.emulator.http.integration.EmulatorHeaderValidationTestCase"/>
             <class name="org.wso2.gw.emulator.http.integration.EmulatorQueryParameterValidationTestCase"/>
         </classes>

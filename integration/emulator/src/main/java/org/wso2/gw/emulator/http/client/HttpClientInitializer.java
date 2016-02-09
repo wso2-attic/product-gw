@@ -28,12 +28,19 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
-import org.wso2.gw.emulator.http.client.contexts.*;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestProcessorContext;
+import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.processors.HttpRequestInformationProcessor;
 import org.wso2.gw.emulator.util.ValidationUtil;
 
 import java.util.Map;
 
+/**
+ * Http client initializer
+ */
 public class HttpClientInitializer {
     private HttpClientInformationContext clientInformationContext;
     private EventLoopGroup group;
@@ -49,15 +56,14 @@ public class HttpClientInitializer {
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
-                                                                                               EmulatorType.HTTP_CLIENT, null);
+                EmulatorType.HTTP_CLIENT, null);
         channelPipelineInitializer.setClientInformationContext(clientInformationContext);
         bootstrap.group(group).channel(NioSocketChannel.class).handler(channelPipelineInitializer);
 
-        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry :
-                clientInformationContext.getRequestResponseCorrelation().entrySet()) {
+        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry : clientInformationContext
+                .getRequestResponseCorrelation().entrySet()) {
             clientInformationContext.setExpectedResponse(entry.getValue());
-            HttpClientRequestProcessorContext httpClientRequestProcessorContext = new
-                    HttpClientRequestProcessorContext();
+            HttpClientRequestProcessorContext httpClientRequestProcessorContext = new HttpClientRequestProcessorContext();
             httpClientRequestProcessorContext.setRequestBuilderContext(entry.getKey());
             httpClientRequestProcessorContext.setClientInformationContext(clientInformationContext);
             sendMessage(httpClientRequestProcessorContext);
@@ -67,11 +73,12 @@ public class HttpClientInitializer {
 
     private void sendMessage(HttpClientRequestProcessorContext httpClientProcessorContext) throws Exception {
         new HttpRequestInformationProcessor().process(httpClientProcessorContext);
-        HttpClientConfigBuilderContext clientConfigBuilderContext = httpClientProcessorContext.getClientInformationContext()
-                .getClientConfigBuilderContext();
+        HttpClientConfigBuilderContext clientConfigBuilderContext = httpClientProcessorContext
+                .getClientInformationContext().getClientConfigBuilderContext();
         ValidationUtil.validateMandatoryParameters(clientConfigBuilderContext);
 
-        Channel ch = bootstrap.connect(clientConfigBuilderContext.getHost(), clientConfigBuilderContext.getPort()).sync().channel();
+        Channel ch = bootstrap.connect(clientConfigBuilderContext.getHost(), clientConfigBuilderContext.getPort())
+                .sync().channel();
         ch.isWritable();
         ch.writeAndFlush(httpClientProcessorContext.getRequest());
         ch.closeFuture().sync();

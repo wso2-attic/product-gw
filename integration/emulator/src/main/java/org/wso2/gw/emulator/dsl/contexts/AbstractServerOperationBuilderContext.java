@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.dsl.contexts;
 
+/**
+ *  AbstractServerOperationBuilderContext
+ * */
 public abstract class AbstractServerOperationBuilderContext extends AbstractOperationBuilderContext {
 
     public abstract AbstractServerOperationBuilderContext start();

@@ -25,6 +25,9 @@ import org.wso2.gw.emulator.http.server.HttpServerInitializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * HttpServerInformationContext
+ * */
 public class HttpServerInformationContext {
     private HttpServerConfigBuilderContext serverConfigBuilderContext;
     private Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> correlation;
@@ -48,7 +51,7 @@ public class HttpServerInformationContext {
     }
 
     public void addCorrelation(HttpServerRequestBuilderContext httpServerRequestBuilderContext,
-                               HttpServerResponseBuilderContext httpServerResponseBuilderContext) {
+            HttpServerResponseBuilderContext httpServerResponseBuilderContext) {
         if (correlation == null) {
             this.correlation = new HashMap<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext>();
         }

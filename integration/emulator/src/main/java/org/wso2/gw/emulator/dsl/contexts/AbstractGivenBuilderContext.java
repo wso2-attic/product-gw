@@ -20,7 +20,10 @@
 
 package org.wso2.gw.emulator.dsl.contexts;
 
-public abstract class AbstractGivenBuilderContext<T extends AbstractConfigurationBuilderContext>{
+/**
+ * AbstractGivenBuilderContext
+ * */
+public abstract class AbstractGivenBuilderContext<T extends AbstractConfigurationBuilderContext> {
 
     public abstract AbstractWhenBuilderContext given(T configurationContext);
 }

@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * File read util
+ * */
 public class FileReaderUtil {
 
     public static String getFileBody(File filePath) throws IOException {
@@ -33,7 +36,7 @@ public class FileReaderUtil {
         String content = "";
 
         while ((c = fileInputStream.read()) != -1) {
-            content += (char)c;
+            content += (char) c;
         }
         content = content.replace("\n", "").replace("\r", "");
 

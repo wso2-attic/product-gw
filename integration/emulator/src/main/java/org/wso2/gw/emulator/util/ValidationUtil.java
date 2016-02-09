@@ -24,6 +24,9 @@ import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext;
 
+/**
+ * Validation util
+ * */
 public class ValidationUtil {
     private static final Logger log = Logger.getLogger(ValidationUtil.class);
 
@@ -52,14 +55,14 @@ public class ValidationUtil {
     }
 
     private static boolean isHostAvailable(String host) {
-        if(host == null) {
+        if (host == null) {
             return false;
         }
         return true;
     }
 
     private static boolean isPortAvailable(int port) {
-        if(port == 0) {
+        if (port == 0) {
             return false;
         }
         return true;

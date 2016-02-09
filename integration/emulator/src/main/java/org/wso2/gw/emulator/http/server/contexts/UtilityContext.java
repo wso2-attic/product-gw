@@ -21,6 +21,9 @@ package org.wso2.gw.emulator.http.server.contexts;
 
 import java.util.regex.Pattern;
 
+/**
+ * UtilityContext
+ * */
 public class UtilityContext {
     private Pattern pattern;
 

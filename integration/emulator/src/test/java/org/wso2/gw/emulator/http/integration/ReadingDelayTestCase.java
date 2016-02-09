@@ -38,6 +38,9 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
+/**
+ * ReadingDelayTestCase
+ * */
 public class ReadingDelayTestCase {
 
     private HttpServerOperationBuilderContext emulator;
@@ -49,15 +52,11 @@ public class ReadingDelayTestCase {
     }
 
     @Test
-    public void testServerWithReadingDelayGET(){
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user1").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+    public void testServerWithReadingDelayGET() {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user1").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -66,15 +65,11 @@ public class ReadingDelayTestCase {
     }
 
     @Test
-    public void testServerWithReadingDelayPUT(){
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user2").withMethod(HttpMethod.PUT))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+    public void testServerWithReadingDelayPUT() {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user2").withMethod(HttpMethod.PUT))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -83,15 +78,11 @@ public class ReadingDelayTestCase {
     }
 
     @Test
-    public void testServerWithReadingDelayPOST(){
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator()
-                .client()
-                .given(HttpClientConfigBuilderContext.configure()
-                        .host("127.0.0.1").port(6065))
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/users/user3").withMethod(HttpMethod.POST))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+    public void testServerWithReadingDelayPOST() {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
+                .when(HttpClientRequestBuilderContext.request().withPath("/users/user3").withMethod(HttpMethod.POST))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -99,40 +90,25 @@ public class ReadingDelayTestCase {
                 "Expected response content not found");
     }
 
-
     @AfterClass
     public void cleanup() {
         this.emulator.stop();
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator()
-                .server()
-                .given(configure()
-                        .host("127.0.0.1").port(6065)
-                        .context("/users")
-                        .withReadingDelay(1000))
+        return Emulator.getHttpEmulator().server()
+                .given(configure().host("127.0.0.1").port(6065).context("/users").withReadingDelay(1000))
 
-                .when(request()
-                        .withMethod(HttpMethod.GET).withPath("/user1"))
-                .then(response()
-                        .withBody("User1")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.GET).withPath("/user1"))
+                .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header1", "value1"))
 
-                .when(request()
-                        .withMethod(HttpMethod.PUT).withPath("/user2"))
-                .then(response()
-                        .withBody("User2")
-                        .withStatusCode(HttpResponseStatus.OK)
+                .when(request().withMethod(HttpMethod.PUT).withPath("/user2"))
+                .then(response().withBody("User2").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header2", "value2"))
 
-                .when(request()
-                        .withMethod(HttpMethod.POST).withPath("user3"))
-                .then(response()
-                        .withBody("User3")
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header3", "value3")))
-                .operation().start();
+                .when(request().withMethod(HttpMethod.POST).withPath("user3"))
+                .then(response().withBody("User3").withStatusCode(HttpResponseStatus.OK)
+                        .withHeaders(new Header("Header3", "value3"))).operation().start();
     }
 }

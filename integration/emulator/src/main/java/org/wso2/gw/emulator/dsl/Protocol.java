@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.dsl;
 
+/**
+ * Protocol types
+ * */
 public enum Protocol {
-    HTTP,HTTPS
+    HTTP, HTTPS
 }

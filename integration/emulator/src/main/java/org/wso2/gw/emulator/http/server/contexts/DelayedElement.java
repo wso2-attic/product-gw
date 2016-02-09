@@ -5,6 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Delay element of the fast backend
+ * */
 public class DelayedElement implements Delayed {
     private long DELAY;
     private ChannelHandlerContext ctx;

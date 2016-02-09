@@ -24,6 +24,9 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractWhenBuilderContext;
 
 import java.util.List;
 
+/**
+ * HttpServerWhenBuilderContext
+ * */
 public class HttpServerWhenBuilderContext extends AbstractWhenBuilderContext<HttpServerRequestBuilderContext> {
     private final HttpServerInformationContext httpServerInformationContext;
     private HttpServerThenBuilderContext thenBuilderContext;
@@ -32,7 +35,7 @@ public class HttpServerWhenBuilderContext extends AbstractWhenBuilderContext<Htt
     private HttpServerOperationBuilderContext httpServerOperationBuilderContext;
 
     public HttpServerWhenBuilderContext(List<HttpServerWhenBuilderContext> whenBuilderContextList,
-                                        HttpServerInformationContext httpServerInformationContext) {
+            HttpServerInformationContext httpServerInformationContext) {
         this.httpServerInformationContext = httpServerInformationContext;
         this.whenBuilderContextList = whenBuilderContextList;
         this.whenBuilderContextList.add(this);
@@ -42,7 +45,8 @@ public class HttpServerWhenBuilderContext extends AbstractWhenBuilderContext<Htt
     public HttpServerThenBuilderContext when(HttpServerRequestBuilderContext requestContext) {
         this.requestContext = requestContext;
         this.requestContext.buildPathRegex(httpServerInformationContext.getServerConfigBuilderContext().getContext());
-        thenBuilderContext = new HttpServerThenBuilderContext(whenBuilderContextList, requestContext, httpServerInformationContext);
+        thenBuilderContext = new HttpServerThenBuilderContext(whenBuilderContextList, requestContext,
+                httpServerInformationContext);
         return thenBuilderContext;
     }
 

@@ -28,6 +28,9 @@ import org.wso2.gw.emulator.http.server.processors.HttpResponseCustomProcessor;
 
 import java.io.File;
 
+/**
+ * HttpServerConfigBuilderContext
+ * */
 public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilderContext {
     private static HttpServerConfigBuilderContext config;
     private String host = null;

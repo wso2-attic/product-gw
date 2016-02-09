@@ -21,24 +21,30 @@
 package org.wso2.gw.emulator.http.client.contexts;
 
 import org.wso2.gw.emulator.dsl.contexts.AbstractThenBuilderContext;
+
 import java.util.List;
 
-public class HttpClientThenBuilderContext extends AbstractThenBuilderContext<HttpClientResponseBuilderContext>{
+/**
+ * Http client then builder context
+ */
+public class HttpClientThenBuilderContext extends AbstractThenBuilderContext<HttpClientResponseBuilderContext> {
     private final HttpClientRequestBuilderContext requestContext;
     private final HttpClientInformationContext httpClientInformationContext;
     private final List<HttpClientWhenBuilderContext> whenBuilderContextList;
     private HttpClientResponseBuilderContext responseContext;
     private HttpClientWhenBuilderContext whenBuilderContext;
 
-    public HttpClientThenBuilderContext(List<HttpClientWhenBuilderContext> whenBuilderContextList, HttpClientRequestBuilderContext requestContext, HttpClientInformationContext httpClientInformationContext) {
+    public HttpClientThenBuilderContext(List<HttpClientWhenBuilderContext> whenBuilderContextList,
+            HttpClientRequestBuilderContext requestContext, HttpClientInformationContext httpClientInformationContext) {
         this.requestContext = requestContext;
         this.httpClientInformationContext = httpClientInformationContext;
         this.whenBuilderContextList = whenBuilderContextList;
     }
+
     @Override
     public HttpClientWhenBuilderContext then(HttpClientResponseBuilderContext responseContext) {
         this.responseContext = responseContext;
-        whenBuilderContext = new HttpClientWhenBuilderContext(whenBuilderContextList,httpClientInformationContext);
+        whenBuilderContext = new HttpClientWhenBuilderContext(whenBuilderContextList, httpClientInformationContext);
         this.httpClientInformationContext.addCorrelation(requestContext, responseContext);
         return whenBuilderContext;
     }

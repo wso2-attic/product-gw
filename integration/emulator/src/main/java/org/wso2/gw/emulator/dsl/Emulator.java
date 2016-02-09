@@ -22,6 +22,9 @@ package org.wso2.gw.emulator.dsl;
 
 import org.wso2.gw.emulator.http.HTTPProtocolEmulator;
 
+/**
+ * Initialize Emulator
+ * */
 public class Emulator extends Thread {
     private static HTTPProtocolEmulator httpProtocolEmulator;
 

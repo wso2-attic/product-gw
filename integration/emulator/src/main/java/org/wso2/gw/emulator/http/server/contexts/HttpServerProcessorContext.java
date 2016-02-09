@@ -24,6 +24,9 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 
+/**
+ * HttpServerProcessorContext
+ */
 public class HttpServerProcessorContext {
     private HttpServerInformationContext serverInformationContext;
     private HttpRequestContext httpRequestContext;

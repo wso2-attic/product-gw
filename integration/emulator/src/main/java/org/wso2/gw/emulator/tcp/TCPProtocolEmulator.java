@@ -20,10 +20,12 @@
 
 package org.wso2.gw.emulator.tcp;
 
-//import org.wso2.gw.emulator.dsl.AbstractEmulatorContext;
 import org.wso2.gw.emulator.dsl.Emulator;
 
-public class TCPProtocolEmulator /*extends AbstractProtocolEmulator */{
+/**
+ * TCPProtocolEmulato
+ * */
+public class TCPProtocolEmulator /*extends AbstractProtocolEmulator */ {
 
     public TCPProtocolEmulator(Emulator emulator) {
         //super(emulator);

@@ -24,10 +24,13 @@ import org.wso2.gw.emulator.dsl.AbstractProtocolEmulator;
 import org.wso2.gw.emulator.http.client.HttpClientInitializer;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientGivenBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
+import org.wso2.gw.emulator.http.server.HttpServerInitializer;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerGivenBuilderContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
-import org.wso2.gw.emulator.http.server.HttpServerInitializer;
 
+/**
+ * HTTPProtocolEmulator
+ * */
 public class HTTPProtocolEmulator extends AbstractProtocolEmulator {
 
     @Override
@@ -35,8 +38,8 @@ public class HTTPProtocolEmulator extends AbstractProtocolEmulator {
         HttpServerInformationContext serverInformationContext = new HttpServerInformationContext();
         HttpServerInitializer serverInitializer = new HttpServerInitializer(serverInformationContext);
         serverInformationContext.setHttpServerInitializer(serverInitializer);
-        HttpServerGivenBuilderContext serverGivenBuilderContext = new HttpServerGivenBuilderContext
-                (serverInformationContext);
+        HttpServerGivenBuilderContext serverGivenBuilderContext = new HttpServerGivenBuilderContext(
+                serverInformationContext);
         return serverGivenBuilderContext;
     }
 
@@ -45,8 +48,8 @@ public class HTTPProtocolEmulator extends AbstractProtocolEmulator {
         HttpClientInformationContext clientInformationContext = new HttpClientInformationContext();
         HttpClientInitializer clientInitializer = new HttpClientInitializer(clientInformationContext);
         clientInformationContext.setClientInitializer(clientInitializer);
-        HttpClientGivenBuilderContext clientGivenBuilderContext = new HttpClientGivenBuilderContext
-                (clientInformationContext);
+        HttpClientGivenBuilderContext clientGivenBuilderContext = new HttpClientGivenBuilderContext(
+                clientInformationContext);
         return clientGivenBuilderContext;
     }
 }

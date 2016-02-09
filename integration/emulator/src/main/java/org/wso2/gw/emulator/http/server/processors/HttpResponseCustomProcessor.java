@@ -23,7 +23,7 @@ package org.wso2.gw.emulator.http.server.processors;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 
-public class HttpResponseCustomProcessor  {
+public class HttpResponseCustomProcessor {
     private static Logger log = Logger.getLogger("InfoLogging");
 
     public HttpServerProcessorContext process(HttpServerProcessorContext responseContext) {

@@ -32,8 +32,16 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorCont
 import org.wso2.gw.emulator.http.client.processors.HttpResponseAssertProcessor;
 import org.wso2.gw.emulator.http.client.processors.HttpResponseInformationProcessor;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * Http client handler
+ */
 public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(HttpClientHandler.class);
     private HttpResponseInformationProcessor responseInformationProcessor;
@@ -65,7 +73,8 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
             ByteBuf content = httpContent.content();
 
             if (content.isReadable()) {
-                this.responseInformationProcessor.appendDecoderResult(processorContext.getReceivedResponseContext(), httpContent, content);
+                this.responseInformationProcessor
+                        .appendDecoderResult(processorContext.getReceivedResponseContext(), httpContent, content);
             }
         }
         if (msg instanceof LastHttpContent) {
@@ -84,12 +93,11 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void readingDelay(int delay) {
-        ScheduledFuture scheduledFuture =
-                scheduledReadingExecutorService.schedule(new Callable() {
-                    public Object call() throws Exception {
-                        return "Client Reading";
-                    }
-                }, delay, TimeUnit.MILLISECONDS);
+        ScheduledFuture scheduledFuture = scheduledReadingExecutorService.schedule(new Callable() {
+            public Object call() throws Exception {
+                return "Client Reading";
+            }
+        }, delay, TimeUnit.MILLISECONDS);
         try {
             System.out.println("result = " + scheduledFuture.get());
         } catch (InterruptedException e) {

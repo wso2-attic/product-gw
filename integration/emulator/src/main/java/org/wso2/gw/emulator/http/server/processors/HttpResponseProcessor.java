@@ -30,8 +30,8 @@ import io.netty.handler.codec.http.ServerCookieEncoder;
 import io.netty.util.CharsetUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpRequestContext;
+import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext;
 
 import java.util.List;
@@ -40,6 +40,9 @@ import java.util.regex.Pattern;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 
+/**
+ * HttpResponseProcessor
+ * */
 public class HttpResponseProcessor extends AbstractServerProcessor {
 
     @Override
@@ -57,8 +60,7 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         boolean keepAlive = requestContext.isKeepAlive();
         Pattern pattern = processorContext.getServerInformationContext().getUtilityContext().getPattern();
         HttpResponseStatus httpResponseStatus = responseContext.getStatusCode();
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, httpResponseStatus,
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus,
                 Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8));
         populateHttpHeaders(response, responseContext);
         populateCookies(response, responseContext);
@@ -72,7 +74,7 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
     }
 
     private String patternMatcher(HttpRequestContext requestContext, HttpServerResponseBuilderContext responseContext,
-                                  Pattern pathRegex) {
+            Pattern pathRegex) {
         String responseBody = responseContext.getBody();
         String requestBody = requestContext.getRequestBody();
         Matcher matcher = pathRegex.matcher(responseBody);
@@ -105,12 +107,10 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         return responseBody;
     }
 
-
     private void populate404NotFoundResponse(HttpServerProcessorContext processorContext) {
         HttpRequestContext requestContext = processorContext.getHttpRequestContext();
         boolean keepAlive = requestContext.isKeepAlive();
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, NOT_FOUND);
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, NOT_FOUND);
         response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
         response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
         if (keepAlive) {
@@ -131,7 +131,8 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
     private void populateCookies(FullHttpResponse response, HttpServerResponseBuilderContext responseContext) {
         if (responseContext.getCookies() != null) {
             for (Cookie cookie : responseContext.getCookies()) {
-                response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie.getName(), cookie.getValue()));
+                response.headers().add(HttpHeaders.Names.SET_COOKIE,
+                        ServerCookieEncoder.encode(cookie.getName(), cookie.getValue()));
             }
         }
     }

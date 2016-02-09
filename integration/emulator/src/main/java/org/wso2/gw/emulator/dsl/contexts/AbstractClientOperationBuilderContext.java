@@ -22,6 +22,9 @@ package org.wso2.gw.emulator.dsl.contexts;
 
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 
+/**
+ * AbstractClientOperationBuilderContext
+ * */
 public abstract class AbstractClientOperationBuilderContext extends AbstractOperationBuilderContext {
 
     public abstract HttpClientResponseProcessorContext send();

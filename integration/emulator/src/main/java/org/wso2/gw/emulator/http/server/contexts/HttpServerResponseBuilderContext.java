@@ -23,9 +23,9 @@ package org.wso2.gw.emulator.http.server.contexts;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
-import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ *HttpServerResponseBuilderContext
+ * */
 public class HttpServerResponseBuilderContext extends AbstractResponseBuilderContext {
     private static final Logger log = Logger.getLogger(HttpServerResponseBuilderContext.class);
     private static HttpServerResponseBuilderContext serverResponse;
@@ -72,7 +75,6 @@ public class HttpServerResponseBuilderContext extends AbstractResponseBuilderCon
         }
         return this;
     }
-
 
     public HttpServerResponseBuilderContext withHeader(String name, String value) {
         if (headers == null) {

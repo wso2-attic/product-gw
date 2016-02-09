@@ -30,19 +30,32 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.LastHttpContent;
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.http.server.contexts.*;
-import org.wso2.gw.emulator.http.server.processors.*;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpRequestContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
+import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
+import org.wso2.gw.emulator.http.server.contexts.MockServerThread;
+import org.wso2.gw.emulator.http.server.processors.HttpRequestCustomProcessor;
+import org.wso2.gw.emulator.http.server.processors.HttpRequestInformationProcessor;
+import org.wso2.gw.emulator.http.server.processors.HttpRequestResponseMatchingProcessor;
+import org.wso2.gw.emulator.http.server.processors.HttpResponseCustomProcessor;
+import org.wso2.gw.emulator.http.server.processors.HttpResponseProcessor;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+/**
+ * HttpServerHandler
+ * */
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(HttpServerHandler.class);
     private HttpRequestInformationProcessor httpRequestInformationProcessor;
@@ -169,14 +182,13 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private void readingDelay(int delay, ChannelHandlerContext ctx) {
         if (delay != 0) {
-            ScheduledFuture scheduledFuture =
-                    scheduledReadingExecutorService.schedule(new Callable() {
-                        public Object call() throws Exception {
-                            return "Reading";
-                        }
-                    }, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledFuture = scheduledReadingExecutorService.schedule(new Callable() {
+                public Object call() throws Exception {
+                    return "Reading";
+                }
+            }, delay, TimeUnit.MILLISECONDS);
             try {
-              scheduledFuture.get();
+                scheduledFuture.get();
             } catch (InterruptedException e) {
                 log.error(e);
             } catch (ExecutionException e) {
@@ -188,12 +200,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private void businessLogicDelay(int delay, ChannelHandlerContext ctx) {
         if (delay != 0) {
-            ScheduledFuture scheduledLogicFuture =
-                    scheduledLogicExecutorService.schedule(new Callable() {
-                        public Object call() throws Exception {
-                            return "Logic delay";
-                        }
-                    }, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledLogicFuture = scheduledLogicExecutorService.schedule(new Callable() {
+                public Object call() throws Exception {
+                    return "Logic delay";
+                }
+            }, delay, TimeUnit.MILLISECONDS);
             try {
                 scheduledLogicFuture.get();
             } catch (InterruptedException e) {
@@ -202,7 +213,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 e.printStackTrace();
                 log.error(e);
             }
-                //scheduledLogicExecutorService.shutdown();
+            //scheduledLogicExecutorService.shutdown();
 
         }
     }

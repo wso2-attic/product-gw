@@ -20,14 +20,28 @@
 package org.wso2.gw.emulator.http;
 
 import io.netty.handler.ssl.SslHandler;
-import javax.net.ssl.*;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
+/**
+ * SSLHandlerFactory
+ * */
 public class SSLHandlerFactory {
     private static final String protocol = "TLS";
     private final SSLContext serverContext;
@@ -42,8 +56,9 @@ public class SSLHandlerFactory {
             KeyStore ks = getKeyStore(sslConfig.getKeyStore(), sslConfig.getKeyStorePass());
             // Set up key manager factory to use our key store
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
-            kmf.init(ks, sslConfig.getCertPass() != null ? sslConfig.getCertPass().toCharArray()
-                    : sslConfig.getKeyStorePass().toCharArray());
+            kmf.init(ks, sslConfig.getCertPass() != null ?
+                    sslConfig.getCertPass().toCharArray() :
+                    sslConfig.getKeyStorePass().toCharArray());
             KeyManager[] keyManagers = kmf.getKeyManagers();
             TrustManager[] trustManagers = null;
             if (sslConfig.getTrustStore() != null) {

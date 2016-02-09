@@ -23,9 +23,9 @@ package org.wso2.gw.emulator.http.client.contexts;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
-import org.wso2.gw.emulator.util.FileReaderUtil;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Expected response details
+ */
 public class HttpClientResponseBuilderContext extends AbstractResponseBuilderContext {
     private static HttpClientResponseBuilderContext clientResponseBuilderContext;
     private HttpResponseStatus statusCode;

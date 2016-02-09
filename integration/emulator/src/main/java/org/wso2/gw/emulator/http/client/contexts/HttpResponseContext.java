@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * response information of the server
+ */
 public class HttpResponseContext {
     private Map<String, List<String>> headerParameters;
     private Map<String, List<String>> cookieParameters;

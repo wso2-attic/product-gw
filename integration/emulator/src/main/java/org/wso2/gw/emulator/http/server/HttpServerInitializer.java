@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * HttpServerInitializer
+ * */
 public class HttpServerInitializer extends Thread {
     private static final Logger log = Logger.getLogger(HttpServerInitializer.class);
     private static boolean SSL = false;
@@ -121,17 +124,14 @@ public class HttpServerInitializer extends Thread {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
-                                                                                                   EmulatorType.HTTP_SERVER, handlers);
+                    EmulatorType.HTTP_SERVER, handlers);
             channelPipelineInitializer.setServerInformationContext(serverInformationContext);
-            serverBootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.INFO))
+            serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .option(ChannelOption.SO_BACKLOG, 100).handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(channelPipelineInitializer);
-            ChannelFuture f = serverBootstrap.bind(serverInformationContext.getServerConfigBuilderContext().getHost()
-                    , serverInformationContext.getServerConfigBuilderContext().getPort()).sync();
+            ChannelFuture f = serverBootstrap.bind(serverInformationContext.getServerConfigBuilderContext().getHost(),
+                    serverInformationContext.getServerConfigBuilderContext().getPort()).sync();
             f.channel().closeFuture().sync();
-
 
         } catch (Exception e) {
             log.error("Exception occurred while initializing Emulator server", e);

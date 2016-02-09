@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.dsl.contexts;
 
+/**
+ * AbstractConfigurationBuilderContext
+ * */
 public abstract class AbstractConfigurationBuilderContext {
 
     public abstract AbstractConfigurationBuilderContext host(String host);

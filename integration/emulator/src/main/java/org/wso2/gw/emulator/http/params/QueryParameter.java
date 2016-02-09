@@ -20,6 +20,9 @@
 
 package org.wso2.gw.emulator.http.params;
 
+/**
+ * Query parameters
+ * */
 public class QueryParameter {
     private String name;
     private String value;
