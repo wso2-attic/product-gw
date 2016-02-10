@@ -5,6 +5,7 @@
     <test name="Basic-Test" preserve-order="true" verbose="2">
         <classes>
             <class name="org.wso2.carbon.gateway.sample.tests.SampleTest1"/>
+            <class name="org.wso2.carbon.gateway.sample.tests.RoutingGeneralFeatures"/>
         </classes>
     </test>
 </suite>
