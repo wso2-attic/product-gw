@@ -20,6 +20,7 @@
 package org.wso2.gw.emulator.example.http;
 
 import io.netty.handler.codec.http.HttpMethod;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
@@ -28,8 +29,10 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorCont
 
 /**
  * Simple emulator client
- * */
+ */
 public class SimpleEmulatorClient {
+
+    private static final Logger log = Logger.getLogger(SimpleEmulatorClient.class);
 
     public static void main(String args[]) {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
@@ -37,8 +40,8 @@ public class SimpleEmulatorClient {
                 .when(HttpClientRequestBuilderContext.request().withPath("/users/user1").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        System.out.println("Response content =" + response.getReceivedResponseContext().getResponseBody());
-        System.out.println("Response status code =" + response.getReceivedResponseContext().getResponseStatus());
+        log.info("Response content =" + response.getReceivedResponseContext().getResponseBody());
+        log.info("Response status code =" + response.getReceivedResponseContext().getResponseStatus());
     }
 
 }

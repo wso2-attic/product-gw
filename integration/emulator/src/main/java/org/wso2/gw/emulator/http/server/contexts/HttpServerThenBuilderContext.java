@@ -26,13 +26,12 @@ import java.util.List;
 
 /**
  * HttpServerThenBuilderContext
- * */
+ */
 public class HttpServerThenBuilderContext extends AbstractThenBuilderContext<HttpServerResponseBuilderContext> {
     private final HttpServerRequestBuilderContext requestContext;
     private final HttpServerInformationContext httpServerInformationContext;
     private HttpServerWhenBuilderContext whenBuilderContext;
     private List<HttpServerWhenBuilderContext> whenBuilderContextList;
-    private HttpServerResponseBuilderContext responseContext;
 
     public HttpServerThenBuilderContext(List<HttpServerWhenBuilderContext> whenBuilderContextList,
             HttpServerRequestBuilderContext requestContext, HttpServerInformationContext httpServerInformationContext) {
@@ -43,7 +42,6 @@ public class HttpServerThenBuilderContext extends AbstractThenBuilderContext<Htt
 
     @Override
     public HttpServerWhenBuilderContext then(HttpServerResponseBuilderContext responseContext) {
-        this.responseContext = responseContext;
         whenBuilderContext = new HttpServerWhenBuilderContext(whenBuilderContextList, httpServerInformationContext);
         this.httpServerInformationContext.addCorrelation(requestContext, responseContext);
         return whenBuilderContext;

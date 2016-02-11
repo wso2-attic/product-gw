@@ -55,7 +55,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * HttpServerHandler
- * */
+ */
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = Logger.getLogger(HttpServerHandler.class);
     private HttpRequestInformationProcessor httpRequestInformationProcessor;
@@ -65,7 +65,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private HttpRequestResponseMatchingProcessor requestResponseMatchingProcessor;
     private ScheduledExecutorService scheduledReadingExecutorService, scheduledLogicExecutorService;
     private int index, corePoolSize = 10;
-    private int DELAY = 0;
+    private int delay = 0;
     private MockServerThread[] handlers;
     private static ExecutorService executorService = Executors.newFixedThreadPool(160);
 
@@ -129,18 +129,14 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             this.httpResponseProcessor.process(httpProcessorContext);
 
             int queues = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getQueues();
-            DELAY = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getDelay();
+            delay = httpProcessorContext.getServerInformationContext().getServerConfigBuilderContext().getDelay();
 
-            if (DELAY != 0 && queues > 0) {
+            if (delay != 0 && queues > 0) {
                 try {
                     executorService.execute(new Runnable() {
-                        public ChannelHandlerContext getCtx() {
-                            return ctx;
-                        }
-
                         @Override
                         public void run() {
-                            handlers[0].delayEvent(ctx, httpProcessorContext, DELAY, 0);
+                            handlers[0].delayEvent(ctx, httpProcessorContext, delay, 0);
                         }
                     });
 
@@ -182,16 +178,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private void readingDelay(int delay, ChannelHandlerContext ctx) {
         if (delay != 0) {
-            ScheduledFuture scheduledFuture = scheduledReadingExecutorService.schedule(new Callable() {
-                public Object call() throws Exception {
-                    return "Reading";
-                }
-            }, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledFuture = scheduledReadingExecutorService
+                    .schedule(readingCallable, delay, TimeUnit.MILLISECONDS);
             try {
                 scheduledFuture.get();
-            } catch (InterruptedException e) {
-                log.error(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 log.error(e);
             }
             //scheduledReadingExecutorService.shutdown();
@@ -200,17 +191,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private void businessLogicDelay(int delay, ChannelHandlerContext ctx) {
         if (delay != 0) {
-            ScheduledFuture scheduledLogicFuture = scheduledLogicExecutorService.schedule(new Callable() {
-                public Object call() throws Exception {
-                    return "Logic delay";
-                }
-            }, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledLogicFuture = scheduledLogicExecutorService
+                    .schedule(logicDelayCallable, delay, TimeUnit.MILLISECONDS);
             try {
                 scheduledLogicFuture.get();
-            } catch (InterruptedException e) {
-                log.error(e);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            } catch (InterruptedException | ExecutionException e) {
                 log.error(e);
             }
             //scheduledLogicExecutorService.shutdown();
@@ -235,11 +220,29 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public MockServerThread[] getHandlers() {
-        return handlers;
+        return handlers.clone();
     }
 
     public void setHandlers(MockServerThread[] handlers) {
-        this.handlers = handlers;
+
+        if (handlers != null) {
+            this.handlers = new MockServerThread[handlers.length];
+            System.arraycopy(handlers, 0, this.handlers, 0, handlers.length);
+        }
     }
+
+    static Callable readingCallable = new Callable() {
+        @Override
+        public Object call() throws Exception {
+            return "Reading";
+        }
+    };
+
+    static Callable logicDelayCallable = new Callable() {
+        @Override
+        public Object call() throws Exception {
+            return "Logic delay";
+        }
+    };
 
 }

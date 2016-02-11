@@ -40,7 +40,7 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 
 /**
  * BodyValidationTestCase
- * */
+ */
 public class BodyValidationTestCase {
 
     private HttpServerOperationBuilderContext emulator;
@@ -196,8 +196,7 @@ public class BodyValidationTestCase {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request().withMethod(HttpMethod.POST).withPath("/user20"))
-                .then(response().withStatusCode(HttpResponseStatus.OK)
-                        .withHeaders(new Header("Header2", "value2")))
+                .then(response().withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header2", "value2")))
 
                 .when(request().withMethod(HttpMethod.GET).withPath("/user1"))
                 .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)

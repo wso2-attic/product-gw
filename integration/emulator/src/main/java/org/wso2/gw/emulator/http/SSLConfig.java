@@ -24,7 +24,7 @@ import java.io.File;
 
 /**
  * SSLConfiguration
- * */
+ */
 public class SSLConfig {
     private File keyStore;
     private String keyStorePass;

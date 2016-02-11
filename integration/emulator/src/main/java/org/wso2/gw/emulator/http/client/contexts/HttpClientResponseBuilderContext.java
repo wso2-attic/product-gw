@@ -21,6 +21,7 @@
 package org.wso2.gw.emulator.http.client.contexts;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
@@ -44,6 +45,8 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
     private String body;
     private boolean isIgnored;
     private Operation operations;
+
+    private static final Logger log = Logger.getLogger(HttpClientResponseBuilderContext.class);
 
     private static HttpClientResponseBuilderContext getInstance() {
         clientResponseBuilderContext = new HttpClientResponseBuilderContext();
@@ -107,7 +110,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         try {
             this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return this;
     }

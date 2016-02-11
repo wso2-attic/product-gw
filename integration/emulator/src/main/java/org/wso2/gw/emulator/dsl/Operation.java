@@ -22,7 +22,7 @@ package org.wso2.gw.emulator.dsl;
 
 /**
  * Header Operations
- * */
+ */
 public enum Operation {
     OR, AND
 }

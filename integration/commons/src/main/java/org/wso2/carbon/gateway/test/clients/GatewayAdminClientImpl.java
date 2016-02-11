@@ -38,10 +38,10 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         serverManager = new GWServerManager();
     }
 
-    public void startGateway() throws Exception{
+    public void startGateway() throws Exception {
         carbonZip = System.getProperty("carbon.zip");
         carbonHome = serverManager.setUpCarbonHome(carbonZip);
-        if(carbonHome != null) {
+        if (carbonHome != null) {
             serverManager.startServerUsingCarbonHome(carbonHome);
         }
     }
@@ -50,9 +50,9 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         serverManager.shutdownServer();
     }
 
-    public void restartGateway() throws Exception{
+    public void restartGateway() throws Exception {
         serverManager.shutdownServer();
-        if(carbonHome != null) {
+        if (carbonHome != null) {
             serverManager.startServerUsingCarbonHome(carbonHome);
         } else {
             log.error("Cannot start gateway - carbon home is not set properly ");
@@ -61,14 +61,14 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
     }
 
     public void deployArtifact(String relativeFilePath) {
-        if(artifacts == null) {
+        if (artifacts == null) {
             artifacts = new ArrayList<String>();
         }
         relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
         try {
             File file = new File(fullPath);
-            String dstFileName = carbonHome + "/conf/camel/"+FileManipulator.getFileName(file);
+            String dstFileName = carbonHome + "/conf/camel/" + FileManipulator.getFileName(file);
             //FileManipulator.backupFile(new File(dstFileName));
             FileManipulator.copyFileToDir(file, dstFileName);
             artifacts.add(dstFileName);
@@ -79,8 +79,8 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
     }
 
     public void cleanArtifacts() {
-        for(String artifact : artifacts) {
-           // FileManipulator.restoreBackup(new File(artifact));
+        for (String artifact : artifacts) {
+            // FileManipulator.restoreBackup(new File(artifact));
             FileManipulator.removeFile(new File(artifact));
         }
         log.info("Restored Successfully");

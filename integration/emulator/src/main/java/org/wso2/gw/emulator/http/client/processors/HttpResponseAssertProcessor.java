@@ -20,6 +20,7 @@
 
 package org.wso2.gw.emulator.http.client.processors;
 
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.params.Header;
@@ -32,6 +33,8 @@ import java.util.Map;
  */
 public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpClientResponseProcessorContext> {
 
+    private static final Logger log = Logger.getLogger(HttpResponseAssertProcessor.class);
+
     @Override
     public void process(HttpClientResponseProcessorContext processorContext) {
 
@@ -39,7 +42,7 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
             assertResponseContent(processorContext);
             assertHeaderParameters(processorContext);
         } else {
-            System.out.println("Assertion ignored");
+            log.info("Assertion ignored");
         }
     }
 
@@ -47,9 +50,9 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
 
         if (processorContext.getExpectedResponseContext().getBody()
                 .equalsIgnoreCase(processorContext.getReceivedResponseContext().getResponseBody())) {
-            System.out.println("Equal content");
+            log.info("Equal content");
         } else {
-            System.out.println("Wrong content");
+            log.info("Wrong content");
         }
     }
 
@@ -74,10 +77,10 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
 
                 if (receivedHeaderValues == null || receivedHeaderValues.isEmpty() || !receivedHeaderValues
                         .contains(header.getValue())) {
-                    System.out.print("Header not present");
+                    log.info("Header not present");
                     break;
                 } else {
-                    System.out.println("Headers are present");
+                    log.info("Headers are present");
                 }
             }
         } else if (operation == operation.OR) {
@@ -92,9 +95,9 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
                 }
             }
             if (value) {
-                System.out.println("Headers are present");
+                log.info("Headers are present");
             } else {
-                System.out.println("Non of the Headers present");
+                log.info("Non of the Headers present");
             }
         } else {
             boolean match = false;
@@ -111,9 +114,9 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
                 }
             }
             if (match) {
-                System.out.println("Header Present");
+                log.info("Header Present");
             } else {
-                System.out.println("Header is not present");
+                log.info("Header is not present");
             }
         }
     }

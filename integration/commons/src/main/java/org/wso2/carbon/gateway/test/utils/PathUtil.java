@@ -23,7 +23,7 @@ public class PathUtil {
 
     public static String getJacocoCoverageHome() {
         return System.getProperty("basedir") + File.separator + "target" + File.separator +
-               "jacoco";
+                "jacoco";
     }
 
     public static String getCoverageMergeFilePath() {
@@ -44,7 +44,7 @@ public class PathUtil {
 
     public static String getCoverageDirPath() {
         return System.getProperty("basedir") + File.separator + "target" + File.separator +
-               "jacoco" + File.separator + "coverage";
+                "jacoco" + File.separator + "coverage";
     }
 
     public static String getUserDirPath() {

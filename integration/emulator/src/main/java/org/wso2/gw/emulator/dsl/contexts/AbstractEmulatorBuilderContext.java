@@ -22,7 +22,7 @@ package org.wso2.gw.emulator.dsl.contexts;
 
 /**
  * AbstractEmulatorBuilderContext
- * */
+ */
 public class AbstractEmulatorBuilderContext {
 
     private String host;

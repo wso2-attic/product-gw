@@ -26,20 +26,27 @@ import java.io.IOException;
 
 /**
  * File read util
- * */
+ */
 public class FileReaderUtil {
 
     public static String getFileBody(File filePath) throws IOException {
 
-        FileInputStream fileInputStream = new FileInputStream(filePath);
-        int c;
-        String content = "";
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(filePath);
+            int c;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((c = fileInputStream.read()) != -1) {
+                stringBuilder.append(c);
+            }
+            String content = stringBuilder.toString();
+            content = content.replace("\n", "").replace("\r", "");
 
-        while ((c = fileInputStream.read()) != -1) {
-            content += (char) c;
+            return content;
+        } finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
         }
-        content = content.replace("\n", "").replace("\r", "");
-
-        return content;
     }
 }

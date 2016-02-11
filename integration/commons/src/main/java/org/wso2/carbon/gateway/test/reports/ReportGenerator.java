@@ -53,8 +53,7 @@ public class ReportGenerator {
     public static final String CLASS_FILE_PATTERN = "**/*.class";
     private ExecFileLoader execFileLoader;
 
-    public ReportGenerator(File executionDataFile, File classesDirectory, File reportDirectory,
-                           File sourceDirectory) {
+    public ReportGenerator(File executionDataFile, File classesDirectory, File reportDirectory, File sourceDirectory) {
         this.executionDataFile = executionDataFile;
         this.classesDirectory = classesDirectory;
         this.reportDirectory = reportDirectory;
@@ -77,26 +76,24 @@ public class ReportGenerator {
         createReport(bundleCoverage);
     }
 
-    private void createReport(final IBundleCoverage bundleCoverage)
-            throws IOException {
+    private void createReport(final IBundleCoverage bundleCoverage) throws IOException {
 
         final IReportVisitor visitor = createVisitor(Locale.getDefault());
 
         // Initialize the report with all of the execution and session
         // information.
         visitor.visitInfo(execFileLoader.getSessionInfoStore().getInfos(),
-                          execFileLoader.getExecutionDataStore().getContents());
+                execFileLoader.getExecutionDataStore().getContents());
 
         // Populate the report structure with the bundle coverage information.
         // Call visitGroup if you need groups in your report.
         visitor.visitBundle(bundleCoverage, new DirectorySourceFileLocator(sourceDirectory, OUTPUT_ENCODING, 4));
-//        visitor.visitGroup("AS");
+        //        visitor.visitGroup("AS");
 
         // Signal end of structure information to allow report to write all
         // information out
         visitor.visitEnd();
     }
-
 
     IReportVisitor createVisitor(final Locale locale) throws IOException {
         final List<IReportVisitor> visitors = new ArrayList<IReportVisitor>();
@@ -118,15 +115,16 @@ public class ReportGenerator {
 
         final XMLFormatter xmlFormatter = new XMLFormatter();
         xmlFormatter.setOutputEncoding(OUTPUT_ENCODING);
-        visitors.add(xmlFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.xml"))));
+        visitors.add(
+                xmlFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.xml"))));
 
         final CSVFormatter csvFormatter = new CSVFormatter();
         csvFormatter.setOutputEncoding(OUTPUT_ENCODING);
-        visitors.add(csvFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.csv"))));
+        visitors.add(
+                csvFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.csv"))));
 
         return new MultiReportVisitor(visitors);
     }
-
 
     private File getOutputDirectoryFile() {
         return this.reportDirectory;
@@ -142,14 +140,12 @@ public class ReportGenerator {
         final CoverageBuilder coverageBuilder = new CoverageBuilder();
         final Analyzer analyzer = new Analyzer(execFileLoader.getExecutionDataStore(), coverageBuilder);
 
-        String[] includes = {CLASS_FILE_PATTERN}; //class file patten to be include
+        String[] includes = { CLASS_FILE_PATTERN }; //class file patten to be include
         String exclusionList = CodeCoverageUtils.getExclusionJarsPattern(",");
         String[] excludes = exclusionList.split(",");
 
-        final List<File> filesToAnalyze =
-                FileUtils.getFiles(classesDirectory,
-                                   CodeCoverageUtils.getInclusionJarsPattern(","),
-                                   exclusionList);
+        final List<File> filesToAnalyze = FileUtils
+                .getFiles(classesDirectory, CodeCoverageUtils.getInclusionJarsPattern(","), exclusionList);
 
         for (final File file : filesToAnalyze) {
 

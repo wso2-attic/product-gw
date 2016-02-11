@@ -19,10 +19,8 @@
  */
 package org.wso2.gw.emulator.http.server.contexts;
 
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
@@ -30,12 +28,9 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.DelayQueue;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
 /**
  * MockServerThread
- * */
+ */
 public class MockServerThread extends Thread {
     private static final Logger log = Logger.getLogger(MockServerThread.class);
 
@@ -61,12 +56,6 @@ public class MockServerThread extends Thread {
 
     private void beginResponse(ChannelHandlerContext ctx, HttpServerProcessorContext context) {
         writeResponse(ctx, context);
-    }
-
-    private static void send100Continue(ChannelHandlerContext ctx) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, CONTINUE);
-        ChannelFuture future = ctx.channel().write(response);
-        future.addListener(ChannelFutureListener.CLOSE);
     }
 
     private void writeResponse(ChannelHandlerContext ctx, HttpServerProcessorContext context) {

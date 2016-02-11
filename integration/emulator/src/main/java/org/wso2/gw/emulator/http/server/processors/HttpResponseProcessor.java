@@ -43,7 +43,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 
 /**
  * HttpResponseProcessor
- * */
+ */
 public class HttpResponseProcessor extends AbstractServerProcessor {
 
     @Override
@@ -63,17 +63,16 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         HttpResponseStatus httpResponseStatus = responseContext.getStatusCode();
 
         ByteBuf buf = null;
-        if (patternMatcher(requestContext, responseContext, pattern)!=null){
-            buf = Unpooled
-                    .copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8);
-        }else{
+        if (patternMatcher(requestContext, responseContext, pattern) != null) {
+            buf = Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8);
+        } else {
             buf = Unpooled.buffer(0);
         }
 
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus, buf);
         populateHttpHeaders(response, responseContext);
         populateCookies(response, responseContext);
-        if(!response.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)) {
+        if (!response.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)) {
             response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
         }
 
@@ -88,9 +87,9 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         String responseBody = responseContext.getBody();
         String requestBody = requestContext.getRequestBody();
         Matcher matcher = null;
-        if (responseBody!=null){
+        if (responseBody != null) {
             matcher = pathRegex.matcher(responseBody);
-        }else {
+        } else {
             return responseBody;
         }
 
