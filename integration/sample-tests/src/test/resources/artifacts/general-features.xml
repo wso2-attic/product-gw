@@ -57,13 +57,23 @@
         </loadBalance>
     </route>
 
-    <route id="failover_without_lb">
+    <route id="failover_with_lb">
         <from uri="wso2-gw:/failover_with_lb"/>
         <loadBalance inheritErrorHandler="false">
             <failover roundRobin="true"/>
             <to uri="wso2-gw:http://localhost:9773/services/failover1"/>
             <to uri="wso2-gw:http://localhost:9873/services/failover2"/>
             <to uri="wso2-gw:http://localhost:9973/services/failover3"/>
+        </loadBalance>
+    </route>
+
+    <route id="failover_without_lb">
+        <from uri="wso2-gw:/failover_without_lb"/>
+        <loadBalance inheritErrorHandler="false">
+            <failover roundRobin="false"/>
+            <to uri="wso2-gw:http://localhost:8773/services/failover2"/>
+            <to uri="wso2-gw:http://localhost:7773/services/failover3"/>
+            <to uri="wso2-gw:http://localhost:9773/services/failover1"/>
         </loadBalance>
     </route>
 

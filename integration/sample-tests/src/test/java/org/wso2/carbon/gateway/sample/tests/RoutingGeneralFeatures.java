@@ -244,7 +244,7 @@ public class RoutingGeneralFeatures {
     }
 
     @Test
-    public void failOverTest() throws Exception {
+    public void failOverTestWithLoadBalance() throws Exception {
         HttpServerOperationBuilderContext emulator4= httpEmulator4();
         Thread.sleep(1000);
         HttpServerOperationBuilderContext emulator5= httpEmulator5();
@@ -307,6 +307,48 @@ public class RoutingGeneralFeatures {
         response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request().withPath("/failover_with_lb").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+                "Expected response code not found");
+        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+                "Expected response not found");
+    }
+
+    @Test(invocationCount = 10)
+    public void failOverTestWithoutLoadBalance() throws Exception {
+        HttpServerOperationBuilderContext emulator6= httpEmulator6();
+        Thread.sleep(1000);
+        HttpServerOperationBuilderContext emulator7= httpEmulator7();
+        Thread.sleep(1000);
+
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/failover_without_lb").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+                "Expected response code not found");
+        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+                "Expected response not found");
+
+        emulator6.stop();
+
+        response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/failover_without_lb").withMethod(HttpMethod.GET))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+                "Expected response code not found");
+        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+                "Expected response not found");
+
+        emulator7.stop();
+
+        response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/failover_without_lb").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
@@ -412,6 +454,24 @@ public class RoutingGeneralFeatures {
                 .when(request().withMethod(HttpMethod.GET).withPath("/failover3"))
                 .then(response()
                         .withBody("Response failOver test 3")
+                        .withStatusCode(HttpResponseStatus.OK))
+                .operation().start();
+    }
+    private HttpServerOperationBuilderContext httpEmulator6() {
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(8773).context("/services"))
+                .when(request().withMethod(HttpMethod.GET).withPath("/failover2"))
+                .then(response()
+                        .withBody("Response failOver test 1")
+                        .withStatusCode(HttpResponseStatus.OK))
+                .operation().start();
+    }
+
+    private HttpServerOperationBuilderContext httpEmulator7() {
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(7773).context("/services"))
+                //failOver
+                .when(request().withMethod(HttpMethod.GET).withPath("/failover3"))
+                .then(response()
+                        .withBody("Response failOver test 1")
                         .withStatusCode(HttpResponseStatus.OK))
                 .operation().start();
     }
