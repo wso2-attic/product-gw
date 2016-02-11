@@ -30,6 +30,8 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContex
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
+import java.io.File;
+
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
@@ -45,7 +47,7 @@ public class SampleTest1 {
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts/new-camel-context.xml");
+        gwClient.deployArtifact("artifacts"+ File.separator+"new-camel-context.xml");
         gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
