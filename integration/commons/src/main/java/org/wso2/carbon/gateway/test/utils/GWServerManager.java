@@ -37,8 +37,7 @@ public class GWServerManager {
         startServerUsingCarbonHome(carbonHome, carbonHome, "carbon");
     }
 
-    public synchronized void startServerUsingCarbonHome(String carbonHome, String carbonFolder, String
-            scriptName) {
+    public synchronized void startServerUsingCarbonHome(String carbonHome, String carbonFolder, String scriptName) {
         if (process == null) {
             Process tempProcess;
             try {
@@ -48,9 +47,11 @@ public class GWServerManager {
                 File commandDir = new File(carbonHome);
                 if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                     commandDir = new File(carbonHome + File.separator + "bin");
-                    tempProcess = Runtime.getRuntime().exec(new String[]{"cmd.exe", "/c", scriptName + ".bat"}, null, commandDir);
+                    tempProcess = Runtime.getRuntime()
+                            .exec(new String[] { "cmd.exe", "/c", scriptName + ".bat" }, null, commandDir);
                 } else {
-                    tempProcess = Runtime.getRuntime().exec(new String[]{"sh", "bin/" + scriptName + ".sh"}, null, commandDir);
+                    tempProcess = Runtime.getRuntime()
+                            .exec(new String[] { "sh", "bin/" + scriptName + ".sh" }, null, commandDir);
                 }
 
                 errorStreamHandler = new InputStreamHandler("errorStream", tempProcess.getErrorStream());
@@ -92,12 +93,14 @@ public class GWServerManager {
                     carbonServerZipFile = carbonServerZipFile.replace("/", "\\");
                 }
 
-                String extractedCarbonDir = carbonServerZipFile.substring(carbonServerZipFile.lastIndexOf(fileSeparator) + 1, indexOfZip);
+                String extractedCarbonDir = carbonServerZipFile
+                        .substring(carbonServerZipFile.lastIndexOf(fileSeparator) + 1, indexOfZip);
                 FileManipulator.deleteDir(extractedCarbonDir);
                 String extractDir = "gwtmp" + System.currentTimeMillis();
                 String baseDir = System.getProperty("basedir", ".") + File.separator + "target";
                 ArchiveManipulatorUtil.extractFile(carbonServerZipFile, baseDir + File.separator + extractDir);
-                carbonHome = (new File(baseDir)).getAbsolutePath() + File.separator + extractDir + File.separator + extractedCarbonDir;
+                carbonHome = (new File(baseDir)).getAbsolutePath() + File.separator + extractDir + File.separator
+                        + extractedCarbonDir;
 
                 //insert Jacoco agent configuration to carbon server startup script. This configuration
                 //cannot be directly pass as server startup command due to script limitation.
@@ -137,9 +140,8 @@ public class GWServerManager {
             if (isCoverageEnable) {
                 try {
                     log.info("Generating Jacoco code coverage...");
-                    generateCoverageReport(
-                            new File(carbonHome + File.separator + "repository" +
-                                     File.separator + "components" + File.separator + "plugins" + File.separator));
+                    generateCoverageReport(new File(carbonHome + File.separator + "repository" +
+                            File.separator + "components" + File.separator + "plugins" + File.separator));
                 } catch (IOException e) {
                     log.error("Failed to generate code coverage ", e);
                 }
@@ -151,26 +153,21 @@ public class GWServerManager {
 
     private String getProcessID(int port) throws java.io.IOException {
         java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("lsof -t -i:" + port).getInputStream())
-                .useDelimiter
-                        ("\\A");
+                .useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 
-    private void generateCoverageReport(File classesDir)
-            throws Exception {
+    private void generateCoverageReport(File classesDir) throws Exception {
 
-        CodeCoverageUtils.executeMerge(PathUtil.getJacocoCoverageHome(),
-                                       PathUtil.getCoverageMergeFilePath());
-        ReportGenerator reportGenerator =
-                new ReportGenerator(new File(PathUtil.getCoverageMergeFilePath()),
-                                    classesDir,
-                                    new File(CodeCoverageUtils.getJacocoReportDirectory()),
-                                    null);
+        CodeCoverageUtils.executeMerge(PathUtil.getJacocoCoverageHome(), PathUtil.getCoverageMergeFilePath());
+        ReportGenerator reportGenerator = new ReportGenerator(new File(PathUtil.getCoverageMergeFilePath()), classesDir,
+                new File(CodeCoverageUtils.getJacocoReportDirectory()), null);
         reportGenerator.create();
 
         log.info("Jacoco coverage dump file path : " + PathUtil.getCoverageDumpFilePath());
         log.info("Jacoco class file path : " + classesDir);
-        log.info("Jacoco coverage HTML report path : " + CodeCoverageUtils.getJacocoReportDirectory() + File.separator + "index.html");
+        log.info("Jacoco coverage HTML report path : " + CodeCoverageUtils.getJacocoReportDirectory() + File.separator
+                + "index.html");
     }
 
     /**
@@ -198,18 +195,16 @@ public class GWServerManager {
      * @param scriptName - Name of the startup script
      * @throws IOException - throws if shell script edit fails
      */
-    private void insertJacocoAgentToBatScript(String scriptName)
-            throws IOException {
+    private void insertJacocoAgentToBatScript(String scriptName) throws IOException {
 
         String jacocoAgentFile = CodeCoverageUtils.getJacocoAgentJarLocation();
         String coverageDumpFilePath = PathUtil.getCoverageDumpFilePath();
 
         CodeCoverageUtils.insertJacocoAgentToStartupBat(
                 new File(carbonHome + File.separator + "bin" + File.separator + scriptName + ".bat"),
-                new File(carbonHome + File.separator + "tmp" + File.separator + scriptName + ".bat"),
-                "-Dcatalina.base",
+                new File(carbonHome + File.separator + "tmp" + File.separator + scriptName + ".bat"), "-Dcatalina.base",
                 "-javaagent:" + jacocoAgentFile + "=destfile=" + coverageDumpFilePath + "" +
-                ",append=true,includes=" + CodeCoverageUtils.getInclusionJarsPattern(":"));
+                        ",append=true,includes=" + CodeCoverageUtils.getInclusionJarsPattern(":"));
     }
 
     /**
@@ -218,17 +213,16 @@ public class GWServerManager {
      * @param scriptName - Name of the startup script
      * @throws IOException - throws if shell script edit fails
      */
-    private void insertJacocoAgentToShellScript(String scriptName)
-            throws IOException {
+    private void insertJacocoAgentToShellScript(String scriptName) throws IOException {
 
         String jacocoAgentFile = CodeCoverageUtils.getJacocoAgentJarLocation();
         String coverageDumpFilePath = PathUtil.getCoverageDumpFilePath();
 
-        CodeCoverageUtils.insertStringToFile(
-                new File(carbonHome + File.separator + "bin" + File.separator + scriptName + ".sh"),
-                new File(carbonHome + File.separator + "tmp" + File.separator + scriptName + ".sh"),
-                "-Dcom.sun.management.jmxremote",
-                "-javaagent:" + jacocoAgentFile + "=destfile=" + coverageDumpFilePath + "" +
-                ",append=true,includes=" + CodeCoverageUtils.getInclusionJarsPattern(":") + " \\");
+        CodeCoverageUtils
+                .insertStringToFile(new File(carbonHome + File.separator + "bin" + File.separator + scriptName + ".sh"),
+                        new File(carbonHome + File.separator + "tmp" + File.separator + scriptName + ".sh"),
+                        "-Dcom.sun.management.jmxremote",
+                        "-javaagent:" + jacocoAgentFile + "=destfile=" + coverageDumpFilePath + "" +
+                                ",append=true,includes=" + CodeCoverageUtils.getInclusionJarsPattern(":") + " \\");
     }
 }

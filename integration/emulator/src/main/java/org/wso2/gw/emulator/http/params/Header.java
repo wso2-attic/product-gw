@@ -22,7 +22,7 @@ package org.wso2.gw.emulator.http.params;
 
 /**
  * Headers
- * */
+ */
 public class Header {
     private String name;
     private String value;

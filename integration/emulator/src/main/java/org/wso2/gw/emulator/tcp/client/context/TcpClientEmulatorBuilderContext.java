@@ -18,7 +18,6 @@
  *
  */
 
-
 package org.wso2.gw.emulator.tcp.client.context;
 
 /**

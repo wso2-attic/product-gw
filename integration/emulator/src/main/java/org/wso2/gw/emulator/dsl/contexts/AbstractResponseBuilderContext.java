@@ -22,6 +22,6 @@ package org.wso2.gw.emulator.dsl.contexts;
 
 /**
  * AbstractResponseBuilderContext
- * */
+ */
 public class AbstractResponseBuilderContext {
 }

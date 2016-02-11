@@ -27,7 +27,6 @@ import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.handler.HttpClientHandler;
@@ -38,18 +37,19 @@ import org.wso2.gw.emulator.http.server.handler.HttpServerHandler;
 
 /**
  * ChannelPipelineInitializer
- * */
+ */
 public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel> {
-    private SslContext sslCtx;
     private EmulatorType emulatorType;
     private HttpServerInformationContext serverInformationContext;
     private HttpClientInformationContext clientInformationContext;
     private MockServerThread[] handlers;
 
-    public ChannelPipelineInitializer(SslContext sslCtx, EmulatorType emulatorType, MockServerThread[] handlers) {
-        this.sslCtx = sslCtx;
+    public ChannelPipelineInitializer(EmulatorType emulatorType, MockServerThread[] handlers) {
         this.emulatorType = emulatorType;
-        this.handlers = handlers;
+        if (handlers != null) {
+            this.handlers = new MockServerThread[handlers.length];
+            System.arraycopy(handlers, 0, this.handlers, 0, handlers.length);
+        }
     }
 
     @Override

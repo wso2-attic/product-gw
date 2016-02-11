@@ -59,17 +59,16 @@ public final class CodeCoverageUtils {
     private CodeCoverageUtils() {
     }
 
-    public static ArrayList<String> searchDirectoryByName(String baseDir,
-                                                          ArrayList<String> directoryLists,
-                                                          String dirName) {
+    public static ArrayList<String> searchDirectoryByName(String baseDir, ArrayList<String> directoryLists,
+            String dirName) {
         File baseDirName = new File(baseDir);
         File[] fileArray = baseDirName.listFiles();
         if (fileArray != null) {
             for (int i = 0; i < fileArray.length; i++) {
                 File name = fileArray[i];
                 if (name.isDirectory()) {
-                    if (name.toString().subSequence(name.toString().lastIndexOf("/") + 1,
-                                                    name.toString().length()).equals(dirName)) {
+                    if (name.toString().subSequence(name.toString().lastIndexOf("/") + 1, name.toString().length())
+                            .equals(dirName)) {
                         directoryLists.add(name.getAbsolutePath());
                     }
                     searchDirectoryByName(fileArray[i].getAbsolutePath(), directoryLists, dirName);
@@ -81,7 +80,6 @@ public final class CodeCoverageUtils {
         return directoryLists;
     }
 
-
     /**
      * Method to get jacoco agent file location
      *
@@ -89,15 +87,18 @@ public final class CodeCoverageUtils {
      * @throws java.io.FileNotFoundException - throws if jar file not found
      */
     public static String getJacocoAgentJarLocation() throws IOException {
-        File jacocoHome = new File(System.getProperty("basedir") + File.separator + "target" + File.separator + "jacoco");
+        File jacocoHome = new File(
+                System.getProperty("basedir") + File.separator + "target" + File.separator + "jacoco");
         String jacocoAgentFilePath = "";
         if (jacocoHome.exists()) {
             File[] files = jacocoHome.listFiles();
             if (files != null) {
                 for (File fileName : files) {
                     if (fileName.getName().contains("org.jacoco.agent")) {
-                        ArchiveManipulatorUtil.extractFile(fileName.getAbsolutePath(), jacocoHome.getAbsolutePath() + File.separator + "agent");
-                        File[] agentJars = new File(jacocoHome.getAbsolutePath() + File.separator + "agent").listFiles();
+                        ArchiveManipulatorUtil.extractFile(fileName.getAbsolutePath(),
+                                jacocoHome.getAbsolutePath() + File.separator + "agent");
+                        File[] agentJars = new File(jacocoHome.getAbsolutePath() + File.separator + "agent")
+                                .listFiles();
                         if (agentJars != null) {
                             for (File agentJar : agentJars) {
                                 if (agentJar.getName().contains(JACOCO_AGENT_JAR_NAME)) {
@@ -114,8 +115,8 @@ public final class CodeCoverageUtils {
         }
 
         if (jacocoAgentFilePath.isEmpty()) {
-            throw new FileNotFoundException("Jacoco Agent file path is empty and agent jar missing " +
-                                            jacocoHome.getAbsolutePath());
+            throw new FileNotFoundException(
+                    "Jacoco Agent file path is empty and agent jar missing " + jacocoHome.getAbsolutePath());
         }
 
         return jacocoAgentFilePath;
@@ -132,8 +133,8 @@ public final class CodeCoverageUtils {
      * @param lineToBeInserted - New line to be inserted into the file
      * @throws java.io.IOException - Throws IO exception if file modification fails
      */
-    public static void insertStringToFile(File inFile, File tmpFile, String lineToBeChecked,
-                                          String lineToBeInserted) throws IOException {
+    public static void insertStringToFile(File inFile, File tmpFile, String lineToBeChecked, String lineToBeInserted)
+            throws IOException {
 
         FileInputStream fis = new FileInputStream(inFile);
         BufferedReader in = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
@@ -161,7 +162,7 @@ public final class CodeCoverageUtils {
 
             if (tmpFile.exists()) {
                 throw new IOException("Failed to move file " + tmpFile.getAbsolutePath() + " as " +
-                                      inFile.getAbsolutePath());
+                        inFile.getAbsolutePath());
             }
 
             log.info("File " + inFile.getName() + " has been modified and inserted new line after " + lineToBeChecked);
@@ -183,7 +184,6 @@ public final class CodeCoverageUtils {
         }
     }
 
-
     /**
      * Insert Jacoco agent configuration into server startup bat file. Specific to windows
      *
@@ -193,9 +193,8 @@ public final class CodeCoverageUtils {
      * @param lineToBeInserted - New line to be inserted into the file
      * @throws java.io.IOException - Throws IO exception if file modification fails
      */
-    public static void insertJacocoAgentToStartupBat(File inFile, File tmpFile,
-                                                     String lineToBeChecked,
-                                                     String lineToBeInserted) throws IOException {
+    public static void insertJacocoAgentToStartupBat(File inFile, File tmpFile, String lineToBeChecked,
+            String lineToBeInserted) throws IOException {
 
         FileInputStream fis = new FileInputStream(inFile);
         BufferedReader in = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
@@ -224,7 +223,7 @@ public final class CodeCoverageUtils {
 
             if (tmpFile.exists()) {
                 throw new IOException("Failed to move file " + tmpFile.getAbsolutePath() + " as " +
-                                      inFile.getAbsolutePath());
+                        inFile.getAbsolutePath());
             }
 
             log.info("File " + inFile.getName() + " has been modified and inserted new line after " + lineToBeChecked);
@@ -279,8 +278,7 @@ public final class CodeCoverageUtils {
         return filePatterns;
     }
 
-    public static String buildStringArrayOfJarList(List<String> jarList, String delimiter)
-            throws IOException {
+    public static String buildStringArrayOfJarList(List<String> jarList, String delimiter) throws IOException {
 
         StringBuilder jarListOfPatternsBuffer = new StringBuilder();
         for (String jarPattern : jarList) {
@@ -302,12 +300,11 @@ public final class CodeCoverageUtils {
      */
     public static String getInclusionJarsPattern(String delimiter) throws IOException {
         log.info("Building jar list for Jacoco coverage inclusion...");
-        File instrumentationTxt =
-                System.getProperty("instr.file") != null ?
+        File instrumentationTxt = System.getProperty("instr.file") != null ?
                 new File(System.getProperty("instr.file")) :
                 new File(System.getProperty("basedir") + File.separator +
-                         "src" + File.separator + "test" + File.separator +
-                         "resources" + File.separator + "instrumentation.txt");
+                        "src" + File.separator + "test" + File.separator +
+                        "resources" + File.separator + "instrumentation.txt");
         if (instrumentationTxt.exists()) {
             return buildStringArrayOfJarList(getInstrumentationJarList(instrumentationTxt), delimiter);
         } else {
@@ -328,8 +325,8 @@ public final class CodeCoverageUtils {
         String jacocoFilters = System.getProperty("filters.file");
         if (jacocoFilters == null) {
             jacocoFilters = System.getProperty("basedir") + File.separator + "src" +
-                            File.separator + "test" + File.separator +
-                            "resources" + File.separator + "filters.txt";
+                    File.separator + "test" + File.separator +
+                    "resources" + File.separator + "filters.txt";
         } else {
             if (!new File(jacocoFilters).exists()) {
                 log.warn("Jacoco filters file " + jacocoFilters + " does not exist");
@@ -378,8 +375,7 @@ public final class CodeCoverageUtils {
 
         //if no files found
         if (fileSetsCollection.size() == 0) {
-            throw new Exception("Couldn't find coverage data files at " +
-                                dataFilePath);
+            throw new Exception("Couldn't find coverage data files at " + dataFilePath);
         }
 
         for (File inputFile : fileSetsCollection) {
@@ -423,8 +419,7 @@ public final class CodeCoverageUtils {
         try {
             loader.save(destinationFile, true);
         } catch (IOException e) {
-            throw new Exception("Unable to write merged file " +
-                                destinationFile.getAbsolutePath(), e);
+            throw new Exception("Unable to write merged file " + destinationFile.getAbsolutePath(), e);
         }
     }
 
@@ -435,11 +430,8 @@ public final class CodeCoverageUtils {
      * @return - File collection of coverage data files
      */
     private static Collection<File> getJacocoDataFiles(String filePath) {
-        return FileUtils.listFiles(
-                new File(filePath),
-                new RegexFileFilter("[^s]+(.(?i)(exec))$"),
-                DirectoryFileFilter.DIRECTORY
-        );
+        return FileUtils.listFiles(new File(filePath), new RegexFileFilter("[^s]+(.(?i)(exec))$"),
+                DirectoryFileFilter.DIRECTORY);
     }
 
     /**
@@ -451,8 +443,8 @@ public final class CodeCoverageUtils {
      * @return - Included files
      * @throws java.io.IOException - Throws if given directory patch cannot be found.
      */
-    public static String[] scanDirectory(String jarExtractedDir, String[] includes,
-                                         String[] excludes) throws IOException {
+    public static String[] scanDirectory(String jarExtractedDir, String[] includes, String[] excludes)
+            throws IOException {
         DirectoryScanner ds = new DirectoryScanner();
         ds.setIncludes(includes);
         ds.setExcludes(excludes);
@@ -469,11 +461,10 @@ public final class CodeCoverageUtils {
      * @return - Jar file extracted directory.
      * @throws java.io.IOException - Throws if jar extraction fails
      */
-    public synchronized static String extractJarFile(String jarFilePath)
-            throws IOException {
+    public synchronized static String extractJarFile(String jarFilePath) throws IOException {
         if (!jarFilePath.endsWith(".jar")) {
             throw new IllegalArgumentException("Jar file should have the extension .jar. " +
-                                               jarFilePath + " is invalid");
+                    jarFilePath + " is invalid");
         }
         JarFile jarFile = new JarFile(jarFilePath);
 
@@ -487,7 +478,7 @@ public final class CodeCoverageUtils {
         String tempExtractedDir = null;
         try {
             tempExtractedDir = PathUtil.getJarExtractedFilePath() + File.separator +
-                               jarFileName.substring(0, jarFileName.lastIndexOf('.'));
+                    jarFileName.substring(0, jarFileName.lastIndexOf('.'));
 
             ArchiveManipulatorUtil.extractFile(jarFilePath, tempExtractedDir);
         } catch (IOException e) {
@@ -497,7 +488,6 @@ public final class CodeCoverageUtils {
         }
         return tempExtractedDir;
     }
-
 
     public static String[] getMatches(String[] classFiles, String[] regexArray) {
         List<String> matches = null;

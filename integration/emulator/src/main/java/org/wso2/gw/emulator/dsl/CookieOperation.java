@@ -20,8 +20,8 @@
 package org.wso2.gw.emulator.dsl;
 
 /**
- *CookieOperation
- * */
+ * CookieOperation
+ */
 public enum CookieOperation {
     OR, AND
 }

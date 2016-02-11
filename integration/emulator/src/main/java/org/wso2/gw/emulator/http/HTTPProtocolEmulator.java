@@ -30,7 +30,7 @@ import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 
 /**
  * HTTPProtocolEmulator
- * */
+ */
 public class HTTPProtocolEmulator extends AbstractProtocolEmulator {
 
     @Override

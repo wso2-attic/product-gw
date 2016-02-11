@@ -27,12 +27,11 @@ import java.util.Map;
 
 /**
  * HttpServerInformationContext
- * */
+ */
 public class HttpServerInformationContext {
     private HttpServerConfigBuilderContext serverConfigBuilderContext;
     private Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> correlation;
     private HttpServerInitializer httpServerInitializer;
-    private UtilityContext utilityContext;
 
     public UtilityContext getUtilityContext() {
         return new UtilityContext();

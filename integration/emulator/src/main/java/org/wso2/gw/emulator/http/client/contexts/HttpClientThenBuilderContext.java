@@ -31,7 +31,6 @@ public class HttpClientThenBuilderContext extends AbstractThenBuilderContext<Htt
     private final HttpClientRequestBuilderContext requestContext;
     private final HttpClientInformationContext httpClientInformationContext;
     private final List<HttpClientWhenBuilderContext> whenBuilderContextList;
-    private HttpClientResponseBuilderContext responseContext;
     private HttpClientWhenBuilderContext whenBuilderContext;
 
     public HttpClientThenBuilderContext(List<HttpClientWhenBuilderContext> whenBuilderContextList,
@@ -43,7 +42,6 @@ public class HttpClientThenBuilderContext extends AbstractThenBuilderContext<Htt
 
     @Override
     public HttpClientWhenBuilderContext then(HttpClientResponseBuilderContext responseContext) {
-        this.responseContext = responseContext;
         whenBuilderContext = new HttpClientWhenBuilderContext(whenBuilderContextList, httpClientInformationContext);
         this.httpClientInformationContext.addCorrelation(requestContext, responseContext);
         return whenBuilderContext;

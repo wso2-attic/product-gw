@@ -21,6 +21,7 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.CookieOperation;
 import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.dsl.QueryParameterOperation;
@@ -39,8 +40,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- *HttpServerRequestBuilderContext
- * */
+ * HttpServerRequestBuilderContext
+ */
 public class HttpServerRequestBuilderContext extends AbstractRequestBuilderContext {
     private static HttpServerRequestBuilderContext serverRequest;
     private HttpMethod method;
@@ -57,6 +58,8 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     private Operation operation;
     private CookieOperation cookieOperation;
     private QueryParameterOperation queryOperation;
+
+    private static final Logger log = Logger.getLogger(HttpServerRequestBuilderContext.class);
 
     private static HttpServerRequestBuilderContext getInstance() {
         serverRequest = new HttpServerRequestBuilderContext();
@@ -86,7 +89,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         try {
             this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return this;
     }
@@ -148,7 +151,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-    public HttpServerRequestBuilderContext withCustomProcessor(String CustomRequestProcessor) {
+    public HttpServerRequestBuilderContext withCustomProcessor(String customRequestProcessor) {
         return this;
     }
 
@@ -202,7 +205,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         Map<String, List<String>> headerParameters = requestContext.getHeaderParameters();
 
         if (operation == Operation.OR) {
-            if ((headerParameters == null || headerParameters.isEmpty()) && (headers != null || !headers.isEmpty())) {
+            if ((headerParameters == null || headerParameters.isEmpty()) && !headers.isEmpty()) {
                 return false;
             }
             for (Header header : headers) {
@@ -278,11 +281,11 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
             return ".*";
         }
 
-        if ((context == "*") && (path == "*")) {
+        if ("*".equals(context) && "*".equals(path)) {
             return ".*";
         }
 
-        if (context != null && !context.isEmpty() && path == "*") {
+        if (context != null && !context.isEmpty() && "*".equals(path)) {
             fullPath = context;
 
             if (!fullPath.startsWith("/")) {

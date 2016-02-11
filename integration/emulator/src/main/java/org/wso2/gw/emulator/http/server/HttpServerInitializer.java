@@ -28,12 +28,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
 import io.netty.util.concurrent.DefaultExecutorServiceFactory;
 import io.netty.util.concurrent.ExecutorServiceFactory;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.EmulatorType;
-import org.wso2.gw.emulator.dsl.Protocol;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerInformationContext;
 import org.wso2.gw.emulator.http.server.contexts.MockServerThread;
@@ -45,10 +43,9 @@ import java.util.Properties;
 
 /**
  * HttpServerInitializer
- * */
+ */
 public class HttpServerInitializer extends Thread {
     private static final Logger log = Logger.getLogger(HttpServerInitializer.class);
-    private static boolean SSL = false;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private HttpServerInformationContext serverInformationContext;
@@ -56,7 +53,7 @@ public class HttpServerInitializer extends Thread {
     private int workerCount;
     private Properties prop;
     private InputStream inputStream;
-    private static int queues;
+    private int queues;
 
     public HttpServerInitializer(HttpServerInformationContext serverInformationContext) {
         this.serverInformationContext = serverInformationContext;
@@ -88,23 +85,19 @@ public class HttpServerInitializer extends Thread {
             queues = 0;
         }
 
-        Protocol protocol = serverInformationContext.getServerConfigBuilderContext().getProtocol();
-        if (protocol == Protocol.HTTPS) {
-            SSL = true;
-        }
-
-        SslContext sslCtx = null;
+//        SslContext sslCtx = null;
 
 
-        /*if (SSL) {
+        /*if (protocol == Protocol.HTTPS) {
             SelfSignedCertificate ssc = null;
             try {
                 ssc = new SelfSignedCertificate();
                 sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
             } catch (CertificateException e) {
-                e.printStackTrace();
+            log.error
+                log.error(e);
             } catch (SSLException e) {
-                e.printStackTrace();
+                log.error(e);
             }
 
         } else {
@@ -123,7 +116,7 @@ public class HttpServerInitializer extends Thread {
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
-            ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
+            ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(
                     EmulatorType.HTTP_SERVER, handlers);
             channelPipelineInitializer.setServerInformationContext(serverInformationContext);
             serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
@@ -144,10 +137,6 @@ public class HttpServerInitializer extends Thread {
     public void shutdown() {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
-    }
-
-    private int getCPUCoreSize() {
-        return Runtime.getRuntime().availableProcessors();
     }
 
     public void setBossCount() {

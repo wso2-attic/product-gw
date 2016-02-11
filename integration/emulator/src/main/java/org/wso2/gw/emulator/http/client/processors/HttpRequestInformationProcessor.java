@@ -28,6 +28,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestProcessorContext;
@@ -37,12 +38,15 @@ import org.wso2.gw.emulator.http.params.QueryParameter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
  * Process the Request information of client
  */
 public class HttpRequestInformationProcessor extends AbstractClientProcessor<HttpClientRequestProcessorContext> {
+
+    private static final Logger log = Logger.getLogger(HttpRequestInformationProcessor.class);
 
     @Override
     public void process(HttpClientRequestProcessorContext processorContext) {
@@ -56,13 +60,13 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
         try {
             requestUri = new URI(uri);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         processorContext.getClientInformationContext().getClientConfigBuilderContext().host(requestUri.getHost());
         String scheme = requestUri.getScheme();
 
         if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-            System.err.println("Only HTTP(S) is supported.");
+            log.error("Only HTTP(S) is supported.");
         }
 
         ByteBuf content;
@@ -71,7 +75,7 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
         if (processorContext.getRequestBuilderContext().getBody() != null) {
 
             String rawData = processorContext.getRequestBuilderContext().getBody();
-            byte[] bytes = rawData.getBytes();
+            byte[] bytes = rawData.getBytes(Charset.defaultCharset());
             content = Unpooled.wrappedBuffer(bytes);
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1,
                     processorContext.getRequestBuilderContext().getMethod(), requestUri.getRawPath(), content);
@@ -96,7 +100,8 @@ public class HttpRequestInformationProcessor extends AbstractClientProcessor<Htt
         request.headers().set(HttpHeaders.Names.ACCEPT_ENCODING, HttpHeaders.Values.GZIP);
 
         if (requestContext.getBody() != null) {
-            request.headers().set(HttpHeaders.Names.CONTENT_LENGTH, requestContext.getBody().getBytes().length);
+            request.headers().set(HttpHeaders.Names.CONTENT_LENGTH,
+                    requestContext.getBody().getBytes(Charset.defaultCharset()).length);
         }
         if (requestContext.getHeaders() != null) {
             for (Header header : requestContext.getHeaders()) {

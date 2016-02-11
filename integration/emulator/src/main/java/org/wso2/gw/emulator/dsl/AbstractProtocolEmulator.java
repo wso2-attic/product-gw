@@ -25,7 +25,7 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractGivenBuilderContext;
 
 /**
  * AbstractProtocolEmulator
- * */
+ */
 public abstract class AbstractProtocolEmulator {
 
     private static final Logger log = Logger.getLogger(AbstractProtocolEmulator.class);

@@ -42,7 +42,8 @@ public class CommonUtil {
                 }
             }
         } else {
-            throw new FileNotFoundException("Server startup script not found at " + carbonHome + File.separator + "bin");
+            throw new FileNotFoundException(
+                    "Server startup script not found at " + carbonHome + File.separator + "bin");
         }
         return FilenameUtils.removeExtension(scriptName);
     }

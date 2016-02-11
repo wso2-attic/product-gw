@@ -25,7 +25,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.ssl.SslContext;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
@@ -52,21 +51,20 @@ public class HttpClientInitializer {
     }
 
     public void initialize() throws Exception {
-        SslContext sslCtx = null;
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(sslCtx,
+        ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(
                 EmulatorType.HTTP_CLIENT, null);
         channelPipelineInitializer.setClientInformationContext(clientInformationContext);
         bootstrap.group(group).channel(NioSocketChannel.class).handler(channelPipelineInitializer);
 
-        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry : clientInformationContext
-                .getRequestResponseCorrelation().entrySet()) {
+        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry :
+                clientInformationContext.getRequestResponseCorrelation().entrySet()) {
             clientInformationContext.setExpectedResponse(entry.getValue());
-            HttpClientRequestProcessorContext httpClientRequestProcessorContext = new HttpClientRequestProcessorContext();
-            httpClientRequestProcessorContext.setRequestBuilderContext(entry.getKey());
-            httpClientRequestProcessorContext.setClientInformationContext(clientInformationContext);
-            sendMessage(httpClientRequestProcessorContext);
+            HttpClientRequestProcessorContext processorContext = new HttpClientRequestProcessorContext();
+            processorContext.setRequestBuilderContext(entry.getKey());
+            processorContext.setClientInformationContext(clientInformationContext);
+            sendMessage(processorContext);
         }
         shutdown();
     }
