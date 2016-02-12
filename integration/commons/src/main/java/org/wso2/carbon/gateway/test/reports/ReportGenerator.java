@@ -96,34 +96,70 @@ public class ReportGenerator {
     }
 
     IReportVisitor createVisitor(final Locale locale) throws IOException {
-        final List<IReportVisitor> visitors = new ArrayList<IReportVisitor>();
+        FileOutputStream xmlOutputStream = null;
+        FileOutputStream csvOutputStream = null;
+        try {
+            List<IReportVisitor> visitors = new ArrayList<IReportVisitor>();
 
-        if (getOutputDirectoryFile().exists()) {
-            //delete coverage directory if it already exists. To avoid report generation
-            // conflicts when two carbon servers are shutting down
-            FileUtils.deleteDirectory(new File(getOutputDirectoryFile().getAbsolutePath()));
+            if (getOutputDirectoryFile().exists()) {
+                //delete coverage directory if it already exists. To avoid report generation
+                // conflicts when two carbon servers are shutting down
+                FileUtils.deleteDirectory(new File(getOutputDirectoryFile().getAbsolutePath()));
+            }
+
+            if (!getOutputDirectoryFile().mkdirs()) {
+                throw new IOException("Failed to create coverage report directory - " + getOutputDirectoryFile());
+            }
+
+            final HTMLFormatter htmlFormatter = new HTMLFormatter();
+            htmlFormatter.setOutputEncoding(OUTPUT_ENCODING);
+            htmlFormatter.setLocale(locale);
+            visitors.add(htmlFormatter.createVisitor(new FileMultiReportOutput(getOutputDirectoryFile())));
+
+            final XMLFormatter xmlFormatter = new XMLFormatter();
+            xmlFormatter.setOutputEncoding(OUTPUT_ENCODING);
+
+            xmlOutputStream = new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.xml"));
+            visitors.add(xmlFormatter.createVisitor(xmlOutputStream));
+
+            final CSVFormatter csvFormatter = new CSVFormatter();
+            csvFormatter.setOutputEncoding(OUTPUT_ENCODING);
+            csvOutputStream = new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.csv"));
+            visitors.add(csvFormatter.createVisitor(csvOutputStream));
+            return new MultiReportVisitor(visitors);
+
+        } catch (IOException e) {
+            if (xmlOutputStream != null) {
+                try {
+                    xmlOutputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing xml output stream", e1);
+                }
+            }
+            if (csvOutputStream != null) {
+                try {
+                    csvOutputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing csv output stream", e1);
+                }
+            }
+            throw e;
+        } finally {
+            if (xmlOutputStream != null) {
+                try {
+                    xmlOutputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing xml output stream", e1);
+                }
+            }
+            if (csvOutputStream != null) {
+                try {
+                    csvOutputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing csv output stream", e1);
+                }
+            }
         }
-
-        if (!getOutputDirectoryFile().mkdirs()) {
-            throw new IOException("Failed to create coverage report directory - " + getOutputDirectoryFile());
-        }
-
-        final HTMLFormatter htmlFormatter = new HTMLFormatter();
-        htmlFormatter.setOutputEncoding(OUTPUT_ENCODING);
-        htmlFormatter.setLocale(locale);
-        visitors.add(htmlFormatter.createVisitor(new FileMultiReportOutput(getOutputDirectoryFile())));
-
-        final XMLFormatter xmlFormatter = new XMLFormatter();
-        xmlFormatter.setOutputEncoding(OUTPUT_ENCODING);
-        visitors.add(
-                xmlFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.xml"))));
-
-        final CSVFormatter csvFormatter = new CSVFormatter();
-        csvFormatter.setOutputEncoding(OUTPUT_ENCODING);
-        visitors.add(
-                csvFormatter.createVisitor(new FileOutputStream(new File(getOutputDirectoryFile(), "jacoco.csv"))));
-
-        return new MultiReportVisitor(visitors);
     }
 
     private File getOutputDirectoryFile() {

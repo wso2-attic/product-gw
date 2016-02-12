@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+/**
+ * Responsible for start, stop, deploy and restart the GW server
+ */
 public class GatewayAdminClientImpl implements GatewayAdminClient {
 
     private static final Logger log = LoggerFactory.getLogger(GatewayAdminClientImpl.class);

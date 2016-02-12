@@ -22,7 +22,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
+/**
+ * InputStreamHandler
+ */
 public class InputStreamHandler implements Runnable {
     private String streamType;
     private InputStream inputStream;
@@ -44,7 +48,7 @@ public class InputStreamHandler implements Runnable {
     public void run() {
         InputStreamReader inputStreamReader = null;
         try {
-            inputStreamReader = new InputStreamReader(this.inputStream);
+            inputStreamReader = new InputStreamReader(this.inputStream, Charset.defaultCharset());
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             while (running) {
@@ -52,15 +56,12 @@ public class InputStreamHandler implements Runnable {
                 if (bufferLine == null) {
                     break;
                 }
-                System.out.println(bufferLine); //TODO remove
                 if ("inputStream".equals(this.streamType)) {
-                    this.stringBuilder.append(bufferLine + "\n");
+                    this.stringBuilder.append(bufferLine).append("\n");
                     log.info(bufferLine);
-                    System.out.println(bufferLine);
                 } else if ("errorStream".equals(this.streamType)) {
-                    this.stringBuilder.append(bufferLine + "\n");
+                    this.stringBuilder.append(bufferLine).append("\n");
                     log.error(bufferLine);
-                    System.out.println(bufferLine);
                 }
             }
         } catch (Exception ex) {

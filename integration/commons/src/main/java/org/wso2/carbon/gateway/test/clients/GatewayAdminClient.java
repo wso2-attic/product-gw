@@ -15,15 +15,18 @@
 
 package org.wso2.carbon.gateway.test.clients;
 
+/**
+ * GatewayAdminClient
+ */
 public interface GatewayAdminClient {
 
-    public void startGateway() throws Exception;
+    void startGateway() throws Exception;
 
-    public void stopGateway() throws Exception;
+    void stopGateway() throws Exception;
 
-    public void restartGateway() throws Exception;
+    void restartGateway() throws Exception;
 
-    public void deployArtifact(String relativeFilePath);
+    void deployArtifact(String relativeFilePath);
 
-    public void cleanArtifacts();
+    void cleanArtifacts();
 }
