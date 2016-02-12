@@ -29,6 +29,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * FileManipulator
+ */
 public class FileManipulator {
     private static final Logger log = LoggerFactory.getLogger(FileManipulator.class);
 
@@ -36,11 +39,8 @@ public class FileManipulator {
         if (dir.isDirectory()) {
             String[] children = dir.list();
             if (children != null) {
-                String[] arr$ = children;
-                int len$ = children.length;
 
-                for (int i$ = 0; i$ < len$; ++i$) {
-                    String child = arr$[i$];
+                for (String child : children) {
                     boolean success = deleteDir(new File(dir, child));
                     if (!success) {
                         return false;
@@ -53,7 +53,9 @@ public class FileManipulator {
 
     public static void deleteFile(File file) {
         if (file.exists()) {
-            file.delete();
+            if (file.delete()) {
+                log.debug("file " + file + " deleted");
+            }
         }
     }
 
@@ -64,12 +66,17 @@ public class FileManipulator {
             }
 
             String[] children = srcDir.list();
-            String[] arr$ = children;
-            int len$ = children.length;
 
-            for (int i$ = 0; i$ < len$; ++i$) {
-                String aChildren = arr$[i$];
-                copyDir(new File(srcDir, aChildren), new File(dstDir, aChildren));
+            if (children != null) {
+
+                int length = children.length;
+
+                int i = 0;
+                while (i < length) {
+                    String aChildren = children[i];
+                    copyDir(new File(srcDir, aChildren), new File(dstDir, aChildren));
+                    ++i;
+                }
             }
         } else {
             copyFile(srcDir, dstDir);
@@ -125,9 +132,39 @@ public class FileManipulator {
             while ((bytesRead = input.read(buf)) > 0) {
                 output.write(buf, 0, bytesRead);
             }
+
+        } catch (IOException e) {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e1) {
+                   log.error("Error while closing input stream ", e1);
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing output stream ", e1);
+                }
+            }
+            throw e;
+
         } finally {
-            input.close();
-            output.close();
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing input stream ", e1);
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing output stream ", e1);
+                }
+            }
         }
     }
 
@@ -139,11 +176,10 @@ public class FileManipulator {
         if (items == null) {
             return new File[0];
         } else {
-            String[] arr$ = items;
-            int len$ = items.length;
+            int length = items.length;
 
-            for (int i$ = 0; i$ < len$; ++i$) {
-                String item = arr$[i$];
+            for (int i = 0; i < length; ++i) {
+                String item = items[i];
                 if (fileNamePrefix != null && extension != null) {
                     if (item.startsWith(fileNamePrefix) && item.endsWith(extension)) {
                         fileList.add(new File(libDirPath + File.separator + item));
@@ -171,7 +207,9 @@ public class FileManipulator {
     public static void backupFile(File file) {
         if (file.exists()) {
             File change = new File(file.getPath() + "_back");
-            file.renameTo(change);
+            if (file.renameTo(change)) {
+                log.debug("backup created for " + file);
+            }
         }
     }
 
@@ -182,7 +220,9 @@ public class FileManipulator {
 
             if (change.exists()) {
                 File original = new File(file.getPath());
-                change.renameTo(original);
+                if (change.renameTo(original)) {
+                    log.debug("backup restored as " + original);
+                }
             }
         }
     }

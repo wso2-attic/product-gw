@@ -18,7 +18,11 @@
 package org.wso2.carbon.gateway.test.utils;
 
 import java.io.File;
+import java.util.Locale;
 
+/**
+ * PathUtil
+ */
 public class PathUtil {
 
     public static String getJacocoCoverageHome() {
@@ -53,7 +57,7 @@ public class PathUtil {
 
     public static String getSystemResourceLocation() {
         String resourceLocation;
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
             resourceLocation = System.getProperty("framework.resource.location").replace("/", "\\");
         } else {
             resourceLocation = System.getProperty("framework.resource.location").replace("/", "/");

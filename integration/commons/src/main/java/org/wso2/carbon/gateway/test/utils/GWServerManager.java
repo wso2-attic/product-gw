@@ -22,7 +22,12 @@ import org.wso2.carbon.gateway.test.reports.ReportGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Scanner;
 
+/**
+ * GWServerManager
+ */
 public class GWServerManager {
     private static final Logger log = LoggerFactory.getLogger(GWServerManager.class);
     private Process process;
@@ -45,7 +50,7 @@ public class GWServerManager {
                 originalUserDir = PathUtil.getUserDirPath();
                 //System.setProperty("user.dir", carbonFolder);
                 File commandDir = new File(carbonHome);
-                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
                     commandDir = new File(carbonHome + File.separator + "bin");
                     tempProcess = Runtime.getRuntime()
                             .exec(new String[] { "cmd.exe", "/c", scriptName + ".bat" }, null, commandDir);
@@ -116,8 +121,8 @@ public class GWServerManager {
     public synchronized void shutdownServer() throws Exception {
         if (process != null && process.isAlive()) {
             String processID = getProcessID(defaultHttpsPort).trim();
-            if (processID != null && !processID.isEmpty()) {
-                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            if (!processID.isEmpty()) {
+                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
                     //TODO need to implement
                 } else {
                     Runtime.getRuntime().exec("kill -9 " + processID);
@@ -134,7 +139,6 @@ public class GWServerManager {
                 System.clearProperty("carbon.home");
                 System.setProperty("user.dir", originalUserDir);
             }
-            Thread.sleep(1000);
 
             //generate coverage report
             if (isCoverageEnable) {
@@ -146,13 +150,11 @@ public class GWServerManager {
                     log.error("Failed to generate code coverage ", e);
                 }
             }
-
-            Thread.sleep(1000);
         }
     }
 
     private String getProcessID(int port) throws java.io.IOException {
-        java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("lsof -t -i:" + port).getInputStream())
+        Scanner s = new Scanner(Runtime.getRuntime().exec("lsof -t -i:" + port).getInputStream(), "UTF-8")
                 .useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
@@ -178,7 +180,7 @@ public class GWServerManager {
     private void instrumentForCoverage() throws IOException {
         String scriptName = CommonUtil.getStartupScriptFileName(carbonHome);
 
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
             insertJacocoAgentToBatScript(scriptName);
             if (log.isDebugEnabled()) {
                 log.debug("Included files " + CodeCoverageUtils.getInclusionJarsPattern(":"));

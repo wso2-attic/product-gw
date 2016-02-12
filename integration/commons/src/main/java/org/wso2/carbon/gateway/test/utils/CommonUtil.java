@@ -22,6 +22,9 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+/**
+ * CommonUtil
+ */
 public class CommonUtil {
     public static final String SEVER_STARTUP_SCRIPT_NAME = "wso2server";
 

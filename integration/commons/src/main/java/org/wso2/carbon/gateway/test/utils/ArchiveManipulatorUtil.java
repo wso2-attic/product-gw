@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * ArchiveManipulatorUtil
+ */
 public class ArchiveManipulatorUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ArchiveManipulatorUtil.class);
@@ -34,9 +37,11 @@ public class ArchiveManipulatorUtil {
         String fileDestination = extractedDir + File.separator;
         byte[] buf = new byte[1024];
         ZipInputStream zipinputstream = null;
+        FileInputStream sourceFileInputStream = null;
 
         try {
-            zipinputstream = new ZipInputStream(new FileInputStream(sourceFilePath));
+            sourceFileInputStream = new FileInputStream(sourceFilePath);
+            zipinputstream = new ZipInputStream(sourceFileInputStream);
             ZipEntry zipentry = zipinputstream.getNextEntry();
 
             while (true) {
@@ -47,7 +52,9 @@ public class ArchiveManipulatorUtil {
                     File newFile = new File(e);
                     if (zipentry.isDirectory()) {
                         if (!newFile.exists()) {
-                            newFile.mkdirs();
+                            if (newFile.mkdirs()) {
+                                log.debug("directory " + newFile + " created");
+                            }
                         }
 
                         zipentry = zipinputstream.getNextEntry();
@@ -73,16 +80,53 @@ public class ArchiveManipulatorUtil {
                 zipinputstream.close();
                 return;
             }
-        } catch (IOException var15) {
-            log.error("Error on archive extraction ", var15);
-            throw new IOException("Error on archive extraction ", var15);
-        } finally {
+        } catch (IOException e) {
+            log.error("Error on archive extraction ", e);
             if (fileoutputstream != null) {
-                fileoutputstream.close();
+                try {
+                    fileoutputstream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing file output stream ", e1);
+                }
             }
 
             if (zipinputstream != null) {
-                zipinputstream.close();
+                try {
+                    zipinputstream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing zip input stream ", e1);
+                }
+            }
+            if (sourceFileInputStream != null) {
+                try {
+                    sourceFileInputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing file input stream ", e1);
+                }
+            }
+            throw new IOException("Error on archive extraction ", e);
+        } finally {
+            if (fileoutputstream != null) {
+                try {
+                    fileoutputstream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing file output stream ", e1);
+                }
+            }
+
+            if (zipinputstream != null) {
+                try {
+                    zipinputstream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing zip input stream ", e1);
+                }
+            }
+            if (sourceFileInputStream != null) {
+                try {
+                    sourceFileInputStream.close();
+                } catch (IOException e1) {
+                    log.error("Error while closing file input stream ", e1);
+                }
             }
         }
     }

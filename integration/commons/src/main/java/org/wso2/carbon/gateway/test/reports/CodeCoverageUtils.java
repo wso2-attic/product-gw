@@ -461,7 +461,7 @@ public final class CodeCoverageUtils {
      * @return - Jar file extracted directory.
      * @throws java.io.IOException - Throws if jar extraction fails
      */
-    public synchronized static String extractJarFile(String jarFilePath) throws IOException {
+    public static synchronized String extractJarFile(String jarFilePath) throws IOException {
         if (!jarFilePath.endsWith(".jar")) {
             throw new IllegalArgumentException("Jar file should have the extension .jar. " +
                     jarFilePath + " is invalid");
@@ -489,7 +489,7 @@ public final class CodeCoverageUtils {
         return tempExtractedDir;
     }
 
-    public static String[] getMatches(String[] classFiles, String[] regexArray) {
+    public static List<String> getMatches(String[] classFiles, String[] regexArray) {
         List<String> matches = null;
         for (String regex : regexArray) {
             Pattern p = Pattern.compile(regex);
@@ -500,7 +500,7 @@ public final class CodeCoverageUtils {
                 }
             }
         }
-        return (String[]) matches.toArray();
+        return  matches;
     }
 
     private static boolean waitForCoverageDumpFileCreation(File file) {

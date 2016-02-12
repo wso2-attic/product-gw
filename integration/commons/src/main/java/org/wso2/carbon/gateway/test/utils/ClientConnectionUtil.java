@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+/**
+ * ClientConnectionUtil
+ */
 public class ClientConnectionUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ClientConnectionUtil.class);
