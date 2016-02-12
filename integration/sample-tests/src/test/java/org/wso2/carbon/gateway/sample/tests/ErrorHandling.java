@@ -47,7 +47,7 @@ public class ErrorHandling {
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts"+ File.separator+"error-hanling.xml");
+        gwClient.deployArtifact("artifacts" + File.separator + "error-handling.xml");
         gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
@@ -66,27 +66,42 @@ public class ErrorHandling {
                 "Expected response not found");
     }
 
-    public void test2() throws Exception {
+    @Test
+    public void overridingConfigFiles() throws Exception {
+        gwClient.deployArtifact("artifacts" + File.separator + "error-handling-same-route-id.xml");
+        gwClient.restartGateway();
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/new-route").withMethod(HttpMethod.GET)
-                        .withHeader("routeId", "r2"))
+                .when(HttpClientRequestBuilderContext.request().withPath("/default").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("User2", response.getReceivedResponseContext().getResponseBody(),
-                "Expected response not found");
+        Assert.assertEquals("Response overriding configuration files test",
+                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
     }
 
-    public void test3() throws Exception {
+    @Test
+    public void nonExistingRoute() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/wrong-route").withMethod(HttpMethod.GET)
-                        .withHeader("routeId", "r2"))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+                .when(HttpClientRequestBuilderContext.request().withPath("/non_existing_route")
+                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+    }
+
+    @Test
+    public void whenEndpointDown() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/when_endpoint_down")
+                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
                 "Expected response code not found");
     }
 
@@ -103,9 +118,11 @@ public class ErrorHandling {
                 //Overriding camel
                 .when(request().
                         withMethod(HttpMethod.GET).withPath("/overriding_camel"))
-                .then(response()
-                        .withBody("Response overriding camel test")
-                        .withStatusCode(HttpResponseStatus.OK))
-                .operation().start();
+                .then(response().withBody("Response overriding camel test").withStatusCode(HttpResponseStatus.OK))
+                //overriding config files
+                .when(request().
+                        withMethod(HttpMethod.GET).withPath("/overriding_config_files"))
+                .then(response().withBody("Response overriding configuration files test")
+                        .withStatusCode(HttpResponseStatus.OK)).operation().start();
     }
 }

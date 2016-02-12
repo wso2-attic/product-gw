@@ -47,7 +47,7 @@ public class SampleTest1 {
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts"+ File.separator+"new-camel-context.xml");
+        gwClient.deployArtifact("artifacts" + File.separator + "new-camel-context.xml");
         gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);

@@ -20,4 +20,8 @@
         <from uri="wso2-gw:/default"/>
         <to uri="wso2-gw:http://localhost:9773/services/overriding_camel"/>
     </route>
+    <route id="when_endpoint_down">
+        <from uri="wso2-gw:/when_endpoint_down"/>
+        <to uri="wso2-gw:http://localhost:9993/services/when_endpoint_down"/>
+    </route>
 </routes>
