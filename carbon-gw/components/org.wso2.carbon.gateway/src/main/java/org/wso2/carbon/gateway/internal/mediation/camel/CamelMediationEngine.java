@@ -22,8 +22,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.gateway.internal.util.uri.URITemplate;
-import org.wso2.carbon.gateway.internal.util.uri.URITemplateException;
 import org.wso2.carbon.messaging.CarbonCallback;
 import org.wso2.carbon.messaging.CarbonMessage;
 import org.wso2.carbon.messaging.CarbonMessageProcessor;
@@ -33,9 +31,6 @@ import org.wso2.carbon.messaging.FaultHandler;
 import org.wso2.carbon.messaging.MessageProcessorException;
 import org.wso2.carbon.messaging.TransportSender;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -176,42 +171,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
                                                   Map<String, String> transportHeaders) {
 
-        for (String consumerKey : consumers.keySet()) {
-            if (!consumerKey.contains("?httpMethodRestrict=")) {
-                if (uri.contains(consumerKey)) {
-                    return consumers.get(consumerKey);
-                }
-            }
-        }
-
-        /*Processing requests to REST interfaces */
-        for (String consumerKey : consumers.keySet()) {
-            if (consumerKey.contains("?httpMethodRestrict=")) {
-                Map<String, String> variables = new HashMap<String, String>();
-                URITemplate uriTemplate = null;
-                try {
-                    /* Extracting the context information from registered REST consumers. */
-                    String[] urlTokens = consumerKey.split(":\\d+");
-                    if (urlTokens.length > 0) {
-                        String consumerContextPath = urlTokens[1];
-                        String decodeConsumerURI = URLDecoder.decode(consumerContextPath, "UTF-8");
-                        uriTemplate = new URITemplate(decodeConsumerURI);
-                        boolean isMatch = uriTemplate.matches(uri + "?httpMethodRestrict=" + httpMethod, variables);
-                        if (variables.size() != 0) {
-                            for (Map.Entry<String, String> entry : variables.entrySet()) {
-                                transportHeaders.put(entry.getKey(), entry.getValue());
-                            }
-                        }
-                        if (isMatch) {
-                            return consumers.get(consumerKey);
-                        }
-                    }
-                } catch (URITemplateException e) {
-                    log.error("URI Template " + consumerKey + " is invalid. " + e);
-                } catch (UnsupportedEncodingException e) {
-                    log.error("URI Template " + consumerKey + " encoding error. " + e);
-                }
-            }
+        String matchBestPath = ConsumePathMatcher.matchBestPath(httpMethod, uri, consumers, transportHeaders);
+        if (matchBestPath != null) {
+            return consumers.get(matchBestPath);
         }
 
         return null;
