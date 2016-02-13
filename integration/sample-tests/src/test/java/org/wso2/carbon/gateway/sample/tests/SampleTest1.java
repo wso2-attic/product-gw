@@ -48,12 +48,11 @@ public class SampleTest1 {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
         gwClient.deployArtifact("artifacts" + File.separator + "new-camel-context.xml");
-        gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
-    @Test(invocationCount = 10)
+    @Test
     public void test1() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
@@ -67,7 +66,7 @@ public class SampleTest1 {
                 "Expected response not found");
     }
 
-    @Test(invocationCount = 10)
+    @Test
     public void test2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))

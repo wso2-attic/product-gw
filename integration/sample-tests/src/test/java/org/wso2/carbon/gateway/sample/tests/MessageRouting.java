@@ -48,7 +48,6 @@ public class MessageRouting {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
         gwClient.deployArtifact("artifacts" + File.separator + "message-routing.xml");
-        gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

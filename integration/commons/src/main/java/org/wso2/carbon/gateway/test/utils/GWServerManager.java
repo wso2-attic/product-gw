@@ -31,6 +31,7 @@ import java.util.Scanner;
 public class GWServerManager {
     private static final Logger log = LoggerFactory.getLogger(GWServerManager.class);
     private Process process;
+    private Process tempProcess;
     private String carbonHome;
     private String originalUserDir = null;
     private InputStreamHandler inputStreamHandler;
@@ -38,13 +39,12 @@ public class GWServerManager {
     private int defaultHttpsPort = 9090;
     private boolean isCoverageEnable = false;
 
-    public synchronized void startServerUsingCarbonHome(String carbonHome) {
+    public void startServerUsingCarbonHome(String carbonHome) {
         startServerUsingCarbonHome(carbonHome, carbonHome, "carbon");
     }
 
-    public synchronized void startServerUsingCarbonHome(String carbonHome, String carbonFolder, String scriptName) {
+    public void startServerUsingCarbonHome(String carbonHome, String carbonFolder, String scriptName) {
         if (process == null) {
-            Process tempProcess;
             try {
                 //System.setProperty("carbon.home", carbonFolder);
                 originalUserDir = PathUtil.getUserDirPath();
@@ -53,10 +53,10 @@ public class GWServerManager {
                 if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
                     commandDir = new File(carbonHome + File.separator + "bin");
                     tempProcess = Runtime.getRuntime()
-                            .exec(new String[] { "cmd.exe", "/c", scriptName + ".bat" }, null, commandDir);
+                            .exec(new String[] { "cmd.exe", "/c", scriptName + ".bat", "start" }, null, commandDir);
                 } else {
                     tempProcess = Runtime.getRuntime()
-                            .exec(new String[] { "sh", "bin/" + scriptName + ".sh" }, null, commandDir);
+                            .exec(new String[] { "sh", "bin/" + scriptName + ".sh", "start" }, null, commandDir);
                 }
 
                 errorStreamHandler = new InputStreamHandler("errorStream", tempProcess.getErrorStream());
@@ -85,7 +85,7 @@ public class GWServerManager {
         }
     }
 
-    public synchronized String setUpCarbonHome(String carbonServerZipFile) throws IOException {
+    public String setUpCarbonHome(String carbonServerZipFile) throws IOException {
         if (process != null) {
             return carbonHome;
         } else {
@@ -118,15 +118,26 @@ public class GWServerManager {
         }
     }
 
-    public synchronized void shutdownServer() throws Exception {
-        if (process != null && process.isAlive()) {
-            String processID = getProcessID(defaultHttpsPort).trim();
-            if (!processID.isEmpty()) {
-                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
-                    //TODO need to implement
-                } else {
-                    Runtime.getRuntime().exec("kill -9 " + processID);
-                }
+    public void shutdownServer() throws Exception {
+//        if (process != null && process.isAlive()) {
+
+            File commandDir = new File(carbonHome);
+            if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
+                commandDir = new File(carbonHome + File.separator + "bin");
+                tempProcess = Runtime.getRuntime()
+                        .exec(new String[] { "cmd.exe", "/c", "carbon.bat", "stop" }, null, commandDir);
+            } else {
+                tempProcess = Runtime.getRuntime()
+                        .exec(new String[] { "sh", "bin/carbon.sh", "stop" }, null, commandDir);
+            }
+
+//            String processID = getProcessID(defaultHttpsPort).trim();
+//            if (!processID.isEmpty()) {
+//                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
+//                    //TODO need to implement
+//                } else {
+//                    Runtime.getRuntime().exec("kill -9 " + processID);
+//                }
                 if (inputStreamHandler != null) {
                     inputStreamHandler.stop();
                     inputStreamHandler = null;
@@ -138,7 +149,8 @@ public class GWServerManager {
                 process = null;
                 System.clearProperty("carbon.home");
                 System.setProperty("user.dir", originalUserDir);
-            }
+//            }
+            Thread.sleep(1000);
 
             //generate coverage report
             if (isCoverageEnable) {
@@ -150,10 +162,12 @@ public class GWServerManager {
                     log.error("Failed to generate code coverage ", e);
                 }
             }
-        }
+
+            Thread.sleep(1000);
+//        }
     }
 
-    private String getProcessID(int port) throws java.io.IOException {
+    public String getProcessID(int port) throws java.io.IOException {
         Scanner s = new Scanner(Runtime.getRuntime().exec("lsof -t -i:" + port).getInputStream(), "UTF-8")
                 .useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";

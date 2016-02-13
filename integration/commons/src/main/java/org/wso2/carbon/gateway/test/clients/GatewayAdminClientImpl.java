@@ -65,7 +65,7 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
 
     public void deployArtifact(String relativeFilePath) {
         if (artifacts == null) {
-            artifacts = new ArrayList<String>();
+            artifacts = new ArrayList<>();
         }
         relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
@@ -86,6 +86,7 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
             // FileManipulator.restoreBackup(new File(artifact));
             FileManipulator.removeFile(new File(artifact));
         }
+        artifacts.clear();
         log.info("Restored Successfully");
     }
 }
