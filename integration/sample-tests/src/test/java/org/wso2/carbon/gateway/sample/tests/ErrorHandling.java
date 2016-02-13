@@ -62,7 +62,7 @@ public class ErrorHandling {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response overriding camel test", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response overriding camel test",
                 "Expected response not found");
     }
 
@@ -77,8 +77,8 @@ public class ErrorHandling {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response overriding configuration files test",
-                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response overriding configuration files test", "Expected response not found");
     }
 
     @Test

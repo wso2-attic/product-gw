@@ -62,7 +62,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response simple passthrough", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response simple passthrough",
                 "Expected response not found");
     }
 
@@ -76,7 +76,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 1",
                 "Expected response not found");
     }
 
@@ -90,7 +90,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 2", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 2",
                 "Expected response not found");
     }
 
@@ -104,7 +104,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 3",
                 "Expected response not found");
     }
 
@@ -118,7 +118,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 4", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 4",
                 "Expected response not found");
     }
 
@@ -132,7 +132,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 5", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 5",
                 "Expected response not found");
     }
 
@@ -146,7 +146,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response header test 3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response header test 3",
                 "Expected response not found");
     }
 
@@ -164,7 +164,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 1",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -174,7 +174,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 2", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 2",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -184,7 +184,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 3",
                 "Expected response not found");
 
         emulator2.stop();
@@ -196,7 +196,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 1",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -214,7 +214,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 3",
                 "Expected response not found");
 
         emulator3.stop();
@@ -226,7 +226,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response loadBalance test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 1",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -261,7 +261,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -272,7 +272,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 2", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 2",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -296,7 +296,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
 
         response = Emulator.getHttpEmulator().client()
@@ -307,7 +307,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 3", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 3",
                 "Expected response not found");
 
         emulator5.stop();
@@ -320,7 +320,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
     }
 
@@ -339,7 +339,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
 
         emulator6.stop();
@@ -352,7 +352,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
 
         emulator7.stop();
@@ -365,7 +365,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response failOver test 1", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response failOver test 1",
                 "Expected response not found");
     }
 
@@ -379,7 +379,7 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("{data: \"Hello\"}", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "{data: \"Hello\"}",
                 "Expected response not found");
     }
 
@@ -393,8 +393,8 @@ public class MessageRouting {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response servicechaining soap test result",
-                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response servicechaining soap test result", "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
