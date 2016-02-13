@@ -31,6 +31,7 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         <property name="contentType" value="application/xml"/>
     </bean>
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
+        <jmxAgent id="agent" disabled="true"/>
 
         <onException>
             <exception>java.lang.Exception</exception>
