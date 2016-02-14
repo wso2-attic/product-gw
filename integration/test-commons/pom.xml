@@ -66,11 +66,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <commons-io.version>2.2</commons-io.version>
-        <plexus-utils.version>3.0.22</plexus-utils.version>
-        <org.jacoco.version>0.7.5.201505241946</org.jacoco.version>
-        <slf4j-log4j12.version>1.7.5</slf4j-log4j12.version>
-    </properties>
 </project>

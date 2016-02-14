@@ -41,14 +41,12 @@
 
     <properties>
         <netty.version>4.0.30.Final</netty.version>
-        <testng.version>6.9.8</testng.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
