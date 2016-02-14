@@ -11,42 +11,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.gateway.test</groupId>
-    <artifactId>test-automation</artifactId>
+    <artifactId>test-integration</artifactId>
     <packaging>pom</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-log4j12.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-log4j12.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.core</artifactId>
-            <version>${org.jacoco.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.report</artifactId>
-            <version>${org.jacoco.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>${plexus-utils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-    </dependencies>
+    <name>WSO2 Carbon - Gateway Test Integration Parent</name>
 
     <properties>
         <commons-io.version>2.2</commons-io.version>
@@ -58,7 +25,7 @@
 
     <modules>
         <module>emulator</module>
-        <module>commons</module>
-        <module>sample-tests</module>
+        <module>test-commons</module>
+        <module>functional-tests</module>
     </modules>
 </project>
