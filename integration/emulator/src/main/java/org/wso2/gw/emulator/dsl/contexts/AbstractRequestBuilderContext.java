@@ -23,6 +23,6 @@ package org.wso2.gw.emulator.dsl.contexts;
 /**
  * AbstractRequestBuilderContext
  */
-public class AbstractRequestBuilderContext {
+public abstract class AbstractRequestBuilderContext {
 
 }

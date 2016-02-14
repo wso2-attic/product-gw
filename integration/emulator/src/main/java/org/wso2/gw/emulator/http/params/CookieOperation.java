@@ -17,12 +17,11 @@
  *  * under the License.
  *
  */
-
-package org.wso2.gw.emulator.dsl;
+package org.wso2.gw.emulator.http.params;
 
 /**
- * Query parameter operation
+ * CookieOperation
  */
-public enum QueryParameterOperation {
+public enum CookieOperation {
     OR, AND
 }

@@ -18,22 +18,8 @@
  *
  */
 
-package org.wso2.gw.emulator.http.server.processors;
+package org.wso2.gw.emulator.dsl.contexts;
 
-import org.wso2.gw.emulator.dsl.processors.AbstractCustomProcessor;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerProcessorContext;
 
-/**
- * AbstractHttpServerCustomProcessor
- */
-public abstract class AbstractHttpServerCustomProcessor extends AbstractCustomProcessor {
-    private HttpServerProcessorContext processorContext;
-
-    public void setProcessorContext(HttpServerProcessorContext processorContext) {
-        this.processorContext = processorContext;
-    }
-
-    public HttpServerProcessorContext getProcessorContext() {
-        return processorContext;
-    }
+public abstract class AbstractClientProcessorContext {
 }

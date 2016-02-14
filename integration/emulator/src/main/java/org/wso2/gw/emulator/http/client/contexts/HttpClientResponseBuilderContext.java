@@ -22,7 +22,7 @@ package org.wso2.gw.emulator.http.client.contexts;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.dsl.Operation;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
@@ -44,7 +44,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
     private List<Cookie> cookies;
     private String body;
     private boolean isIgnored;
-    private Operation operations;
+    private HeaderOperation operations;
 
     private static final Logger log = Logger.getLogger(HttpClientResponseBuilderContext.class);
 
@@ -70,7 +70,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         return this;
     }
 
-    public HttpClientResponseBuilderContext withHeaders(Operation operation, Header... headers) {
+    public HttpClientResponseBuilderContext withHeaders(HeaderOperation operation, Header... headers) {
         this.operations = operation;
         if (this.headers == null) {
             this.headers = new ArrayList<Header>();
@@ -140,7 +140,7 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
         return body;
     }
 
-    public Operation getOperations() {
+    public HeaderOperation getOperations() {
         return operations;
     }
 }

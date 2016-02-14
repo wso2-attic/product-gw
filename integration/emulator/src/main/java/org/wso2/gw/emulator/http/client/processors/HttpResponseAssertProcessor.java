@@ -21,7 +21,7 @@
 package org.wso2.gw.emulator.http.client.processors;
 
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.dsl.Operation;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.params.Header;
 
@@ -62,10 +62,10 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
             return;
         }
         Map<String, List<String>> receivedHeaders = processorContext.getReceivedResponseContext().getHeaderParameters();
-        Operation operation = processorContext.getClientInformationContext().getExpectedResponse().getOperations();
+        HeaderOperation operation = processorContext.getClientInformationContext().getExpectedResponse().getOperations();
 
         boolean value = false;
-        if (operation == Operation.AND) {
+        if (operation == HeaderOperation.AND) {
 
             for (Map.Entry<String, List<String>> entry : processorContext.getReceivedResponseContext()
                     .getHeaderParameters().entrySet()) {

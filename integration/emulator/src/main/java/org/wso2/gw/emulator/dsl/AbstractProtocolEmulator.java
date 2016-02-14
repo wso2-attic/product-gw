@@ -28,8 +28,6 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractGivenBuilderContext;
  */
 public abstract class AbstractProtocolEmulator {
 
-    private static final Logger log = Logger.getLogger(AbstractProtocolEmulator.class);
-
     public abstract AbstractGivenBuilderContext server();
 
     public abstract AbstractGivenBuilderContext client();
