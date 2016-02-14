@@ -20,10 +20,12 @@
 
 package org.wso2.gw.emulator.http.client.contexts;
 
+import org.wso2.gw.emulator.dsl.contexts.AbstractClientProcessorContext;
+
 /**
  * To set and get client information context
  */
-public class HttpClientProcessorContext {
+public class HttpClientProcessorContext extends AbstractClientProcessorContext {
     private HttpClientInformationContext clientInformationContext;
 
     public HttpClientInformationContext getClientInformationContext() {

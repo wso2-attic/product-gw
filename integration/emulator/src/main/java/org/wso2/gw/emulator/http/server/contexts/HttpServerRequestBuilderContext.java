@@ -22,9 +22,9 @@ package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.dsl.CookieOperation;
-import org.wso2.gw.emulator.dsl.Operation;
-import org.wso2.gw.emulator.dsl.QueryParameterOperation;
+import org.wso2.gw.emulator.http.params.CookieOperation;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
+import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
@@ -55,7 +55,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     private List<Header> headers;
     private List<QueryParameter> queryParameters;
     private List<Cookie> cookies;
-    private Operation operation;
+    private HeaderOperation operation;
     private CookieOperation cookieOperation;
     private QueryParameterOperation queryOperation;
 
@@ -103,7 +103,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-    public Operation getOperation() {
+    public HeaderOperation getOperation() {
         return operation;
     }
 
@@ -111,7 +111,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return cookieOperation;
     }
 
-    public HttpServerRequestBuilderContext withHeaders(Operation operation, Header... headers) {
+    public HttpServerRequestBuilderContext withHeaders(HeaderOperation operation, Header... headers) {
         this.operation = operation;
         this.headers = Arrays.asList(headers);
         return this;
@@ -201,10 +201,10 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         if (headers == null) {
             return true;
         }
-        Operation operation = getOperation();
+        HeaderOperation operation = getOperation();
         Map<String, List<String>> headerParameters = requestContext.getHeaderParameters();
 
-        if (operation == Operation.OR) {
+        if (operation == HeaderOperation.OR) {
             if ((headerParameters == null || headerParameters.isEmpty()) && !headers.isEmpty()) {
                 return false;
             }

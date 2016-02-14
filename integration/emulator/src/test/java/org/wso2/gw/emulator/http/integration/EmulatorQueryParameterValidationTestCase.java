@@ -27,8 +27,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.gw.emulator.dsl.Emulator;
-import org.wso2.gw.emulator.dsl.Operation;
-import org.wso2.gw.emulator.dsl.QueryParameterOperation;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
+import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
@@ -181,7 +181,7 @@ public class EmulatorQueryParameterValidationTestCase {
                         .withHeader("Header6", "value6"))
 
                 .when(request().withMethod(HttpMethod.GET).withPath("user8/")
-                        .withHeaders(Operation.AND, new Header("Header8", "value8"), new Header("Header9", "value9"))
+                        .withHeaders(HeaderOperation.AND, new Header("Header8", "value8"), new Header("Header9", "value9"))
                         .withQueryParameters(QueryParameterOperation.AND,
                                 new QueryParameter("Query-req8", "value-req8"),
                                 new QueryParameter("Query-req9", "value-req9"),

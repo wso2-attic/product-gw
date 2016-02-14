@@ -18,11 +18,11 @@
  *
  */
 
-package org.wso2.gw.emulator.dsl;
+package org.wso2.gw.emulator.http.params;
 
 /**
- * Header Operations
+ * Query parameter operation
  */
-public enum Operation {
+public enum QueryParameterOperation {
     OR, AND
 }

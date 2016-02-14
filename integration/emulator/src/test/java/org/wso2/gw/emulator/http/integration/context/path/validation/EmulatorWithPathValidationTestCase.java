@@ -25,8 +25,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.gw.emulator.dsl.Emulator;
-import org.wso2.gw.emulator.dsl.Operation;
-import org.wso2.gw.emulator.dsl.QueryParameterOperation;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
+import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
@@ -168,13 +168,13 @@ public class EmulatorWithPathValidationTestCase {
                         .withHeader("Header1", "value1"))
 
                 .when(request().withMethod(HttpMethod.POST).withBody("User4")
-                        .withHeaders(Operation.AND, new Header("Header2", "value2"), new Header("Header3", "value3"),
+                        .withHeaders(HeaderOperation.AND, new Header("Header2", "value2"), new Header("Header3", "value3"),
                                 new Header("Header4", "value4")))
                 .then(response().withBody("User4").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header2", "value2"))
 
                 .when(request().withMethod(HttpMethod.POST).withBody("User5")
-                        .withHeaders(Operation.AND, new Header("Header5", "value5"), new Header("Header6", "value6"),
+                        .withHeaders(HeaderOperation.AND, new Header("Header5", "value5"), new Header("Header6", "value6"),
                                 new Header("Header7", "value7"))
                         .withQueryParameters(QueryParameterOperation.AND, new QueryParameter("Query1", "value1"),
                                 new QueryParameter("Query2", "value2")))
