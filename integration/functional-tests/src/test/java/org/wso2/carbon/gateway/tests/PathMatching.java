@@ -48,6 +48,7 @@ public class PathMatching {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
         gwClient.deployArtifact("artifacts" + File.separator + "path-matching.xml");
+        gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(2000);
     }

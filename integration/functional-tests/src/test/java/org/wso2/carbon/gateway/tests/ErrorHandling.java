@@ -1,19 +1,16 @@
 /*
  * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package org.wso2.carbon.gateway.tests;
@@ -39,9 +36,6 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-/**
- * SampleTest1
- */
 public class ErrorHandling {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
@@ -65,7 +59,7 @@ public class ErrorHandling {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response overriding camel test",
+        Assert.assertEquals("Response overriding camel test", response.getReceivedResponseContext().getResponseBody(),
                 "Expected response not found");
     }
 
@@ -80,8 +74,8 @@ public class ErrorHandling {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
-                "Response overriding configuration files test", "Expected response not found");
+        Assert.assertEquals("Response overriding configuration files test",
+                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
     }
 
     @Test

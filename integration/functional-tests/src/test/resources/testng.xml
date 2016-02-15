@@ -4,8 +4,13 @@
 
     <test name="Basic-Test" preserve-order="true" verbose="2">
         <classes>
-            <class name="org.wso2.carbon.gateway.tests.MessageRouting"/>
             <class name="org.wso2.carbon.gateway.tests.ErrorHandling"/>
+            <class name="org.wso2.carbon.gateway.tests.HeaderBasedRoutingTest"/>
+            <class name="org.wso2.carbon.gateway.tests.PassingHeadersInRoutingTest"/>
+            <class name="org.wso2.carbon.gateway.tests.RoutingToFailoverEndPointsTest"/>
+            <class name="org.wso2.carbon.gateway.tests.RoutingToLoadBalancedEndpointsTest"/>
+            <class name="org.wso2.carbon.gateway.tests.ServiceChainingTest"/>
+            <class name="org.wso2.carbon.gateway.tests.SimplePassThroughTest"/>
             <class name="org.wso2.carbon.gateway.tests.PathMatching"/>
         </classes>
     </test>
