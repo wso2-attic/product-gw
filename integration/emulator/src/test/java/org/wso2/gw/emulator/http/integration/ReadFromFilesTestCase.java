@@ -42,7 +42,7 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 
 /**
  * ReadFromFilesTestCase
- * */
+ */
 public class ReadFromFilesTestCase {
 
     private HttpServerOperationBuilderContext emulator;
@@ -59,8 +59,8 @@ public class ReadFromFilesTestCase {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
                 .when(HttpClientRequestBuilderContext.request().withPath("/users/user1").withMethod(HttpMethod.POST)
-                        .withBody("User1").withBody(new File(
-                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1clientRequest.txt")))
+                        .withBody("User1")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test1clientRequest.txt")))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
@@ -105,8 +105,7 @@ public class ReadFromFilesTestCase {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(6065))
                 .when(HttpClientRequestBuilderContext.request().withPath("/users/user4").withMethod(HttpMethod.POST)
-                        .withBody(new File(
-                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4clientRequest.txt")))
+                        .withBody(getTestFiles("testFiles" + File.separator + "test4clientRequest.txt")))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
@@ -119,29 +118,33 @@ public class ReadFromFilesTestCase {
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
-                .when(request().withMethod(HttpMethod.POST).withPath("/user1").withBody("User1").withBody(new File(
-                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test1serverRequest.txt")))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user1").withBody("User1")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test1serverRequest.txt")))
                 .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header1", "value1"))
 
-                .when(request().withMethod(HttpMethod.POST).withPath("/user2").withBody("User2")).then(response()
-                        .withBody(new File(
-                                "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test2serverResponse.txt"))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user2").withBody("User2"))
+                .then(response().withBody(getTestFiles("testFiles" + File.separator + "test2serverResponse.txt"))
                         .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header2", "value2")))
 
-                .when(request().withMethod(HttpMethod.POST).withPath("/user3").withBody(new File(
-                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverRequest.txt")))
-                .then(response().withBody("User3").withBody(new File(
-                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test3serverResponse.txt"))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user3")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test3serverRequest.txt")))
+                .then(response().withBody("User3")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test3serverResponse.txt"))
                         .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header3", "value3")))
 
-                .when(request().withMethod(HttpMethod.POST).withPath("/user4").withBody(new File(
-                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverRequest.txt")))
-                .then(response().withBody("User4").withBody(new File(
-                        "/home/dilshank/product/02-01/product-gw/integration/emulator/file/test4serverResponse.txt"))
+                .when(request().withMethod(HttpMethod.POST).withPath("/user4")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test4serverRequest.txt")))
+                .then(response().withBody("User4")
+                        .withBody(getTestFiles("testFiles" + File.separator + "test4serverResponse.txt"))
                         .withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header4", "value4")))
 
                 .operation().start();
+    }
+
+    private File getTestFiles(String fileName) {
+        String changeLater = "/home/senduran/projects/bsenduran/product-gw/integration/emulator/src/main/resources/";
+        return new File(changeLater + fileName);
     }
 
     @AfterClass

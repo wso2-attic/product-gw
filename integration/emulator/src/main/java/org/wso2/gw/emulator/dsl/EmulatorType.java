@@ -22,7 +22,7 @@ package org.wso2.gw.emulator.dsl;
 
 /**
  * Types of emulator
- * */
+ */
 public enum EmulatorType {
     HTTP_SERVER, HTTP_CLIENT, TCP_SERVER, TCP_CLIENT
 }

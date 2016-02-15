@@ -7,15 +7,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Delay element of the fast backend
- * */
+ */
 public class DelayedElement implements Delayed {
-    private long DELAY;
+    private long delay;
     private ChannelHandlerContext ctx;
     private HttpServerProcessorContext context;
     protected long timestamp;
 
     public DelayedElement(ChannelHandlerContext ctx, HttpServerProcessorContext context, long receivedTime, int delay) {
-        DELAY = delay;
+        this.delay = delay;
         this.ctx = ctx;
         this.context = context;
         this.timestamp = receivedTime;
@@ -23,7 +23,7 @@ public class DelayedElement implements Delayed {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        return DELAY - (System.currentTimeMillis() - this.timestamp);
+        return delay - (System.currentTimeMillis() - this.timestamp);
     }
 
     @Override
@@ -36,6 +36,39 @@ public class DelayedElement implements Delayed {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        DelayedElement that = (DelayedElement) o;
+
+        if (delay != that.delay) {
+            return false;
+        }
+        if (timestamp != that.timestamp) {
+            return false;
+        }
+        if (ctx != null ? !ctx.equals(that.ctx) : that.ctx != null) {
+            return false;
+        }
+        return !(context != null ? !context.equals(that.context) : that.context != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (delay ^ (delay >>> 32));
+        result = 31 * result + (ctx != null ? ctx.hashCode() : 0);
+        result = 31 * result + (context != null ? context.hashCode() : 0);
+        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+        return result;
     }
 
     public ChannelHandlerContext getContext() {

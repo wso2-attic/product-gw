@@ -29,7 +29,7 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 
 /**
  * Simple emulator server
- * */
+ */
 public class SimpleEmulatorServer {
 
     public static void main(String args[]) {

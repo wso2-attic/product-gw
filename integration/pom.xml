@@ -11,55 +11,37 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.gateway.test</groupId>
-    <artifactId>test-automation</artifactId>
+    <artifactId>test-integration</artifactId>
     <packaging>pom</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-log4j12.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-log4j12.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.core</artifactId>
-            <version>${org.jacoco.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.report</artifactId>
-            <version>${org.jacoco.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>${plexus-utils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-    </dependencies>
+    <name>WSO2 Carbon - Gateway Test Integration Parent</name>
 
     <properties>
         <commons-io.version>2.2</commons-io.version>
         <plexus-utils.version>3.0.22</plexus-utils.version>
         <org.jacoco.version>0.7.5.201505241946</org.jacoco.version>
-        <slf4j-log4j12.version>1.7.5</slf4j-log4j12.version>
+        <testng.version>6.9.8</testng.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <version>${org.jacoco.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
     <modules>
         <module>emulator</module>
-        <module>commons</module>
-        <module>sample-tests</module>
         <module>http-compliance-tests</module>
+        <module>test-commons</module>
+        <module>functional-tests</module>
     </modules>
 </project>

@@ -24,7 +24,7 @@ import org.wso2.gw.emulator.dsl.Emulator;
 
 /**
  * TCPProtocolEmulato
- * */
+ */
 public class TCPProtocolEmulator /*extends AbstractProtocolEmulator */ {
 
     public TCPProtocolEmulator(Emulator emulator) {

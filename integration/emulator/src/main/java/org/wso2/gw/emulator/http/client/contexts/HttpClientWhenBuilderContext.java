@@ -25,14 +25,12 @@ import org.wso2.gw.emulator.dsl.contexts.AbstractWhenBuilderContext;
 import java.util.List;
 
 /**
- * Http client when builder context
+ * Http client when builder context.
  */
 public class HttpClientWhenBuilderContext extends AbstractWhenBuilderContext<HttpClientRequestBuilderContext> {
-    private HttpClientInformationContext httpInformationContext;
     private List<HttpClientWhenBuilderContext> whenBuilderContextList;
     private HttpClientInformationContext httpClientInformationContext;
     private HttpClientThenBuilderContext thenBuilderContext;
-    private HttpClientOperationBuilderContext httpClientOperationBuilderContext;
 
     public HttpClientWhenBuilderContext(List<HttpClientWhenBuilderContext> whenBuilderContextList,
             HttpClientInformationContext httpClientInformationContext) {
@@ -51,7 +49,6 @@ public class HttpClientWhenBuilderContext extends AbstractWhenBuilderContext<Htt
 
     @Override
     public HttpClientOperationBuilderContext operation() {
-        this.httpClientOperationBuilderContext = new HttpClientOperationBuilderContext(httpClientInformationContext);
-        return httpClientOperationBuilderContext;
+        return new HttpClientOperationBuilderContext(httpClientInformationContext);
     }
 }

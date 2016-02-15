@@ -34,8 +34,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *HttpServerResponseBuilderContext
- * */
+ * HttpServerResponseBuilderContext
+ */
 public class HttpServerResponseBuilderContext extends AbstractResponseBuilderContext {
     private static final Logger log = Logger.getLogger(HttpServerResponseBuilderContext.class);
     private static HttpServerResponseBuilderContext serverResponse;
@@ -95,7 +95,7 @@ public class HttpServerResponseBuilderContext extends AbstractResponseBuilderCon
         return this;
     }
 
-    public HttpServerResponseBuilderContext withCustomProcessor(String CustomRequestProcessor) {
+    public HttpServerResponseBuilderContext withCustomProcessor(String customRequestProcessor) {
         return this;
     }
 

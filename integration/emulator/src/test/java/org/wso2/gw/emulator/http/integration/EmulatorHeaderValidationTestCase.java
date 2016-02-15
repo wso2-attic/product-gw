@@ -27,12 +27,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.gw.emulator.dsl.Emulator;
-import org.wso2.gw.emulator.dsl.Operation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
@@ -41,7 +41,7 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 
 /**
  * EmulatorHeaderValidationTestCase
- * */
+ */
 public class EmulatorHeaderValidationTestCase {
     private HttpServerOperationBuilderContext emulator;
 
@@ -195,11 +195,11 @@ public class EmulatorHeaderValidationTestCase {
                 .when(request().withMethod(HttpMethod.GET).withPath("user4/").withHeader("Header-req-1", "value-req1"))
                 .then(response().withBody("User4").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header5", "value5")).when(request().withMethod(HttpMethod.GET).withPath("user5/")
-                        .withHeaders(Operation.AND, new Header("Header-req2", "value-req2"),
+                        .withHeaders(HeaderOperation.AND, new Header("Header-req2", "value-req2"),
                                 new Header("Header-req3", "value-req3"), new Header("Header-req4", "value-req4")))
                 .then(response().withBody("User5").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header6", "value6")).when(request().withMethod(HttpMethod.GET).withPath("user6/")
-                        .withHeaders(Operation.OR, new Header("Header-req3", "value-req3"),
+                        .withHeaders(HeaderOperation.OR, new Header("Header-req3", "value-req3"),
                                 new Header("Header-req5", "value-req5"), new Header("Header-req6", "value-req6")))
                 .then(response().withBody("User7").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header7", "value7")).operation().start();

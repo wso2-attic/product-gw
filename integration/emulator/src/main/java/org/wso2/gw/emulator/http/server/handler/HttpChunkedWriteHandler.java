@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * HttpChunkedWriteHandler
- * */
+ */
 public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
     private static final Logger log = Logger.getLogger(HttpChunkedWriteHandler.class);
     private final HttpServerInformationContext serverInformationContext;
@@ -35,11 +35,9 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
 
     private void waitingDelay(int delay) {
         if (delay != 0) {
-            ScheduledFuture scheduledWaitingFuture = scheduledWritingExecutorService.schedule(new Callable() {
-                public Object call() throws Exception {
-                    return "Writing";
-                }
-            }, delay, TimeUnit.MILLISECONDS);
+
+            ScheduledFuture scheduledWaitingFuture = scheduledWritingExecutorService.schedule(callable, delay,
+                    TimeUnit.MILLISECONDS);
             try {
                 scheduledWaitingFuture.get();
             } catch (InterruptedException e) {
@@ -50,4 +48,10 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
             //scheduledWritingExecutorService.shutdown();
         }
     }
+
+    static Callable callable = new Callable() {
+        public Object call() throws Exception {
+            return "Writing";
+        }
+    };
 }

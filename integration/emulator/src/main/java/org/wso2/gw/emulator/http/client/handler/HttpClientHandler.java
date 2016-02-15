@@ -32,12 +32,8 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorCont
 import org.wso2.gw.emulator.http.client.processors.HttpResponseAssertProcessor;
 import org.wso2.gw.emulator.http.client.processors.HttpResponseInformationProcessor;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Http client handler
@@ -90,21 +86,5 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error(cause);
         ctx.close();
-    }
-
-    private void readingDelay(int delay) {
-        ScheduledFuture scheduledFuture = scheduledReadingExecutorService.schedule(new Callable() {
-            public Object call() throws Exception {
-                return "Client Reading";
-            }
-        }, delay, TimeUnit.MILLISECONDS);
-        try {
-            System.out.println("result = " + scheduledFuture.get());
-        } catch (InterruptedException e) {
-            log.error(e);
-        } catch (ExecutionException e) {
-            log.error(e);
-        }
-        scheduledReadingExecutorService.shutdown();
     }
 }

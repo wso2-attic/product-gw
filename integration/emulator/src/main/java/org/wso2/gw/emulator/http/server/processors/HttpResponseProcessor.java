@@ -20,6 +20,7 @@
 
 package org.wso2.gw.emulator.http.server.processors;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -42,7 +43,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 
 /**
  * HttpResponseProcessor
- * */
+ */
 public class HttpResponseProcessor extends AbstractServerProcessor {
 
     @Override
@@ -60,11 +61,18 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
         boolean keepAlive = requestContext.isKeepAlive();
         Pattern pattern = processorContext.getServerInformationContext().getUtilityContext().getPattern();
         HttpResponseStatus httpResponseStatus = responseContext.getStatusCode();
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus,
-                Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8));
+
+        ByteBuf buf = null;
+        if (patternMatcher(requestContext, responseContext, pattern) != null) {
+            buf = Unpooled.copiedBuffer(patternMatcher(requestContext, responseContext, pattern), CharsetUtil.UTF_8);
+        } else {
+            buf = Unpooled.buffer(0);
+        }
+
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus, buf);
         populateHttpHeaders(response, responseContext);
         populateCookies(response, responseContext);
-        if(!response.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)) {
+        if (!response.headers().contains(HttpHeaders.Names.CONTENT_LENGTH)) {
             response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
         }
 
@@ -78,7 +86,12 @@ public class HttpResponseProcessor extends AbstractServerProcessor {
             Pattern pathRegex) {
         String responseBody = responseContext.getBody();
         String requestBody = requestContext.getRequestBody();
-        Matcher matcher = pathRegex.matcher(responseBody);
+        Matcher matcher = null;
+        if (responseBody != null) {
+            matcher = pathRegex.matcher(responseBody);
+        } else {
+            return responseBody;
+        }
 
         while (matcher.find()) {
             String tag = "";

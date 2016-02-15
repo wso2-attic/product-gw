@@ -26,31 +26,27 @@ import org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext;
 
 /**
  * Validation util
- * */
+ */
 public class ValidationUtil {
     private static final Logger log = Logger.getLogger(ValidationUtil.class);
 
     public static void validateMandatoryParameters(HttpClientConfigBuilderContext clientConfigBuilderContext) {
         if (!isHostAvailable(clientConfigBuilderContext.getHost())) {
             log.error("Host is not given");
-            System.exit(0);
         }
 
         if (!isPortAvailable(clientConfigBuilderContext.getPort())) {
             log.error("Host is not given");
-            System.exit(0);
         }
     }
 
     public static void validateMandatoryParameters(HttpServerConfigBuilderContext serverConfigBuilderContext) {
         if (!isHostAvailable(serverConfigBuilderContext.getHost())) {
             log.error("Host is not given");
-            System.exit(0);
         }
 
         if (!isPortAvailable(serverConfigBuilderContext.getPort())) {
             log.error("Host is not given");
-            System.exit(0);
         }
     }
 

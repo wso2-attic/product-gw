@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="GWTestSuite" parallel="false">
+
+    <test name="Basic-Test" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.tests.MessageRouting"/>
+            <class name="org.wso2.carbon.gateway.tests.ErrorHandling"/>
+            <class name="org.wso2.carbon.gateway.tests.PathMatching"/>
+        </classes>
+    </test>
+</suite>
+
+

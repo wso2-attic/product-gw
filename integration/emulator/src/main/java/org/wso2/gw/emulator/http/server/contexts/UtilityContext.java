@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 /**
  * UtilityContext
- * */
+ */
 public class UtilityContext {
     private Pattern pattern;
 

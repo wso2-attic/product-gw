@@ -21,13 +21,14 @@
 package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
-import org.wso2.gw.emulator.dsl.CookieOperation;
-import org.wso2.gw.emulator.dsl.Operation;
-import org.wso2.gw.emulator.dsl.QueryParameterOperation;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
+import org.wso2.gw.emulator.http.params.CookieOperation;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.params.QueryParameter;
+import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
@@ -39,8 +40,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- *HttpServerRequestBuilderContext
- * */
+ * HttpServerRequestBuilderContext
+ */
 public class HttpServerRequestBuilderContext extends AbstractRequestBuilderContext {
     private static HttpServerRequestBuilderContext serverRequest;
     private HttpMethod method;
@@ -54,9 +55,11 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     private List<Header> headers;
     private List<QueryParameter> queryParameters;
     private List<Cookie> cookies;
-    private Operation operation;
+    private HeaderOperation operation;
     private CookieOperation cookieOperation;
     private QueryParameterOperation queryOperation;
+
+    private static final Logger log = Logger.getLogger(HttpServerRequestBuilderContext.class);
 
     private static HttpServerRequestBuilderContext getInstance() {
         serverRequest = new HttpServerRequestBuilderContext();
@@ -86,7 +89,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         try {
             this.body = FileReaderUtil.getFileBody(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return this;
     }
@@ -100,7 +103,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-    public Operation getOperation() {
+    public HeaderOperation getOperation() {
         return operation;
     }
 
@@ -108,7 +111,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return cookieOperation;
     }
 
-    public HttpServerRequestBuilderContext withHeaders(Operation operation, Header... headers) {
+    public HttpServerRequestBuilderContext withHeaders(HeaderOperation operation, Header... headers) {
         this.operation = operation;
         this.headers = Arrays.asList(headers);
         return this;
@@ -148,7 +151,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         return this;
     }
 
-    public HttpServerRequestBuilderContext withCustomProcessor(String CustomRequestProcessor) {
+    public HttpServerRequestBuilderContext withCustomProcessor(String customRequestProcessor) {
         return this;
     }
 
@@ -198,11 +201,11 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
         if (headers == null) {
             return true;
         }
-        Operation operation = getOperation();
+        HeaderOperation operation = getOperation();
         Map<String, List<String>> headerParameters = requestContext.getHeaderParameters();
 
-        if (operation == Operation.OR) {
-            if ((headerParameters == null || headerParameters.isEmpty()) && (headers != null || !headers.isEmpty())) {
+        if (operation == HeaderOperation.OR) {
+            if ((headerParameters == null || headerParameters.isEmpty()) && !headers.isEmpty()) {
                 return false;
             }
             for (Header header : headers) {
@@ -278,11 +281,11 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
             return ".*";
         }
 
-        if ((context == "*") && (path == "*")) {
+        if ("*".equals(context) && "*".equals(path)) {
             return ".*";
         }
 
-        if (context != null && !context.isEmpty() && path == "*") {
+        if (context != null && !context.isEmpty() && "*".equals(path)) {
             fullPath = context;
 
             if (!fullPath.startsWith("/")) {

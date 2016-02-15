@@ -18,14 +18,13 @@
  *
  */
 
-
 package org.wso2.gw.emulator.tcp.client.context;
 
 import org.wso2.gw.emulator.dsl.contexts.AbstractConfigurationBuilderContext;
 
 /**
  * TcpClientConfigBuilderContext
- * */
+ */
 public class TcpClientConfigBuilderContext extends AbstractConfigurationBuilderContext {
 
     private static TcpClientConfigBuilderContext clientConfigBuilderContext;

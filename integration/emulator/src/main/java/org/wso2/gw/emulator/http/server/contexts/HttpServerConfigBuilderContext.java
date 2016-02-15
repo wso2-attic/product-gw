@@ -30,7 +30,7 @@ import java.io.File;
 
 /**
  * HttpServerConfigBuilderContext
- * */
+ */
 public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilderContext {
     private static HttpServerConfigBuilderContext config;
     private String host = null;
@@ -213,5 +213,9 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
 
     public int getLogicDelay() {
         return logicDelay;
+    }
+
+    public ChannelInboundHandlerAdapter getLogicHandler() {
+        return logicHandler;
     }
 }
