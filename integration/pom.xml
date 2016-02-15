@@ -60,5 +60,6 @@
         <module>emulator</module>
         <module>commons</module>
         <module>sample-tests</module>
+        <module>http-compliance-tests</module>
     </modules>
 </project>
