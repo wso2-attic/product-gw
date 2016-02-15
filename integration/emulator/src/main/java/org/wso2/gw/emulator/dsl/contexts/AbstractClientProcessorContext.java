@@ -20,6 +20,8 @@
 
 package org.wso2.gw.emulator.dsl.contexts;
 
-
+/**
+ * AbstractClientProcessorContext
+ */
 public abstract class AbstractClientProcessorContext {
 }

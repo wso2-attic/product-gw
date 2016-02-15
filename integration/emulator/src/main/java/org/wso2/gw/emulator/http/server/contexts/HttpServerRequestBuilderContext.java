@@ -22,13 +22,13 @@ package org.wso2.gw.emulator.http.server.contexts;
 
 import io.netty.handler.codec.http.HttpMethod;
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.http.params.CookieOperation;
-import org.wso2.gw.emulator.http.params.HeaderOperation;
-import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractRequestBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
+import org.wso2.gw.emulator.http.params.CookieOperation;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.params.QueryParameter;
+import org.wso2.gw.emulator.http.params.QueryParameterOperation;
 import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;

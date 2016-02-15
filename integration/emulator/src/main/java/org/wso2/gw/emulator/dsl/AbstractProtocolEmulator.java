@@ -20,7 +20,6 @@
 
 package org.wso2.gw.emulator.dsl;
 
-import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.contexts.AbstractGivenBuilderContext;
 
 /**

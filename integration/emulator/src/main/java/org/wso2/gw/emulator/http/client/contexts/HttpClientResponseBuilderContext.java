@@ -22,10 +22,10 @@ package org.wso2.gw.emulator.http.client.contexts;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.log4j.Logger;
-import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.dsl.contexts.AbstractResponseBuilderContext;
 import org.wso2.gw.emulator.http.params.Cookie;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;

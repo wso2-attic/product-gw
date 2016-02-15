@@ -25,12 +25,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.gw.emulator.dsl.Emulator;
-import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
@@ -176,7 +176,8 @@ public class EmulatorWithContextValidationTestCase {
                         .withHeader("Header2", "value2"))
 
                 .when(request().withMethod(HttpMethod.GET).withPath("*")
-                        .withHeaders(HeaderOperation.AND, new Header("Header5", "value5"), new Header("Header6", "value6")))
+                        .withHeaders(HeaderOperation.AND, new Header("Header5", "value5"),
+                                new Header("Header6", "value6")))
                 .then(response().withBody("User5").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header-res-5", "value5"))
 
@@ -186,7 +187,8 @@ public class EmulatorWithContextValidationTestCase {
                         .withHeader("Header4", "value4"))
 
                 .when(request().withMethod(HttpMethod.GET).withPath("/user8")
-                        .withHeaders(HeaderOperation.AND, new Header("Header8", "value8"), new Header("Header9", "value9")))
+                        .withHeaders(HeaderOperation.AND, new Header("Header8", "value8"),
+                                new Header("Header9", "value9")))
                 .then(response().withBody("User8").withHeader("Header-res8", "value8")
                         .withStatusCode(HttpResponseStatus.OK))
 
@@ -203,8 +205,8 @@ public class EmulatorWithContextValidationTestCase {
                         .withHeader("Header-res14", "value14"))
 
                 .when(request().withMethod(HttpMethod.POST).withPath("/user15").withBody("User15")
-                        .withHeaders(HeaderOperation.OR, new Header("Header15", "value15"), new Header("Header16", "value16"))
-                        .withQueryParameter("Query16", "value16"))
+                        .withHeaders(HeaderOperation.OR, new Header("Header15", "value15"),
+                                new Header("Header16", "value16")).withQueryParameter("Query16", "value16"))
                 .then(response().withBody("User15").withStatusCode(HttpResponseStatus.OK)
                         .withHeader("Header-res-15", "value15"))
 

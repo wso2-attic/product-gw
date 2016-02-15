@@ -27,12 +27,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.gw.emulator.dsl.Emulator;
-import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.params.Header;
+import org.wso2.gw.emulator.http.params.HeaderOperation;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
