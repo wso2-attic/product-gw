@@ -20,13 +20,13 @@
 
     <test name="HTTP2xx-Tests" preserve-order="true" verbose="2">
         <classes>
-            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP200ComplianceTest"/>-->
-            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP201ComplianceTest"/>-->
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP200ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP201ComplianceTest"/>
             <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP202ComplianceTest"/>
-            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP203ComplianceTest"/>-->
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP203ComplianceTest"/>
             <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP204ComplianceTest"/>
             <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP205ComplianceTest"/>
-            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP206ComplianceTest"/>-->
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.successful.HTTP206ComplianceTest"/>
         </classes>
     </test>
 </suite>

@@ -31,6 +31,8 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContex
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
+import java.io.File;
+
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
@@ -38,20 +40,20 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 public class HTTP203ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
-    private final String HOST = "127.0.0.1";
-    private final int PORT = 9090;
+    private static final String HOST = "127.0.0.1";
+    private int port = 9090;
 
     @BeforeClass
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts/http-compliance-test-camel-context.xml");
+        gwClient.deployArtifact("artifacts" + File.separator + "http-compliance-test-camel-context.xml");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host(HOST).port(6065).context("/users"))
 
                 .when(request()
                         .withMethod(HttpMethod.GET)
@@ -100,7 +102,7 @@ public class HTTP203ComplianceTest {
     @Test
     public void test203GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -118,7 +120,7 @@ public class HTTP203ComplianceTest {
     @Test
     public void test203POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
@@ -137,7 +139,7 @@ public class HTTP203ComplianceTest {
     @Test
     public void test203POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withPath("/new-route")

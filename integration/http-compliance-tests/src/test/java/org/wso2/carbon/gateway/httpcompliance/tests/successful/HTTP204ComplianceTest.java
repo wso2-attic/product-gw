@@ -15,6 +15,8 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContex
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
+import java.io.File;
+
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
@@ -23,14 +25,14 @@ public class HTTP204ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
-    private final int PORT = 9090;
+    private int port = 9090;
     private static final String RESPONSE_BODY = "";
 
     @BeforeClass
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts/http-compliance-test-camel-context.xml");
+        gwClient.deployArtifact("artifacts" + File.separator + "http-compliance-test-camel-context.xml");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -66,7 +68,7 @@ public class HTTP204ComplianceTest {
     @Test
     public void test204POSTRequestWithoutBody() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withPath("/new-route")
@@ -83,7 +85,7 @@ public class HTTP204ComplianceTest {
     @Test
     public void test204POSTRequestWithBody() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withPath("/new-route")

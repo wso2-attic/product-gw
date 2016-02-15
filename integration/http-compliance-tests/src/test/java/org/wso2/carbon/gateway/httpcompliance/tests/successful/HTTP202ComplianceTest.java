@@ -25,23 +25,23 @@ public class HTTP202ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
-    private final int PORT = 9090;
+    private int port = 9090;
     private static final String RESPONSE_BODY = "Request accepted and will be processed in due time";
     private File clientRequestPayload;
 
     @BeforeClass
     public void setup() throws Exception {
         clientRequestPayload = new File(getClass().getClassLoader()
-                .getResource("test-payloads/client-request-payload.txt").toURI());
+                .getResource("test-payloads" + File.separator + "client-request-payload.txt").toURI());
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts/http-compliance-test-camel-context.xml");
+        gwClient.deployArtifact("artifacts" + File.separator + "http-compliance-test-camel-context.xml");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host(HOST).port(6065).context("/users"))
 
                 .when(request()
                         .withPath("/user1")
@@ -73,7 +73,7 @@ public class HTTP202ComplianceTest {
     @Test
     public void test202POSTRequestWithPayloadWithoutBody() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withPath("/new-route")
@@ -92,7 +92,7 @@ public class HTTP202ComplianceTest {
     @Test
     public void test202POSTRequestWithPayloadWithBody() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(PORT))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withPath("/new-route")

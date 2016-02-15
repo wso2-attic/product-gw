@@ -11,9 +11,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>http-compliance-tests</artifactId>
-    <groupId>org.wso2.carbon.gateway.test</groupId>
     <packaging>jar</packaging>
     <url>http://maven.apache.org</url>
+    <name>WSO2 Carbon - HTTP Compliance Tests</name>
 
     <dependencies>
         <dependency>
