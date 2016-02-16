@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 /**
@@ -125,20 +126,22 @@ public class FileManipulator {
         try {
             input = new FileInputStream(src);
             Path newFile = Paths.get(dstPath);
-            Files.createFile(newFile);
-            output = new FileOutputStream(dstPath);
-            byte[] buf = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = input.read(buf)) > 0) {
-                output.write(buf, 0, bytesRead);
-            }
 
+            // Files.createFile(newFile);
+            Files.copy(input, newFile, StandardCopyOption.REPLACE_EXISTING);
+            //            output = new FileOutputStream(dstPath);
+            //            byte[] buf = new byte[1024];
+            //            int bytesRead;
+            //            while ((bytesRead = input.read(buf)) > 0) {
+            //                output.write(buf, 0, bytesRead);
+            //            }
+            //
         } catch (IOException e) {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e1) {
-                   log.error("Error while closing input stream ", e1);
+                    log.error("Error while closing input stream ", e1);
                 }
             }
             if (output != null) {

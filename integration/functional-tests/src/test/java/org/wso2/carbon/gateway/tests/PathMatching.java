@@ -24,8 +24,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClient;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClientImpl;
+import org.wso2.carbon.gateway.tests.internal.GWIntegrationTest;
 import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext;
@@ -39,24 +38,20 @@ import static org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderC
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext.response;
 
-public class PathMatching {
-    private GatewayAdminClient gwClient;
+public class PathMatching extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwClient = new GatewayAdminClientImpl();
-        gwClient.startGateway();
-        gwClient.deployArtifact("artifacts" + File.separator + "path-matching.xml");
+        gwDeployArtifacts("artifacts" + File.separator + "path-matching.xml", "/baz/qux");
         emulator = startHttpEmulator();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwClient.stopGateway();
+        gwCleanup();
         emulator.stop();
-        gwClient.cleanArtifacts();
     }
 
     @Test

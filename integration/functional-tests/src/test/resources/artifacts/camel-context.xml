@@ -1,0 +1,121 @@
+<!--
+  ~ /*
+  ~ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ *
+  ~ * Licensed under the Apache License, Version 2.0 (the "License");
+  ~ * you may not use this file except in compliance with the License.
+  ~ * You may obtain a copy of the License at
+  ~ *
+  ~ * http://www.apache.org/licenses/LICENSE-2.0
+  ~ *
+  ~ * Unless required by applicable law or agreed to in writing, software
+  ~ * distributed under the License is distributed on an "AS IS" BASIS,
+  ~ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ * See the License for the specific language governing permissions and
+  ~ * limitations under the License.
+  ~ */
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+classpath:org/springframework/beans/factory/xml/spring-beans-4.1.xsd
+http://camel.apache.org/schema/spring
+classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
+
+    <bean id="wso2-gw"
+          class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
+    <bean id="failureResponse" class="org.wso2.carbon.gateway.internal.mediation.camel.CustomErrorHandlingProcessor">
+        <property name="errorMessage" value="MY Error Message"/>
+        <property name="statusCode" value="500"/>
+        <property name="contentType" value="application/xml"/>
+    </bean>
+    <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
+        <jmxAgent id="agent" disabled="true"/>
+
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <handled>
+                <constant>true</constant>
+            </handled>
+            <process ref="failureResponse"/>
+        </onException>
+
+        <restConfiguration bindingMode="off" component="wso2-gw" scheme="http" port="9090"/>
+
+        <!--sample rest interfaces -->
+        <rest path="/gw">
+            <get uri="/news">
+                <to uri="direct:getNews"/>
+            </get>
+            <get uri="/news/{id}">
+                <to uri="direct:getNewsById"/>
+            </get>
+
+            <!--rest paths for testing-->
+
+            <get uri="/customerGet/{id}">
+                <to uri="direct:getCustomerById"/>
+            </get>
+            <post uri="/customerAdd">
+                <to uri="direct:addCustomer"/>
+            </post>
+            <put uri="/customerUpdate">
+                <to uri="direct:updateCustomer"/>
+            </put>
+            <delete uri="/customerDel/{id}">
+                <to uri="direct:deleteCustomerById"/>
+            </delete>
+        </rest>
+        <!--sample rest interfaces -->
+
+
+        <!-- sample routes corresponding to the rest interfaces -->
+        <route>
+            <from uri="direct:getNews"/>
+            <to uri="wso2-gw:http://jsonplaceholder.typicode.com/posts"/>
+        </route>
+        <route>
+            <from uri="direct:getNewsById"/>
+            <toD uri="wso2-gw:http://jsonplaceholder.typicode.com/posts/${header.id}"/>
+        </route>
+
+        <!-- sample routes based on http header (custom header routeId)-->
+        <route id="http-routes">
+            <from uri="wso2-gw:/default"/>
+            <choice>
+                <when>
+                    <simple>${header.routeId} regex 'r1'</simple>
+                    <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+                </when>
+                <when>
+                    <simple>${header.routeId} regex 'r2'</simple>
+                    <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
+                </when>
+                <otherwise>
+                    <to uri="wso2-gw:http://localhost:9004/services/SimpleStockQuoteService"/>
+                </otherwise>
+            </choice>
+        </route>
+
+
+        <!--sample routes for rest testing-->
+        <route>
+            <from uri="direct:getCustomerById"/>
+            <toD uri="wso2-gw:http://localhost:9773/services/xxxx/${header.id}"/>
+        </route>
+        <route>
+            <from uri="direct:addCustomer"/>
+            <to uri="wso2-gw:http://localhost:9773/services/xxxx"/>
+        </route>
+        <route>
+            <from uri="direct:updateCustomer"/>
+            <to uri="wso2-gw:http://localhost:9773/services/xxxx"/>
+        </route>
+        <route>
+            <from uri="direct:deleteCustomerById"/>
+            <toD uri="wso2-gw:http://localhost:9773/services/xxxx/${header.id}"/>
+        </route>
+    </camelContext>
+
+</beans>

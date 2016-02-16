@@ -35,67 +35,70 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class ErrorHandling extends GWIntegrationTest {
+public class RestEndPointTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling.xml", "/when_endpoint_down");
+        gwDeployArtifacts("artifacts" + File.separator + "camel-context.xml", "/default");
+        gwRestart();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
-
     @Test
-    public void overridingCamel() {
+    public void restEndPoint1() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/default").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/customerGet/1")
+                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response overriding camel test", response.getReceivedResponseContext().getResponseBody(),
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response rest endpoint 1",
                 "Expected response not found");
     }
 
     @Test
-    public void overridingConfigFiles() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling-same-route-id.xml", "/default");
-        gwRestart();
+    public void restEndPoint2() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/default").withMethod(HttpMethod.GET))
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/customerAdd").withMethod(HttpMethod.POST))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals("Response overriding configuration files test",
-                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response rest endpoint 2",
+                "Expected response not found");
     }
 
     @Test
-    public void nonExistingRoute() throws Exception {
+    public void restEndPoint3() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/non_existing_route")
-                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/customerUpdate")
+                        .withMethod(HttpMethod.PUT)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response rest endpoint 3",
+                "Expected response not found");
     }
 
     @Test
-    public void whenEndpointDown() throws Exception {
+    public void restEndPoint4() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/when_endpoint_down")
-                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
-                .operation().send();
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/customerDel/1")
+                        .withMethod(HttpMethod.DELETE))
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response rest endpoint 4",
+                "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
@@ -106,15 +109,15 @@ public class ErrorHandling extends GWIntegrationTest {
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(9773).context("/services"))
-
-                //Overriding camel
-                .when(request().
-                        withMethod(HttpMethod.GET).withPath("/overriding_camel"))
-                .then(response().withBody("Response overriding camel test").withStatusCode(HttpResponseStatus.OK))
-                //overriding config files
-                .when(request().
-                        withMethod(HttpMethod.GET).withPath("/overriding_config_files"))
-                .then(response().withBody("Response overriding configuration files test")
-                        .withStatusCode(HttpResponseStatus.OK)).operation().start();
+                //Rest endpoint
+                .when(request().withMethod(HttpMethod.GET).withPath("/xxxx/1"))
+                .then(response().withBody("Response rest endpoint 1").withStatusCode(HttpResponseStatus.OK))
+                .when(request().withMethod(HttpMethod.POST).withPath("/xxxx"))
+                .then(response().withBody("Response rest endpoint 2").withStatusCode(HttpResponseStatus.OK))
+                .when(request().withMethod(HttpMethod.PUT).withPath("/xxxx"))
+                .then(response().withBody("Response rest endpoint 3").withStatusCode(HttpResponseStatus.OK))
+                .when(request().withMethod(HttpMethod.DELETE).withPath("/xxxx/1"))
+                .then(response().withBody("Response rest endpoint 4").withStatusCode(HttpResponseStatus.OK)).operation()
+                .start();
     }
 }
