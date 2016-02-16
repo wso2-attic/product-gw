@@ -2,6 +2,10 @@
 
 <suite name="GWTestSuite" parallel="false">
 
+    <listeners>
+        <listener class-name="org.wso2.carbon.gateway.tests.internal.GWTestSuiteListener"/>
+    </listeners>
+
     <test name="Basic-Test" preserve-order="true" verbose="2">
         <classes>
             <class name="org.wso2.carbon.gateway.tests.ErrorHandling"/>
