@@ -22,8 +22,14 @@ import org.wso2.carbon.gateway.test.reports.ReportGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * GWServerManager
@@ -55,8 +61,21 @@ public class GWServerManager {
                     tempProcess = Runtime.getRuntime()
                             .exec(new String[] { "cmd.exe", "/c", scriptName + ".bat", "start" }, null, commandDir);
                 } else {
+                    String path = commandDir + "/bin/carbon.sh";
+                    Path file = Paths.get(path);
+                    Set perms = new HashSet();
+
+                    perms.add(PosixFilePermission.OWNER_EXECUTE);
+                    perms.add(PosixFilePermission.OWNER_READ);
+                    perms.add(PosixFilePermission.OWNER_WRITE);
+
+                    Files.setPosixFilePermissions(file, perms);
                     tempProcess = Runtime.getRuntime()
                             .exec(new String[] { "sh", "bin/" + scriptName + ".sh", "start" }, null, commandDir);
+                    //                    int test = tempProcess.exitValue();
+                    //                    if (test == 0) {
+                    //                        log.debug("success");
+                    //                    }
                 }
 
                 errorStreamHandler = new InputStreamHandler("errorStream", tempProcess.getErrorStream());
@@ -119,52 +138,51 @@ public class GWServerManager {
     }
 
     public void shutdownServer() throws Exception {
-//        if (process != null && process.isAlive()) {
+        //        if (process != null && process.isAlive()) {
 
-            File commandDir = new File(carbonHome);
-            if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
-                commandDir = new File(carbonHome + File.separator + "bin");
-                tempProcess = Runtime.getRuntime()
-                        .exec(new String[] { "cmd.exe", "/c", "carbon.bat", "stop" }, null, commandDir);
-            } else {
-                tempProcess = Runtime.getRuntime()
-                        .exec(new String[] { "sh", "bin/carbon.sh", "stop" }, null, commandDir);
+        File commandDir = new File(carbonHome);
+        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
+            commandDir = new File(carbonHome + File.separator + "bin");
+            tempProcess = Runtime.getRuntime()
+                    .exec(new String[] { "cmd.exe", "/c", "carbon.bat", "stop" }, null, commandDir);
+        } else {
+            tempProcess = Runtime.getRuntime().exec(new String[] { "sh", "bin/carbon.sh", "stop" }, null, commandDir);
+        }
+
+        //            String processID = getProcessID(defaultHttpsPort).trim();
+        //            if (!processID.isEmpty()) {
+        //                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
+        //                    //TODO need to implement
+        //                } else {
+        //                    Runtime.getRuntime().exec("kill -9 " + processID);
+        //                }
+        if (inputStreamHandler != null) {
+            inputStreamHandler.stop();
+            inputStreamHandler = null;
+        }
+        if (errorStreamHandler != null) {
+            errorStreamHandler.stop();
+            errorStreamHandler = null;
+        }
+        process = null;
+        System.clearProperty("carbon.home");
+        System.setProperty("user.dir", originalUserDir);
+        //            }
+        Thread.sleep(1000);
+
+        //generate coverage report
+        if (isCoverageEnable) {
+            try {
+                log.info("Generating Jacoco code coverage...");
+                generateCoverageReport(new File(carbonHome + File.separator + "repository" +
+                        File.separator + "components" + File.separator + "plugins" + File.separator));
+            } catch (IOException e) {
+                log.error("Failed to generate code coverage ", e);
             }
+        }
 
-//            String processID = getProcessID(defaultHttpsPort).trim();
-//            if (!processID.isEmpty()) {
-//                if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows")) {
-//                    //TODO need to implement
-//                } else {
-//                    Runtime.getRuntime().exec("kill -9 " + processID);
-//                }
-                if (inputStreamHandler != null) {
-                    inputStreamHandler.stop();
-                    inputStreamHandler = null;
-                }
-                if (errorStreamHandler != null) {
-                    errorStreamHandler.stop();
-                    errorStreamHandler = null;
-                }
-                process = null;
-                System.clearProperty("carbon.home");
-                System.setProperty("user.dir", originalUserDir);
-//            }
-            Thread.sleep(1000);
-
-            //generate coverage report
-            if (isCoverageEnable) {
-                try {
-                    log.info("Generating Jacoco code coverage...");
-                    generateCoverageReport(new File(carbonHome + File.separator + "repository" +
-                            File.separator + "components" + File.separator + "plugins" + File.separator));
-                } catch (IOException e) {
-                    log.error("Failed to generate code coverage ", e);
-                }
-            }
-
-            Thread.sleep(1000);
-//        }
+        Thread.sleep(1000);
+        //        }
     }
 
     public String getProcessID(int port) throws java.io.IOException {
