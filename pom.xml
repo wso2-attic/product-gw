@@ -130,22 +130,6 @@
                 <artifactId>org.wso2.carbon.messaging</artifactId>
                 <version>${carbon.messaging.version}</version>
             </dependency>
-            <!-- Carbon Metrics Dependency -->
-            <!--<dependency>
-                <groupId>org.wso2.carbon.metrics</groupId>
-                <artifactId>org.wso2.carbon.metrics.manager</artifactId>
-                <version>${carbon.metrics.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.metrics</groupId>
-                <artifactId>org.wso2.carbon.metrics.impl</artifactId>
-                <version>${carbon.metrics.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.metrics</groupId>
-                <artifactId>org.wso2.carbon.metrics.common</artifactId>
-                <version>${carbon.metrics.version}</version>
-            </dependency>-->
             <!-- Metrics Dependencies - Start -->
             <dependency>
                 <groupId>org.wso2.carbon.metrics</groupId>
@@ -266,7 +250,6 @@
                 <version>${commons.pool.version}</version>
             </dependency>
             <!-- Metrics Dependencies - End -->
-
         </dependencies>
     </dependencyManagement>
 
@@ -392,7 +375,6 @@
         <commons.pool.version>1.5.6.wso2v1</commons.pool.version>
         <carbon.ldap.server.version>5.0.0</carbon.ldap.server.version>
         <javax.ws.rs-api.fragment.version>1.0.0.wso2v1</javax.ws.rs-api.fragment.version>
-
     </properties>
 
     <modules>
