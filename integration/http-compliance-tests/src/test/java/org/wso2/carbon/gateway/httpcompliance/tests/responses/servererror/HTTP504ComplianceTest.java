@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.successful;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -37,11 +37,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP200ComplianceTest {
+public class HTTP504ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String servererror = "504 Gateway Timeout";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -59,30 +60,31 @@ public class HTTP200ComplianceTest {
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("User1"))
+                        .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
+                        .withBody(servererror))
 
                 .when(request()
                         .withMethod(HttpMethod.GET)
-                        .withPath("/user2"))
+                        .withPath("/user2")
+                        .withBody("Body included"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("User2"))
+                        .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
+                        .withBody(servererror))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user3")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("Trace Expert City"))
+                        .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
+                        .withBody(servererror))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user3").withBody(""))
+                        .withPath("/user1")
+                        .withBody("Body included"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("Trace Expert City"))
+                        .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
+                        .withBody(servererror))
 
                 .operation().start();
     }
@@ -95,55 +97,77 @@ public class HTTP200ComplianceTest {
     }
 
     @Test
-    public void test200GETRequest() throws Exception {
+    public void test504GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User2");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
     }
 
     @Test
-    public void test200POSTRequestWithPayload() throws Exception {
+    public void test504GETRequestWithPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r2")
+                        .withBody("Body included"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+    }
+
+    @Test
+    public void test504POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10")
-                        .withHeader("routeId", "r3"))
+                        .withBody("Body included")
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
     }
 
     @Test
-    public void test200POSTRequestWithoutPayload() throws Exception {
+    public void test504POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r3"))
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City",
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
                 "Response body does not match the expected response body");
     }
 }

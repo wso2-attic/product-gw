@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.successful;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.successful;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;

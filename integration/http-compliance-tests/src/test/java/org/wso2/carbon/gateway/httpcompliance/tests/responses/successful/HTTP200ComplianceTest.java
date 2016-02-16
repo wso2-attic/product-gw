@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.successful;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -37,12 +37,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP500ComplianceTest {
+public class HTTP200ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String servererror = "Internal server error occurred";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -60,22 +59,29 @@ public class HTTP500ComplianceTest {
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withBody("User1"))
+
+                .when(request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/user2"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withBody("User2"))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2")
+                        .withPath("/user3")
                         .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                        .withStatusCode(HttpResponseStatus.OK)
                         .withBody("Trace Expert City"))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2").withBody(""))
+                        .withPath("/user3").withBody(""))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                        .withStatusCode(HttpResponseStatus.OK)
                         .withBody("Trace Expert City"))
 
                 .operation().start();
@@ -89,25 +95,24 @@ public class HTTP500ComplianceTest {
     }
 
     @Test
-    public void test500GETRequest() throws Exception {
+    public void test200GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r2"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User2");
     }
 
     @Test
-    public void test500POSTRequestWithPayload() throws Exception {
+    public void test200POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
@@ -115,31 +120,29 @@ public class HTTP500ComplianceTest {
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
                         .withBody("name=WSO2&location=Colombo10")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r3"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City");
     }
 
     @Test
-    public void test500POSTRequestWithoutPayload() throws Exception {
+    public void test200POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r3"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City",
                 "Response body does not match the expected response body");
     }

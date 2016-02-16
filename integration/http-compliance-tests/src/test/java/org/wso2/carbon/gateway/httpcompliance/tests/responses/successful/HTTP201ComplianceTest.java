@@ -1,4 +1,4 @@
-package org.wso2.carbon.gateway.httpcompliance.tests.successful;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.successful;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -21,18 +21,16 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP202ComplianceTest {
+public class HTTP201ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
     private int port = 9090;
-    private static final String RESPONSE_BODY = "Request accepted and will be processed in due time";
-    private File clientRequestPayload;
+    private static final String RESPONSE_BODY = "Created entity WSO2, located in Colombo 10";
+    private static final String REQUEST_BODY = "name=WSO2&location=Colombo10";
 
     @BeforeClass
     public void setup() throws Exception {
-        clientRequestPayload = new File(getClass().getClassLoader()
-                .getResource("test-payloads" + File.separator + "client-request-payload.txt").toURI());
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
         gwClient.deployArtifact("artifacts" + File.separator + "http-compliance-test-camel-context.xml");
@@ -41,24 +39,15 @@ public class HTTP202ComplianceTest {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host(HOST).port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
-                        .withPath("/user1")
                         .withMethod(HttpMethod.POST)
-                        .withBody(clientRequestPayload))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.ACCEPTED)
-                        .withBody(RESPONSE_BODY))
-
-                .when(request()
                         .withPath("/user1")
-                        .withMethod(HttpMethod.POST)
-                        .withBody(clientRequestPayload)
-                        .withBody("Body included"))
+                        .withBody("ABC"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.ACCEPTED)
-                        .withBody(RESPONSE_BODY))
+                        .withStatusCode(HttpResponseStatus.CREATED)
+                        .withBody("XYZ"))
 
                 .operation().start();
     }
@@ -71,41 +60,35 @@ public class HTTP202ComplianceTest {
     }
 
     @Test
-    public void test202POSTRequestWithPayloadWithoutBody() throws Exception {
+    public void test201POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
                         .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
                         .withHeader("routeId", "r1")
-                        .withBody(clientRequestPayload))
+                        .withBody("ABC"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.ACCEPTED,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CREATED,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "XYZ");
     }
 
-    @Test
-    public void test202POSTRequestWithPayloadWithBody() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
-                        .withMethod(HttpMethod.POST)
-                        .withHeader("routeId", "r1")
-                        .withBody(clientRequestPayload)
-                        .withBody("Body included"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.ACCEPTED,
-                "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY);
-    }
+//    @Test
+//    public void test201POSTRequestWithoutPayload() throws Exception {
+//        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+//                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+//                .when(HttpClientRequestBuilderContext.request().withPath("/new-route").withMethod(HttpMethod.POST)
+//                        .withHeader("routeId", "r3"))
+//                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+//
+//        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CREATED,
+//                "Expected response code not found");
+//        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY,
+//                "Response body does not match the expected response body");
+//    }
 }

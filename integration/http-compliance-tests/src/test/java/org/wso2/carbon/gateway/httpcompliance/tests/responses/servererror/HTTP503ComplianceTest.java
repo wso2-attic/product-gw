@@ -37,12 +37,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP500ComplianceTest {
+public class HTTP503ComplianceTest {
     private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String servererror = "Internal server error occurred";
+    private String servererror = "503 Service Unavailable";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -60,23 +60,31 @@ public class HTTP500ComplianceTest {
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+                        .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
+                        .withBody(servererror))
+
+                .when(request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/user2")
+                        .withBody("Body included"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
                         .withBody(servererror))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-                        .withBody("Trace Expert City"))
+                        .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
+                        .withBody(servererror))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2").withBody(""))
+                        .withPath("/user1")
+                        .withBody("Body included"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-                        .withBody("Trace Expert City"))
+                        .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
+                        .withBody(servererror))
 
                 .operation().start();
     }
@@ -89,9 +97,9 @@ public class HTTP500ComplianceTest {
     }
 
     @Test
-    public void test500GETRequest() throws Exception {
+    public void test503GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -100,47 +108,66 @@ public class HTTP500ComplianceTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SERVICE_UNAVAILABLE,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
     }
 
     @Test
-    public void test500POSTRequestWithPayload() throws Exception {
+    public void test503GETRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.POST)
+                        .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r2")
+                        .withBody("Body included"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SERVICE_UNAVAILABLE,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
     }
 
     @Test
-    public void test500POSTRequestWithoutPayload() throws Exception {
+    public void test503POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withBody("Body included")
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SERVICE_UNAVAILABLE,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City",
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+    }
+
+    @Test
+    public void test503POSTRequestWithoutPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SERVICE_UNAVAILABLE,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
                 "Response body does not match the expected response body");
     }
 }
