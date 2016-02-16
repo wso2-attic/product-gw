@@ -34,6 +34,8 @@ import org.wso2.carbon.messaging.TransportSender;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+
 /**
  * Responsible for receive the client message and send it in to camel
  * and send back the response message to client.
@@ -60,8 +62,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         }
         Map<String, String> transportHeaders = cMsg.getHeaders();
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
-                                                         cMsg.getProperty(Constants.HTTP_METHOD).toString(),
-                                                         transportHeaders);
+                cMsg.getProperty(Constants.HTTP_METHOD).toString(),
+                transportHeaders);
         if (consumer != null) {
 
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
@@ -73,7 +75,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             } catch (Exception e) {
                 String msg = "Unit of Work creation failed" + e.getMessage();
                 CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
-                           (msg, 500, Constants.TEXT_PLAIN);
+                        (msg, 500, Constants.TEXT_PLAIN);
                 requestCallback.done(carbonMessage);
             }
             processAsynchronously(exchange, consumer, requestCallback);
@@ -81,7 +83,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             String msg = "Message consumer not found.";
             log.error(msg);
             CarbonMessage carbonMessage = CarbonCamelMessageUtil.createHttpCarbonResponse
-                       (msg, 404, Constants.TEXT_PLAIN);
+                    (msg, 404, Constants.TEXT_PLAIN);
             requestCallback.done(carbonMessage);
         }
         return true;
@@ -126,7 +128,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                         mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
                     } catch (ClassCastException classCastException) {
                         log.info("Response Http Status code is invalid. response code : " +
-                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+                                mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
                     }
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                     mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
@@ -149,20 +151,22 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 }
 
                 if (exchange.getProperty(Constants.HTTP_STATUS_CODE) == null && exchange.getOut() instanceof
-                           CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
-                           getCarbonMessage().
-                           getProperty(Constants.HTTP_STATUS_CODE) != null) {
+                        CamelHttp4Message && ((CamelHttp4Message) exchange.getOut()).
+                        getCarbonMessage().
+                        getProperty(Constants.HTTP_STATUS_CODE) != null) {
                     String value = (String) ((CamelHttp4Message) exchange.getOut()).getCarbonMessage().
-                               getProperty(Constants.HTTP_STATUS_CODE);
+                            getProperty(Constants.HTTP_STATUS_CODE);
                     code = Integer.parseInt(value);
                 }
                 mediatedResponse =
-                           CarbonCamelMessageUtil.createHttpCarbonResponse
-                                      (exchange.getException().getMessage(), code, contentType);
+                        CarbonCamelMessageUtil.createHttpCarbonResponse
+                                (exchange.getException().getMessage(), code, contentType);
             }
             try {
                 requestCallback.done(mediatedResponse);
             } finally {
+                if (mediatedResponse != null) {
+                }
                 consumer.doneUoW(exchange);
             }
         });
