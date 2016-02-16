@@ -39,7 +39,7 @@ public abstract class GWIntegrationTest {
         while (responseBody.equalsIgnoreCase("Message consumer not found.")) {
 
             Thread.sleep(1000);
-            responseBody = Emulator.getHttpEmulator().client().given(configure().host("localhost").port(9090))
+            responseBody = Emulator.getHttpEmulator().client().given(configure().host("127.0.0.1").port(9090))
                     .when(request().withMethod(HttpMethod.GET).withPath(fromUri)).then(response().assertionIgnore())
                     .operation().send().getReceivedResponseContext().getResponseBody();
         }

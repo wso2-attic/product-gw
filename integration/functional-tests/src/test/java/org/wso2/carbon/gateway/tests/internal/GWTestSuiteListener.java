@@ -26,6 +26,7 @@ import org.testng.ISuiteListener;
 public class GWTestSuiteListener implements ISuiteListener {
 
     private static final Logger log = LoggerFactory.getLogger(GWTestSuiteListener.class);
+
     @Override
     public void onStart(ISuite iSuite) {
         try {

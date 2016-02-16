@@ -21,8 +21,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClient;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClientImpl;
+import org.wso2.carbon.gateway.tests.internal.GWIntegrationTest;
 import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
@@ -36,16 +35,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class RoutingToLoadBalancedEndpointsTest {
-    private GatewayAdminClient gwClient;
+public class RoutingToLoadBalancedEndpointsTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwClient = new GatewayAdminClientImpl();
-        gwClient.startGateway();
-        gwClient.deployArtifact("artifacts" + File.separator + "message-routing.xml");
-        gwClient.restartGateway();
+        gwDeployArtifacts("artifacts" + File.separator + "load-balance.xml", "/loadbalanced");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -58,16 +53,6 @@ public class RoutingToLoadBalancedEndpointsTest {
         Thread.sleep(1000);
 
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/loadbalanced").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
-                "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response loadBalance test 1",
-                "Expected response not found");
-
-        response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request().withPath("/loadbalanced").withMethod(HttpMethod.GET))
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
@@ -148,9 +133,8 @@ public class RoutingToLoadBalancedEndpointsTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwClient.stopGateway();
+        gwCleanup();
         emulator.stop();
-        gwClient.cleanArtifacts();
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {

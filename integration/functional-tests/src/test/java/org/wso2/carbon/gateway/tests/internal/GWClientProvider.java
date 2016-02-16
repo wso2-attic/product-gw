@@ -23,9 +23,8 @@ import org.wso2.carbon.gateway.test.clients.GatewayAdminClientImpl;
 
 public class GWClientProvider {
 
-    private GatewayAdminClient gwClient = new GatewayAdminClientImpl();
-
     private static GWClientProvider instance = new GWClientProvider();
+    private GatewayAdminClient gwClient = new GatewayAdminClientImpl();
 
     private GWClientProvider() {
 

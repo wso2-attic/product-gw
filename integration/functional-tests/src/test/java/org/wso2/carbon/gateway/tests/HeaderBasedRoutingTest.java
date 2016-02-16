@@ -21,8 +21,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClient;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClientImpl;
+import org.wso2.carbon.gateway.tests.internal.GWIntegrationTest;
 import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
@@ -36,16 +35,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HeaderBasedRoutingTest {
-    private GatewayAdminClient gwClient;
+public class HeaderBasedRoutingTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwClient = new GatewayAdminClientImpl();
-        gwClient.startGateway();
-        gwClient.deployArtifact("artifacts" + File.separator + "message-routing.xml");
-        gwClient.restartGateway();
+        gwDeployArtifacts("artifacts" + File.separator + "header-based-routing.xml", "/http_headerbased");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -136,9 +131,8 @@ public class HeaderBasedRoutingTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwClient.stopGateway();
+        gwCleanup();
         emulator.stop();
-        gwClient.cleanArtifacts();
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {

@@ -21,8 +21,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClient;
-import org.wso2.carbon.gateway.test.clients.GatewayAdminClientImpl;
+import org.wso2.carbon.gateway.tests.internal.GWIntegrationTest;
 import org.wso2.gw.emulator.dsl.Emulator;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
@@ -39,16 +38,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 /**
  * Created by riyafa on 2/14/16.
  */
-public class ServiceChainingTest {
-    private GatewayAdminClient gwClient;
+public class ServiceChainingTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwClient = new GatewayAdminClientImpl();
-        gwClient.startGateway();
-        gwClient.deployArtifact("artifacts" + File.separator + "message-routing.xml");
-        gwClient.restartGateway();
+        gwDeployArtifacts("artifacts" + File.separator + "soap-service-chaining.xml", "/servicechaining_soap");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -69,9 +64,8 @@ public class ServiceChainingTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwClient.stopGateway();
+        gwCleanup();
         emulator.stop();
-        gwClient.cleanArtifacts();
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {

@@ -45,6 +45,7 @@ public class PathMatching extends GWIntegrationTest {
     public void setup() throws Exception {
         gwDeployArtifacts("artifacts" + File.separator + "path-matching.xml", "/baz/qux");
         emulator = startHttpEmulator();
+        Thread.sleep(1000);
     }
 
     @AfterClass(alwaysRun = true)
