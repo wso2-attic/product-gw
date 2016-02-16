@@ -117,6 +117,7 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                                              request.getProperty(Constants.DISRUPTOR));
                     responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
                                              request.getProperty(Constants.CHNL_HNDLR_CTX));
+                    responseCmsg.setFaultHandlerStack(request.getFaultHandlerStack());
                     Object obj = responseCmsg.getProperty(Constants.EXCHANGE);
 
                     if (obj != null) {
