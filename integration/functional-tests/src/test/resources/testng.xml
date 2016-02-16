@@ -12,6 +12,7 @@
             <class name="org.wso2.carbon.gateway.tests.ServiceChainingTest"/>
             <class name="org.wso2.carbon.gateway.tests.SimplePassThroughTest"/>
             <class name="org.wso2.carbon.gateway.tests.PathMatching"/>
+            <class name="org.wso2.carbon.gateway.tests.RestEndPointTest"/>
         </classes>
     </test>
 </suite>
