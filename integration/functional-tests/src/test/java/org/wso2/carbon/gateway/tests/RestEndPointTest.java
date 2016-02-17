@@ -103,7 +103,6 @@ public class RestEndPointTest extends GWIntegrationTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwCleanup();
         emulator.stop();
     }
 

@@ -35,85 +35,71 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class ErrorHandling extends GWIntegrationTest {
+public class ServiceChainingRestTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling.xml", "/when_endpoint_down");
+        gwDeployArtifacts("artifacts" + File.separator + "camel-context.xml", "/default");
+        gwRestart();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     @Test
-    public void overridingCamel() {
+    public void serviceChainingRest1() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/default").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
-                "Expected response code not found");
-        Assert.assertEquals("Response overriding camel test", response.getReceivedResponseContext().getResponseBody(),
-                "Expected response not found");
-    }
-
-    @Test
-    public void overridingConfigFiles() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling-same-route-id.xml", "/default");
-        gwRestart();
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/default").withMethod(HttpMethod.GET))
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
-                "Expected response code not found");
-        Assert.assertEquals("Response overriding configuration files test",
-                response.getReceivedResponseContext().getResponseBody(), "Expected response not found");
-    }
-
-    @Test
-    public void nonExistingRoute() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/non_existing_route")
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/service_chaining_rest/1")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response servicechaining rest test result 1", "Expected response not found");
     }
 
     @Test
-    public void whenEndpointDown() throws Exception {
+    public void serviceChainingRest2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/when_endpoint_down")
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/service_chaining_rest2/1")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response servicechaining rest test result 2", "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwCleanup();
         emulator.stop();
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(9773).context("/services"))
+                //rest service chaining
+                .when(request().
+                        withMethod(HttpMethod.GET).withPath("/servicechaining/1"))
+                .then(response().withBody("Response servicechaining rest test 1").withStatusCode(HttpResponseStatus.OK))
 
-                //Overriding camel
                 .when(request().
-                        withMethod(HttpMethod.GET).withPath("/overriding_camel"))
-                .then(response().withBody("Response overriding camel test").withStatusCode(HttpResponseStatus.OK))
-                //overriding config files
+                        withMethod(HttpMethod.POST).withPath("/servicechaining")
+                        .withBody("Response servicechaining rest test 1"))
+                .then(response().withBody("Response servicechaining rest test result 1")
+                        .withStatusCode(HttpResponseStatus.OK))
+
                 .when(request().
-                        withMethod(HttpMethod.GET).withPath("/overriding_config_files"))
-                .then(response().withBody("Response overriding configuration files test")
+                        withMethod(HttpMethod.GET).withPath("/servicechaining2/1"))
+                .then(response().withBody("Response servicechaining rest test 2").withStatusCode(HttpResponseStatus.OK))
+
+                .when(request().
+                        withMethod(HttpMethod.POST).withPath("/servicechaining2")
+                        .withHeader("Accept", "application/json").withBody("Response servicechaining rest test 2"))
+                .then(response().withBody("Response servicechaining rest test result 2")
                         .withStatusCode(HttpResponseStatus.OK)).operation().start();
     }
 }
