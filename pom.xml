@@ -128,7 +128,7 @@
             <dependency>
                 <groupId>org.wso2.carbon.gateway</groupId>
                 <artifactId>org.wso2.carbon.gateway.camel.core.fragment</artifactId>
-                <version>${carbon.messaging.version}</version>
+                <version>${carbon.gateway.version}</version>
             </dependency>
 
         </dependencies>
