@@ -125,6 +125,11 @@
                 <artifactId>org.wso2.carbon.messaging</artifactId>
                 <version>${carbon.messaging.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.gateway</groupId>
+                <artifactId>org.wso2.carbon.gateway.camel.core.fragment</artifactId>
+                <version>${carbon.messaging.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -243,6 +248,7 @@
 
     <modules>
         <module>carbon-gw/components/org.wso2.carbon.gateway</module>
+        <module>carbon-gw/components/org.wso2.carbon.gateway.camel.core.fragment</module>
         <module>carbon-gw/features/org.wso2.carbon.gateway.feature</module>
         <module>product</module>
     </modules>
