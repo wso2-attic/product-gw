@@ -27,14 +27,14 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
           class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
     <bean id="failureResponse" class="org.wso2.carbon.gateway.internal.mediation.camel.CustomErrorHandlingProcessor">
         <property name="errorMessage" value="MY Error Message"/>
-        <property name="statusCode" value="500"/>
+        <property name="statusCode" value="502"/>
         <property name="contentType" value="application/xml"/>
     </bean>
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
         <jmxAgent id="agent" disabled="true"/>
 
         <onException>
-            <exception>java.lang.Exception</exception>
+            <exception>java.net.ConnectException</exception>
             <handled>
                 <constant>true</constant>
             </handled>

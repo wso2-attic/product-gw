@@ -19,6 +19,7 @@
             <class name="org.wso2.carbon.gateway.tests.HotDeploymentSpecificTest"/>
             <class name="org.wso2.carbon.gateway.tests.RestEndPointTest"/>
             <class name="org.wso2.carbon.gateway.tests.ServiceChainingRestTest"/>
+            <class name="org.wso2.carbon.gateway.tests.CustomErrorMessageTest"/>
         </classes>
     </test>
 </suite>
