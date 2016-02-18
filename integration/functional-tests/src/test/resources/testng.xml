@@ -16,6 +16,7 @@
             <class name="org.wso2.carbon.gateway.tests.ServiceChainingSoapTest"/>
             <class name="org.wso2.carbon.gateway.tests.SimplePassThroughTest"/>
             <class name="org.wso2.carbon.gateway.tests.PathMatching"/>
+            <class name="org.wso2.carbon.gateway.tests.TimoutConfigurationTest"/>
             <class name="org.wso2.carbon.gateway.tests.HotDeploymentSpecificTest"/>
             <class name="org.wso2.carbon.gateway.tests.RestEndPointTest"/>
             <class name="org.wso2.carbon.gateway.tests.ServiceChainingRestTest"/>
