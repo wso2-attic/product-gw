@@ -67,7 +67,7 @@ public class TimoutConfigurationTest extends GWIntegrationTest {
     public void manualTimeOut() throws Exception {
         backup = gwDeployTransports("artifacts" + File.separator + "netty-transports.yml");
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1"))
                 .when(HttpClientRequestBuilderContext.request().withPath("/simple_passthrough2")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();

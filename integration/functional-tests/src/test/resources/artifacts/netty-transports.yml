@@ -21,7 +21,7 @@ listenerConfigurations:
  -
   id: "netty-gw"
   host: "0.0.0.0"
-  port: 9090
+  port: 80
   bossThreadPoolSize: 4
   workerThreadPoolSize: 8
   execHandlerThreadPoolSize: 60
