@@ -1,0 +1,8 @@
+-*.stub*
+-*.stub_
+-org.eclipse.*
+-*.equinox.*
+-samples.*
+-*.log4j*
+-*.ui*
+-*startup*
