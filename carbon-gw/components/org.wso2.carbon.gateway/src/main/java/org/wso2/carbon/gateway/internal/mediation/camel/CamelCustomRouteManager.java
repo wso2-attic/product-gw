@@ -53,16 +53,12 @@ public class CamelCustomRouteManager {
      * @param fileName custom configuration file name
      */
     public void addRoutesFromCustomConfigs(String fileName) throws FileNotFoundException {
-        File createdFile = new File(GatewayActivator.CAMEL_CONFIGS_DIRECTORY + File.separator + fileName);
+        File createdFile = new File(GatewayActivator.HOT_DEPLOYMENT_CONFIG_DIRECTORY + File.separator + fileName);
         addRoutesFromFile(createdFile);
     }
 
     private void addRoutesFromFile(File newFile) throws FileNotFoundException {
         String fileName = newFile.getName();
-        if (fileName.equals(GatewayActivator.CAMEL_CONTEXT_NAME)) {
-            log.debug("Skipping camel Context file [" + fileName + "]");
-            return;
-        }
         InputStream inputStream = new FileInputStream(newFile.getAbsolutePath());
         try {
             log.info("Adding custom routes from [" + fileName + "]");
@@ -84,7 +80,7 @@ public class CamelCustomRouteManager {
     }
 
     public void modifyRoutesFromCustomConfigs(String fileName) throws FileNotFoundException {
-        File modifiedFile = new File(GatewayActivator.CAMEL_CONFIGS_DIRECTORY + File.separator + fileName);
+        File modifiedFile = new File(GatewayActivator.HOT_DEPLOYMENT_CONFIG_DIRECTORY + File.separator + fileName);
         InputStream inputStream = new FileInputStream(modifiedFile.getAbsoluteFile());
         try {
             RoutesDefinition routesDefinition = camelContext.loadRoutesDefinition(inputStream);
@@ -109,11 +105,6 @@ public class CamelCustomRouteManager {
     }
 
     public void removeRoutesFromCustomConfigs(String fileName) throws FileNotFoundException {
-
-        if (fileName.equals(GatewayActivator.CAMEL_CONTEXT_NAME)) {
-            log.warn("Default camel Context file [" + fileName + "] removed");
-            return;
-        }
         try {
             log.info("Removing custom routes from [" + fileName + "]");
             List<RouteDefinition> routes = routesMap.remove(fileName);

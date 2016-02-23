@@ -41,8 +41,6 @@ public class HttpResponseAssertProcessor extends AbstractClientProcessor<HttpCli
         if (!processorContext.getExpectedResponseContext().getAssertionStatus()) {
             assertResponseContent(processorContext);
             assertHeaderParameters(processorContext);
-        } else {
-            log.info("Assertion ignored");
         }
     }
 

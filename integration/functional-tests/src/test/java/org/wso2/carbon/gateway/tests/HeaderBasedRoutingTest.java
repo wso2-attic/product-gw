@@ -40,7 +40,7 @@ public class HeaderBasedRoutingTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "header-based-routing.xml", "/http_headerbased");
+        gwHotDeployArtifacts("artifacts" + File.separator + "header-based-routing.xml", "/http_headerbased");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

@@ -15,6 +15,8 @@
 
 package org.wso2.carbon.gateway.test.clients;
 
+import java.io.File;
+
 /**
  * GatewayAdminClient
  */
@@ -26,7 +28,13 @@ public interface GatewayAdminClient {
 
     void restartGateway() throws Exception;
 
-    void deployArtifact(String relativeFilePath);
+    void hotDeployArtifact(String relativeFilePath);
+
+    File deployCamel(String relativeFilePath);
+
+    void restoreFile(File file);
 
     void cleanArtifacts();
+
+    File deployTransports(String relativeFilePath);
 }

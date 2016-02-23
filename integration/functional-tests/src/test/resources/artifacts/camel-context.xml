@@ -27,14 +27,14 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
           class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
     <bean id="failureResponse" class="org.wso2.carbon.gateway.internal.mediation.camel.CustomErrorHandlingProcessor">
         <property name="errorMessage" value="MY Error Message"/>
-        <property name="statusCode" value="500"/>
+        <property name="statusCode" value="502"/>
         <property name="contentType" value="application/xml"/>
     </bean>
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
         <jmxAgent id="agent" disabled="true"/>
 
         <onException>
-            <exception>java.lang.Exception</exception>
+            <exception>java.net.ConnectException</exception>
             <handled>
                 <constant>true</constant>
             </handled>
@@ -66,6 +66,14 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
             <delete uri="/customerDel/{id}">
                 <to uri="direct:deleteCustomerById"/>
             </delete>
+
+            <get uri="/service_chaining_rest/{id}">
+                <to uri="direct:serviceChaining"/>
+            </get>
+
+            <get uri="/service_chaining_rest2/{id}">
+                <to uri="direct:serviceChaining2"/>
+            </get>
         </rest>
         <!--sample rest interfaces -->
 
@@ -115,6 +123,19 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
         <route>
             <from uri="direct:deleteCustomerById"/>
             <toD uri="wso2-gw:http://localhost:9773/services/xxxx/${header.id}"/>
+        </route>
+        <route>
+            <from uri="direct:serviceChaining"/>
+            <toD uri="wso2-gw:http://localhost:9773/services/servicechaining/${header.id}"/>
+            <to uri="wso2-gw:http://localhost:9773/services/servicechaining"/>
+        </route>
+        <route>
+            <from uri="direct:serviceChaining2"/>
+            <toD uri="wso2-gw:http://localhost:9773/services/servicechaining2/${header.id}"/>
+            <setHeader headerName="Accept">
+                <simple>application/json</simple>
+            </setHeader>
+            <to uri="wso2-gw:http://localhost:9773/services/servicechaining2"/>
         </route>
     </camelContext>
 

@@ -35,28 +35,28 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class SimplePassThroughTest extends GWIntegrationTest {
+public class ServiceChainingSoapTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwHotDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
+        gwHotDeployArtifacts("artifacts" + File.separator + "soap-service-chaining.xml", "/servicechaining_soap");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     @Test
-    public void simplePassthrough() {
+    public void serviceChainingSoap() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/simple_passthrough")
+                .when(HttpClientRequestBuilderContext.request().withPath("/servicechaining_soap")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response simple passthrough",
-                "Expected response not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response servicechaining soap test result", "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
@@ -67,9 +67,15 @@ public class SimplePassThroughTest extends GWIntegrationTest {
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(9773).context("/services"))
-                //Simplepassthrough
-                .when(request().withMethod(HttpMethod.GET).withPath("/HelloService"))
-                .then(response().withBody("Response simple passthrough").withStatusCode(HttpResponseStatus.OK))
-                .operation().start();
+                //soap service chaining
+                .when(request().
+                        withMethod(HttpMethod.GET).withPath("/"))
+                .then(response().withBody("Response servicechaining soap test").withStatusCode(HttpResponseStatus.OK))
+
+                .when(request().
+                        withMethod(HttpMethod.POST).withPath("/Axis2Service").withHeader("SOAPAction", "urn:echoInt")
+                        .withHeader("Content-Type", "text/xml").withBody("Response servicechaining soap test"))
+                .then(response().withBody("Response servicechaining soap test result")
+                        .withStatusCode(HttpResponseStatus.OK)).operation().start();
     }
 }

@@ -71,6 +71,15 @@
             <outputDirectory>samples</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+
+        <!--adding an empty directory 'camel' for route hot deployment-->
+        <fileSet>
+            <directory>./</directory>
+            <outputDirectory>deployment/camel</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
 
     <files>

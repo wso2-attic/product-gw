@@ -71,6 +71,13 @@
             <version>${carbon.messaging.version}</version>
             <type>zip</type>
         </dependency>
+
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty.statistics.feature</artifactId>
+            <version>${carbon.transport.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -135,6 +142,11 @@
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${carbon.messaging.version}</version>
+                                </feature>
+
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.statistics.feature</id>
+                                    <version>${carbon.transport.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -203,6 +215,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature.group</id>
                                     <version>${carbon.messaging.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.statistics.feature.group</id>
+                                    <version>${carbon.transport.version}</version>
                                 </feature>
                             </features>
                         </configuration>

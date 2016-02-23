@@ -35,50 +35,72 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-/**
- * Created by riyafa on 2/14/16.
- */
-public class ServiceChainingTest extends GWIntegrationTest {
+public class ServiceChainingRestTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
+    private File backup;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "soap-service-chaining.xml", "/servicechaining_soap");
+        backup = gwDeployCamel("artifacts" + File.separator + "camel-context.xml");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
 
     @Test
-    public void serviceChainingSoap() throws Exception {
+    public void serviceChainingRest1() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/servicechaining_soap")
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/service_chaining_rest/1")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
-                "Response servicechaining soap test result", "Expected response not found");
+                "Response servicechaining rest test result 1", "Expected response not found");
+    }
+
+    @Test
+    public void serviceChainingRest2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/service_chaining_rest2/1")
+                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+                "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "Response servicechaining rest test result 2", "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwCleanup();
         emulator.stop();
+        gwRestoreFile(backup);
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(9773).context("/services"))
-                //soap service chaining
+                //rest service chaining
                 .when(request().
-                        withMethod(HttpMethod.GET).withPath("/"))
-                .then(response().withBody("Response servicechaining soap test").withStatusCode(HttpResponseStatus.OK))
+                        withMethod(HttpMethod.GET).withPath("/servicechaining/1"))
+                .then(response().withBody("Response servicechaining rest test 1").withStatusCode(HttpResponseStatus.OK))
 
                 .when(request().
-                        withMethod(HttpMethod.POST).withPath("/Axis2Service").withHeader("SOAPAction", "urn:echoInt")
-                        .withHeader("Content-Type", "text/xml").withBody("Response servicechaining soap test"))
-                .then(response().withBody("Response servicechaining soap test result")
+                        withMethod(HttpMethod.POST).withPath("/servicechaining")
+                        .withBody("Response servicechaining rest test 1"))
+                .then(response().withBody("Response servicechaining rest test result 1")
+                        .withStatusCode(HttpResponseStatus.OK))
+
+                .when(request().
+                        withMethod(HttpMethod.GET).withPath("/servicechaining2/1"))
+                .then(response().withBody("Response servicechaining rest test 2").withStatusCode(HttpResponseStatus.OK))
+
+                .when(request().
+                        withMethod(HttpMethod.POST).withPath("/servicechaining2")
+                        .withHeader("Accept", "application/json").withBody("Response servicechaining rest test 2"))
+                .then(response().withBody("Response servicechaining rest test result 2")
                         .withStatusCode(HttpResponseStatus.OK)).operation().start();
     }
 }
