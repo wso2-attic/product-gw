@@ -48,7 +48,6 @@ public class CamelConfigWatchAgent {
     private static final Logger log = LoggerFactory.getLogger(CamelConfigWatchAgent.class);
 
     private ExecutorService pool = Executors.newFixedThreadPool(10);
-    private int eventCount = 0;
 
     /**
      * Start watching the specified directory for file modifications, adding new files, etc.
@@ -57,7 +56,7 @@ public class CamelConfigWatchAgent {
      * @throws Exception
      */
     public void startWatchingForModifications(CamelCustomRouteManager customRouteManger) throws Exception {
-        Path directoryPath = Paths.get(GatewayActivator.CAMEL_CONFIGS_DIRECTORY);
+        Path directoryPath = Paths.get(GatewayActivator.HOT_DEPLOYMENT_CONFIG_DIRECTORY);
         log.info("Start watching directory [Path: " + directoryPath.toString() + "]");
         try {
             Future<Integer> future = pool.submit(() -> {
@@ -76,7 +75,6 @@ public class CamelConfigWatchAgent {
                     log.info("Watch service running ...");
                     WatchKey key;
                     while (true) {
-                        //todo debug log
                         log.debug("Watch service running ...");
                         key = service.take();
                         WatchEvent.Kind<?> kind;

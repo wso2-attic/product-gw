@@ -42,7 +42,7 @@ public class GatewayActivator implements BundleActivator {
     public static final String CAMEL_CONTEXT_CONFIG_FILE =
             "conf" + File.separator + "camel" + File.separator + CAMEL_CONTEXT_NAME;
 
-    public static final String CAMEL_CONFIGS_DIRECTORY = "conf" + File.separator + "camel";
+    public static final String HOT_DEPLOYMENT_CONFIG_DIRECTORY = "deployment" + File.separator + "camel";
 
     public void start(BundleContext bundleContext) throws Exception {
         try {
@@ -60,7 +60,7 @@ public class GatewayActivator implements BundleActivator {
             // Add the routes from the custom routes config files in the repository/conf/camel directory
             CamelCustomRouteManager camelCustomRouteManager = new CamelCustomRouteManager(camelContext);
 
-            camelCustomRouteManager.addRoutesToContext(CAMEL_CONFIGS_DIRECTORY);
+            camelCustomRouteManager.addRoutesToContext(HOT_DEPLOYMENT_CONFIG_DIRECTORY);
 
             // Start the watch service for the custom route file modification in the repository/conf/camel directory
             new CamelConfigWatchAgent().startWatchingForModifications(camelCustomRouteManager);
