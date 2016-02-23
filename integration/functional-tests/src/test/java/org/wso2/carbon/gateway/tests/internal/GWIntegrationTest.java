@@ -21,6 +21,8 @@ package org.wso2.carbon.gateway.tests.internal;
 import io.netty.handler.codec.http.HttpMethod;
 import org.wso2.gw.emulator.dsl.Emulator;
 
+import java.io.File;
+
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext.response;
@@ -31,8 +33,8 @@ public abstract class GWIntegrationTest {
         GWClientProvider.getInstance().getGwClient().cleanArtifacts();
     }
 
-    protected void gwDeployArtifacts(String file, String fromUri) throws Exception {
-        GWClientProvider.getInstance().getGwClient().deployArtifact(file);
+    protected void gwHotDeployArtifacts(String file, String fromUri) throws Exception {
+        GWClientProvider.getInstance().getGwClient().hotDeployArtifact(file);
 
         String responseBody = "Message consumer not found.";
         int count = 1;
@@ -48,7 +50,26 @@ public abstract class GWIntegrationTest {
         }
     }
 
+    protected File gwDeployCamel(String file) throws Exception {
+        File backup = GWClientProvider.getInstance().getGwClient().deployCamel(file);
+        gwRestart();
+        return backup;
+
+    }
+
+    protected File gwDeployTransports(String file) throws Exception {
+        File backup = GWClientProvider.getInstance().getGwClient().deployTransports(file);
+        gwRestart();
+        return backup;
+
+    }
+
     protected void gwRestart() throws Exception {
         GWClientProvider.getInstance().getGwClient().restartGateway();
+    }
+
+    protected void gwRestoreFile(File file) throws Exception {
+        GWClientProvider.getInstance().getGwClient().restoreFile(file);
+        gwRestart();
     }
 }

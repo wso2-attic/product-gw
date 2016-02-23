@@ -40,7 +40,7 @@ public class RoutingToLoadBalancedEndpointsTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "load-balance.xml", "/loadbalanced");
+        gwHotDeployArtifacts("artifacts" + File.separator + "load-balance.xml", "/loadbalanced");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

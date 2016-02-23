@@ -27,49 +27,33 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
-import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import java.io.File;
 
-import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderContext.configure;
-import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
-import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
-
-public class SimplePassThroughTest extends GWIntegrationTest {
-    private HttpServerOperationBuilderContext emulator;
+public class CustomErrorMessageTest extends GWIntegrationTest {
+    private File backup;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwHotDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
-        emulator = startHttpEmulator();
-        Thread.sleep(1000);
+        backup = gwDeployCamel("artifacts" + File.separator + "camel-context.xml");
     }
 
     @Test
-    public void simplePassthrough() {
+    public void customErrorMessage() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-                .when(HttpClientRequestBuilderContext.request().withPath("/simple_passthrough")
+                .when(HttpClientRequestBuilderContext.request().withPath("/gw/customerGet/1")
                         .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
                 .operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response simple passthrough",
-                "Expected response not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "<errorMessage>MY Error Message</errorMessage>", "Expected response not found");
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
-        gwCleanup();
-        emulator.stop();
-    }
-
-    private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(9773).context("/services"))
-                //Simplepassthrough
-                .when(request().withMethod(HttpMethod.GET).withPath("/HelloService"))
-                .then(response().withBody("Response simple passthrough").withStatusCode(HttpResponseStatus.OK))
-                .operation().start();
+        gwRestoreFile(backup);
     }
 }

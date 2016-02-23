@@ -20,4 +20,8 @@
         <from uri="wso2-gw:/simple_passthrough"/>
         <to uri="wso2-gw:http://localhost:9773/services/HelloService"/>
     </route>
+    <route id="simple_passthrough2">
+        <from uri="wso2-gw:/simple_passthrough2"/>
+        <to uri="wso2-gw:http://localhost:9873/services/HelloService"/>
+    </route>
 </routes>

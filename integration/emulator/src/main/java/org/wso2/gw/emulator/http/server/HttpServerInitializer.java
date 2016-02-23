@@ -28,8 +28,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.concurrent.DefaultExecutorServiceFactory;
-import io.netty.util.concurrent.ExecutorServiceFactory;
 import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.ChannelPipelineInitializer;
@@ -85,7 +83,7 @@ public class HttpServerInitializer extends Thread {
             queues = 0;
         }
 
-//        SslContext sslCtx = null;
+        //        SslContext sslCtx = null;
 
 
         /*if (protocol == Protocol.HTTPS) {
@@ -104,11 +102,6 @@ public class HttpServerInitializer extends Thread {
             sslCtx = null;
         }*/
         // Configure the server.
-        ExecutorServiceFactory bossExecutorServiceFactory = new DefaultExecutorServiceFactory("sample-bosses");
-        bossExecutorServiceFactory.newExecutorService(bossCount);
-
-        ExecutorServiceFactory workerExecutorServiceFactory = new DefaultExecutorServiceFactory("sample-workers");
-        workerExecutorServiceFactory.newExecutorService(workerCount);
 
         bossGroup = new NioEventLoopGroup(bossCount);
         workerGroup = new NioEventLoopGroup(workerCount);

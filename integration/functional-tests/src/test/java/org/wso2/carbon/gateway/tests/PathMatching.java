@@ -43,7 +43,7 @@ public class PathMatching extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "path-matching.xml", "/baz/qux");
+        gwHotDeployArtifacts("artifacts" + File.separator + "path-matching.xml", "/baz/qux");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

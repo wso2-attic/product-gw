@@ -40,7 +40,7 @@ public class RoutingToFailoverEndPointsTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "failover-endpoint.xml", "/failover_without_lb");
+        gwHotDeployArtifacts("artifacts" + File.separator + "failover-endpoint.xml", "/failover_without_lb");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

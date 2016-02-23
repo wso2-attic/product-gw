@@ -40,7 +40,7 @@ public class PassingHeadersInRoutingTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "passing-headers.xml", "/headers_in_message");
+        gwHotDeployArtifacts("artifacts" + File.separator + "passing-headers.xml", "/headers_in_message");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
