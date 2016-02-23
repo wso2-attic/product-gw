@@ -21,12 +21,12 @@
     <test name="HTTP2xx-Tests" preserve-order="true" verbose="2">
         <classes>
             <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP200ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP201ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP202ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP203ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP204ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP205ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP206ComplianceTest"/>
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP201ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP202ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP203ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP204ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP205ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP206ComplianceTest"/>-->
         </classes>
     </test>
 
@@ -42,16 +42,16 @@
         <!--</classes>-->
     <!--</test>-->
 
-    <test name="HTTP5xx-Tests" preserve-order="true" verbose="2">
-        <classes>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP500ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP501ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP502ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP503ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP504ComplianceTest"/>
-            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP505ComplianceTest"/>
-        </classes>
-    </test>
+    <!--<test name="HTTP5xx-Tests" preserve-order="true" verbose="2">-->
+        <!--<classes>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP500ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP501ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP502ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP503ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP504ComplianceTest"/>-->
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP505ComplianceTest"/>-->
+        <!--</classes>-->
+    <!--</test>-->
 </suite>
 
 
