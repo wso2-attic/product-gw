@@ -18,6 +18,7 @@ package org.wso2.carbon.gateway.tests;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.gateway.tests.internal.GWIntegrationTest;
@@ -30,11 +31,11 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorCont
 import java.io.File;
 
 public class CustomErrorMessageTest extends GWIntegrationTest {
+    private File backup;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "camel-context.xml", "/default");
-        gwRestart();
+        backup = gwDeployCamel("artifacts" + File.separator + "camel-context.xml");
     }
 
     @Test
@@ -51,4 +52,8 @@ public class CustomErrorMessageTest extends GWIntegrationTest {
                 "<errorMessage>MY Error Message</errorMessage>", "Expected response not found");
     }
 
+    @AfterClass(alwaysRun = true)
+    public void cleanup() throws Exception {
+        gwRestoreFile(backup);
+    }
 }

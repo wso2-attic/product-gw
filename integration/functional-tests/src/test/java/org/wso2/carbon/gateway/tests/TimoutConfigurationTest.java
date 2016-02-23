@@ -36,17 +36,20 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilder
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
 public class TimoutConfigurationTest extends GWIntegrationTest {
-    private HttpServerOperationBuilderContext emulator;
+    private HttpServerOperationBuilderContext emulator, emulator2;
+    private File backup = null;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
+        gwHotDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
         emulator = startHttpEmulator();
+        Thread.sleep(1000);
+        emulator2 = httpEmulator();
         Thread.sleep(1000);
     }
 
     @Test
-    public void timeOut() {
+    public void defaultTimeOut() {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
                 .when(HttpClientRequestBuilderContext.request().withPath("/simple_passthrough")
@@ -60,15 +63,44 @@ public class TimoutConfigurationTest extends GWIntegrationTest {
                 "Expected response not found");
     }
 
+    @Test
+    public void manualTimeOut() throws Exception {
+        backup = gwDeployTransports("artifacts" + File.separator + "netty-transports.yml");
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .when(HttpClientRequestBuilderContext.request().withPath("/simple_passthrough2")
+                        .withMethod(HttpMethod.GET)).then(HttpClientResponseBuilderContext.response().assertionIgnore())
+                .operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
+                "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                "<errorMessage>ReadTimeoutException occurred for endpoint localhost-9873</errorMessage>",
+                "Expected response not found");
+    }
+
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
         gwCleanup();
         emulator.stop();
+        emulator2.stop();
+        if (backup != null) {
+            gwRestoreFile(backup);
+        }
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server()
                 .given(configure().host("127.0.0.1").port(9773).context("/services").withWritingDelay(40000))
+                //Simplepassthrough
+                .when(request().withMethod(HttpMethod.GET).withPath("/HelloService"))
+                .then(response().withBody("Response simple passthrough").withStatusCode(HttpResponseStatus.OK))
+                .operation().start();
+    }
+
+    private HttpServerOperationBuilderContext httpEmulator() {
+        return Emulator.getHttpEmulator().server()
+                .given(configure().host("127.0.0.1").port(9873).context("/services").withWritingDelay(30000))
                 //Simplepassthrough
                 .when(request().withMethod(HttpMethod.GET).withPath("/HelloService"))
                 .then(response().withBody("Response simple passthrough").withStatusCode(HttpResponseStatus.OK))

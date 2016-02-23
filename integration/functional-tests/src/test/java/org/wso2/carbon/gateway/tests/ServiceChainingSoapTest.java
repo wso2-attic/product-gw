@@ -40,7 +40,7 @@ public class ServiceChainingSoapTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "soap-service-chaining.xml", "/servicechaining_soap");
+        gwHotDeployArtifacts("artifacts" + File.separator + "soap-service-chaining.xml", "/servicechaining_soap");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

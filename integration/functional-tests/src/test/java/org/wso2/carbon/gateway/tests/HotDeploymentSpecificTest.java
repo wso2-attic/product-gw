@@ -40,7 +40,7 @@ public class HotDeploymentSpecificTest extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
+        gwHotDeployArtifacts("artifacts" + File.separator + "simple-passthrough.xml", "/simple_passthrough");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }

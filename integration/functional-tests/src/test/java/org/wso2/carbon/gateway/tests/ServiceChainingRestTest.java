@@ -37,11 +37,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilde
 
 public class ServiceChainingRestTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
+    private File backup;
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "camel-context.xml", "/default");
-        gwRestart();
+        backup = gwDeployCamel("artifacts" + File.separator + "camel-context.xml");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -77,6 +77,7 @@ public class ServiceChainingRestTest extends GWIntegrationTest {
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
         emulator.stop();
+        gwRestoreFile(backup);
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {

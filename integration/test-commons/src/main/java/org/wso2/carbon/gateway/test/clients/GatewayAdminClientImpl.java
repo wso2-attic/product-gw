@@ -63,7 +63,7 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         Thread.sleep(1000);
     }
 
-    public void deployArtifact(String relativeFilePath) {
+    public void hotDeployArtifact(String relativeFilePath) {
         if (artifacts == null) {
             artifacts = new ArrayList<>();
         }
@@ -71,7 +71,7 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
         try {
             File file = new File(fullPath);
-            String dstFileName = carbonHome + "/conf/camel/" + FileManipulator.getFileName(file);
+            String dstFileName = carbonHome + "/deployment/camel/" + FileManipulator.getFileName(file);
             //FileManipulator.backupFile(new File(dstFileName));
             FileManipulator.copyFileToDir(file, dstFileName);
             artifacts.add(dstFileName);
@@ -79,6 +79,52 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         } catch (IOException e) {
             log.error("Exception occurred while copying artifacts", e);
         }
+    }
+
+    @Override
+    public File deployCamel(String relativeFilePath) {
+        if (artifacts == null) {
+            artifacts = new ArrayList<>();
+        }
+        relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
+        String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
+        File backup=null;
+        try {
+            File file = new File(fullPath);
+            String dstFileName = carbonHome + "/conf/camel/" + FileManipulator.getFileName(file);
+            backup=new File(dstFileName);
+            FileManipulator.backupFile(backup);
+            FileManipulator.copyFileToDir(file, dstFileName);
+            log.info("Successfully Deployed");
+        } catch (IOException e) {
+            log.error("Exception occurred while copying artifacts", e);
+        }
+        return backup;
+    }
+
+    @Override
+    public void restoreFile(File backup) {
+        FileManipulator.restoreBackup(backup);
+    }
+
+    public File deployTransports(String relativeFilePath) {
+        if (artifacts == null) {
+            artifacts = new ArrayList<>();
+        }
+        relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
+        String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
+        File backup=null;
+        try {
+            File file = new File(fullPath);
+            String dstFileName = carbonHome + "/conf/transports/" + FileManipulator.getFileName(file);
+            backup=new File(dstFileName);
+            FileManipulator.backupFile(backup);
+            FileManipulator.copyFileToDir(file, dstFileName);
+            log.info("Successfully Deployed");
+        } catch (IOException e) {
+            log.error("Exception occurred while copying artifacts", e);
+        }
+        return backup;
     }
 
     public void cleanArtifacts() {

@@ -40,7 +40,7 @@ public class ErrorHandling extends GWIntegrationTest {
 
     @BeforeClass
     public void setup() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling.xml", "/when_endpoint_down");
+        gwHotDeployArtifacts("artifacts" + File.separator + "error-handling.xml", "/when_endpoint_down");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
@@ -60,7 +60,7 @@ public class ErrorHandling extends GWIntegrationTest {
 
     @Test
     public void overridingConfigFiles() throws Exception {
-        gwDeployArtifacts("artifacts" + File.separator + "error-handling-same-route-id.xml", "/default");
+        gwHotDeployArtifacts("artifacts" + File.separator + "error-handling-same-route-id.xml", "/default");
         gwRestart();
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))

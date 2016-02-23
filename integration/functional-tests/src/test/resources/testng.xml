@@ -21,6 +21,7 @@
             <class name="org.wso2.carbon.gateway.tests.RestEndPointTest"/>
             <class name="org.wso2.carbon.gateway.tests.ServiceChainingRestTest"/>
             <class name="org.wso2.carbon.gateway.tests.CustomErrorMessageTest"/>
+            <class name="org.wso2.carbon.gateway.tests.TimoutConfigurationTest"/>
         </classes>
     </test>
 </suite>
