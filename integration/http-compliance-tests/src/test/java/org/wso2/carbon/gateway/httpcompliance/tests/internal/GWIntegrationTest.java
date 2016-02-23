@@ -21,6 +21,8 @@ package org.wso2.carbon.gateway.httpcompliance.tests.internal;
 import io.netty.handler.codec.http.HttpMethod;
 import org.wso2.gw.emulator.dsl.Emulator;
 
+import java.io.File;
+
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext.configure;
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext.response;
@@ -31,8 +33,8 @@ public abstract class GWIntegrationTest {
         GWClientProvider.getInstance().getGwClient().cleanArtifacts();
     }
 
-    protected void gwDeployArtifacts(String file, String fromUri) throws Exception {
-        GWClientProvider.getInstance().getGwClient().deployArtifact(file);
+    protected void gwHotDeployArtifacts(String file, String fromUri) throws Exception {
+        GWClientProvider.getInstance().getGwClient().hotDeployArtifact(file);
 
         String responseBody = "Message consumer not found.";
         int count = 1;
@@ -40,24 +42,34 @@ public abstract class GWIntegrationTest {
             count++;
             Thread.sleep(1000);
             responseBody = Emulator.getHttpEmulator().client().given(configure().host("127.0.0.1").port(9090))
-
-                    .when(request()
-                            .withMethod(HttpMethod.GET)
-                            .withPath(fromUri))
-
-                    .then(response().assertionIgnore())
-
-                    .operation()
-                    .send()
-                    .getReceivedResponseContext()
-                    .getResponseBody();
+                    .when(request().withMethod(HttpMethod.GET).withPath(fromUri)).then(response().assertionIgnore())
+                    .operation().send().getReceivedResponseContext().getResponseBody();
         }
         if (count > 3) {
             gwRestart();
         }
     }
 
+    protected File gwDeployCamel(String file) throws Exception {
+        File backup = GWClientProvider.getInstance().getGwClient().deployCamel(file);
+        gwRestart();
+        return backup;
+
+    }
+
+    protected File gwDeployTransports(String file) throws Exception {
+        File backup = GWClientProvider.getInstance().getGwClient().deployTransports(file);
+        gwRestart();
+        return backup;
+
+    }
+
     protected void gwRestart() throws Exception {
         GWClientProvider.getInstance().getGwClient().restartGateway();
+    }
+
+    protected void gwRestoreFile(File file) throws Exception {
+        GWClientProvider.getInstance().getGwClient().restoreFile(file);
+        gwRestart();
     }
 }

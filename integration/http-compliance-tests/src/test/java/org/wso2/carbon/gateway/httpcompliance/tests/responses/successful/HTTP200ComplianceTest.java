@@ -37,17 +37,14 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilder
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
 public class HTTP200ComplianceTest extends GWIntegrationTest {
-//    private GatewayAdminClient gwClient;
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
 
     @BeforeClass
     public void setup() throws Exception {
-//        gwClient = new GatewayAdminClientImpl();
-//        gwClient.startGateway();
-        gwDeployArtifacts("artifacts" + File.separator + "http-compliance-test-camel-context.xml",
-                "/when_endpoint_down");
+        gwHotDeployArtifacts("artifacts" + File.separator + "http-compliance-test-camel-context.xml",
+                "/new-route");
         emulator = startHttpEmulator();
         Thread.sleep(1000);
     }
