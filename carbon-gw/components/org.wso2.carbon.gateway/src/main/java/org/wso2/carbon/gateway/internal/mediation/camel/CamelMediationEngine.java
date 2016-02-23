@@ -28,7 +28,6 @@ import org.wso2.carbon.messaging.CarbonMessageProcessor;
 import org.wso2.carbon.messaging.Constants;
 import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
-import org.wso2.carbon.messaging.MessageProcessorException;
 import org.wso2.carbon.messaging.TransportSender;
 
 import java.util.Map;
@@ -198,27 +197,8 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         }
 
         @Override
-        public void handleFault(String s) {
-
-        }
-
-        @Override
-        public void handleFault() {
-
-        }
-
-        @Override
-        public void handleFault(String s, CarbonCallback carbonCallback) {
-            Throwable throwable = new MessageProcessorException(s);
-            exchange.setException(throwable);
-            DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
-            defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, "500");
-            defaultCarbonMessage.setProperty(Constants.EXCHANGE, throwable);
-            carbonCallback.done(defaultCarbonMessage);
-        }
-
-        @Override
-        public void handleFault(String statusCode, Throwable throwable, CarbonCallback carbonCallback) {
+        public void handleFault(String statusCode, Throwable throwable, CarbonMessage carbonMessage,
+                CarbonCallback carbonCallback) {
             exchange.setException(throwable);
             DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
             defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, statusCode);

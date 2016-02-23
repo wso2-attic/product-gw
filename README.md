@@ -102,8 +102,8 @@ By default we are keeping all the route configurations in the `camel-context.xml
 
 </routes>
 ```
-* Copy the route configuration file to `$CARBON_HOME/conf/camel`
+* Copy the route configuration file to `$CARBON_HOME/deployment/camel`
 * Routes added to the existing camel-context.xml configuration file, will not be hot deployed
-* You may have custom route configuration files already in the `$CARBON_HOME/conf/camel` directory, before the server starts. These custom routes will be loaded to the context when the server starts
+* You may have custom route configuration files already in the `$CARBON_HOME/deployment/camel` directory, before the server starts. These custom routes will be loaded to the context when the server starts
 * If you add a custom route and it is an existing one, the latter one will override the former one
 * Do not add two routes with same id in the same configuration file
