@@ -15,20 +15,22 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the error handling use case where it catches the 
 java.net.ConnectException and handles that error with a custom message -->
-  
+
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-       <route id="error-handling">
-            <from uri="wso2-gw:/errorhandling"/>
-               <onException>
-		<exception>java.net.ConnectException</exception>
-		<handled><constant>true</constant></handled>
-		<process ref="connectFailureResponse"/>
-	    </onException>
+    <route id="error-handling">
+        <from uri="wso2-gw:/errorhandling"/>
+        <onException>
+            <exception>java.net.ConnectException</exception>
+            <handled>
+                <constant>true</constant>
+            </handled>
+            <process ref="connectFailureResponse"/>
+        </onException>
         <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
-       </route> 
+    </route>
 
 </routes>

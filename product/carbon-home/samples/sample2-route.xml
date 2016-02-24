@@ -15,28 +15,26 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the header based routing use case -->
-  
+
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-        <route id="header-routing">
-            <from uri="wso2-gw:/headerrouting"/>
-            <choice>
-                <when>
-                    <simple>${header.routeId} regex 'r1'</simple>
-                    <to uri="wso2-gw:http://localhost:8080/services/echo"/>
-                </when>
-                <when>
-                    <simple>${header.routeId} regex 'r2'</simple>
-                    <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
-                </when>
-                <otherwise>
-                    <to uri="wso2-gw:http://localhost:9001/SimpleStockQuoteService"/>
-                </otherwise>
-            </choice>
-        </route>
+    <route id="header-routing">
+        <from uri="wso2-gw:/headerrouting"/>
+        <choice>
+            <when>
+                <simple>${header.routeId} regex 'r1'</simple>
+                <to uri="wso2-gw:http://localhost:8080/services/echo"/>
+            </when>
+            <when>
+                <simple>${header.routeId} regex 'r2'</simple>
+                <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+            </when>
+            <otherwise>
+                <to uri="wso2-gw:http://localhost:9001/SimpleStockQuoteService"/>
+            </otherwise>
+        </choice>
+    </route>
 
-</routes>        
-        
-
+</routes>

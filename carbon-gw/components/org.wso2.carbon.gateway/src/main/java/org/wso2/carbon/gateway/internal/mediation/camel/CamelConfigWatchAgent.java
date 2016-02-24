@@ -79,7 +79,7 @@ public class CamelConfigWatchAgent {
                         key = service.take();
                         WatchEvent.Kind<?> kind;
 
-                        log.debug("FileWatcher event detected!");
+                        log.debug("FileWatcher event detected");
                         List<WatchEvent<?>> watchEvents = key.pollEvents();
                         WatchEvent createdEvent = null;
 
@@ -92,24 +92,24 @@ public class CamelConfigWatchAgent {
                                 continue;
                             } else if (ENTRY_CREATE == kind) {
 
-                                log.debug("New File creation Event Fired!");
+                                log.debug("New File creation Event Fired");
                                 createdEvent = watchEvent;
                                 customRouteManger.addRoutesFromCustomConfigs(fileName);
 
                             } else if (ENTRY_DELETE == kind) {
-                                log.debug("File deleted Event Fired!");
+                                log.debug("File deleted Event Fired");
                                 customRouteManger.removeRoutesFromCustomConfigs(fileName);
                             } else if (ENTRY_MODIFY == kind) {
                                 if (createdEvent != null) {
                                     // new file creation or copying is non-atomic in some operating systems.
                                     // Both created and modified events will be triggered so ignore the modified event
                                     if (!fileName.equals(createdEvent.context().toString())) {
-                                        log.info("File modification Event Fired!");
+                                        log.info("File modification Event Fired");
                                         customRouteManger.modifyRoutesFromCustomConfigs(fileName);
                                         createdEvent = null;
                                     }
                                 } else {
-                                    log.info("File modification Event Fired!");
+                                    log.info("File modification Event Fired");
                                     customRouteManger.modifyRoutesFromCustomConfigs(fileName);
                                 }
                             }
@@ -123,7 +123,7 @@ public class CamelConfigWatchAgent {
                 }
             });
             if (future == null) {
-                log.error("Camel config watcher has failed!");
+                log.error("Camel config watcher has failed");
             }
         } catch (Exception e) {
             throw e;

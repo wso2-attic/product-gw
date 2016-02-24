@@ -15,22 +15,22 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the REST API definition use case  -->
 
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-        <route>
-            <from uri="direct:getNews"/>
-            <to uri="wso2-gw:http://localhost:8280/news/getNews"/>
-        </route>
-        <route>
-            <from uri="direct:getNewsById"/>
-            <toD uri="wso2-gw:http://localhost:8280/news/getNews/${header.id}"/>
-        </route>
-        <route>
-            <from uri="direct:updateNews"/>
-            <to uri="wso2-gw:http://localhost:8280/news/updateNews"/>
-        </route>
+    <route>
+        <from uri="direct:getNews"/>
+        <to uri="wso2-gw:http://localhost:8280/news/getNews"/>
+    </route>
+    <route>
+        <from uri="direct:getNewsById"/>
+        <toD uri="wso2-gw:http://localhost:8280/news/getNews/${header.id}"/>
+    </route>
+    <route>
+        <from uri="direct:updateNews"/>
+        <to uri="wso2-gw:http://localhost:8280/news/updateNews"/>
+    </route>
 
 </routes>
