@@ -43,7 +43,7 @@ public class GWServerManager {
     private InputStreamHandler inputStreamHandler;
     private InputStreamHandler errorStreamHandler;
     private int defaultHttpsPort = 9090;
-    private boolean isCoverageEnable = false;
+    private boolean isCoverageEnable = true;
 
     public void startServerUsingCarbonHome(String carbonHome) {
         startServerUsingCarbonHome(carbonHome, carbonHome, "carbon");
@@ -129,7 +129,7 @@ public class GWServerManager {
                 //insert Jacoco agent configuration to carbon server startup script. This configuration
                 //cannot be directly pass as server startup command due to script limitation.
                 if (isCoverageEnable) {
-                    instrumentForCoverage();
+                    JacocoReport.instrumentForCoverage(carbonHome);
                 }
 
                 return carbonHome;
@@ -172,13 +172,13 @@ public class GWServerManager {
 
         //generate coverage report
         if (isCoverageEnable) {
-            try {
-                log.info("Generating Jacoco code coverage...");
-                generateCoverageReport(new File(carbonHome + File.separator + "repository" +
-                        File.separator + "components" + File.separator + "plugins" + File.separator));
-            } catch (IOException e) {
-                log.error("Failed to generate code coverage ", e);
-            }
+//            try {
+//                log.info("Generating Jacoco code coverage...");
+////                generateCoverageReport(new File(carbonHome + File.separator +
+////                        File.separator + "osgi" + File.separator + "plugins" + File.separator));
+//            } catch (IOException e) {
+//                log.error("Failed to generate code coverage ", e);
+//            }
         }
 
         Thread.sleep(1000);
