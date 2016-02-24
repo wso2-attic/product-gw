@@ -15,18 +15,18 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the http traffic failover use case -->
-  
+
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-       <route id="failover">
-            <from uri="wso2-gw:/failover"/>
-                <loadBalance inheritErrorHandler="false">
-				<failover roundRobin="true"/>
-				<to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteProxy"/>        
-				<to uri="wso2-gw:http://localhost:8080/services/echo"/>                                 
-			</loadBalance>
-       </route> 
+    <route id="failover">
+        <from uri="wso2-gw:/failover"/>
+        <loadBalance inheritErrorHandler="false">
+            <failover roundRobin="true"/>
+            <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteProxy"/>
+            <to uri="wso2-gw:http://localhost:8080/services/echo"/>
+        </loadBalance>
+    </route>
 
 </routes>
