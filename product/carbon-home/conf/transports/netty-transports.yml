@@ -28,7 +28,7 @@ listenerConfigurations:
   parameters:
     -
      name: "disruptor.wait.strategy"
-     value: BUSY_SPIN
+     value: PHASED_BACKOFF
     -
      name: "disruptor.buffer.size"
      value: 1024
@@ -38,6 +38,30 @@ listenerConfigurations:
     -
      name: "disruptor.eventhandler.count"
      value: 1
+    -
+     name: "server.bootstrap.nodelay"
+     value: true
+    -
+     name: "server.bootstrap.keepalive"
+     value: true
+    -
+     name: "server.bootstrap.sendbuffersize"
+     value: 1048576
+    -
+     name: "server.bootstrap.recievebuffersize"
+     value: 1048576
+    -
+     name: "server.bootstrap.connect.timeout"
+     value: 15000
+    -
+     name: "server.bootstrap.socket.reuse"
+     value: false
+    -
+     name: "server.bootstrap.socket.timeout"
+     value: 15
+    -
+     name: "server.bootstrap.socket.backlog"
+     value: 100
 # -
 #   id: "netty-gw-https"
 #   host: "0.0.0.0"
@@ -52,7 +76,7 @@ listenerConfigurations:
 #   parameters:
 #     -
 #      name: "disruptor.wait.strategy"
-#      value: BUSY_SPIN
+#      value: PHASED_BACKOFF
 #     -
 #      name: "disruptor.buffer.size"
 #      value: 1024
@@ -69,6 +93,27 @@ senderConfigurations:
     -
      name: "connection.pool.count"
      value: 0
+    -
+     name: "client.bootstrap.nodelay"
+     value: true
+    -
+     name: "client.bootstrap.keepalive"
+     value: true
+    -
+     name: "client.bootstrap.sendbuffersize"
+     value: 1048576
+    -
+     name: "client.bootstrap.recievebuffersize"
+     value: 1048576
+    -
+     name: "client.bootstrap.connect.timeout"
+     value: 15000
+    -
+     name: "client.bootstrap.socket.reuse"
+     value: false
+    -
+     name: "client.bootstrap.socket.timeout"
+     value: 15
 # -
 #  id: "https-sender"
 #  scheme: "https"
