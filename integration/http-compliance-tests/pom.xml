@@ -10,10 +10,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>functional-tests</artifactId>
+    <artifactId>http-compliance-tests</artifactId>
     <packaging>jar</packaging>
     <url>http://maven.apache.org</url>
-    <name>WSO2 Carbon - Gateway Tests</name>
+    <name>WSO2 Carbon - HTTP Compliance Tests</name>
 
     <dependencies>
         <dependency>
@@ -29,16 +29,13 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <version>6.9.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.gateway</groupId>
-            <artifactId>test-commons</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <!--<version>0.7.4.201502262128</version>-->
         </dependency>
     </dependencies>
 
