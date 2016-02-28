@@ -33,14 +33,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Utility class for matching the path
+ * Utility class for matching the path.
  */
 public class ConsumePathMatcher {
 
     private static final Logger log = LoggerFactory.getLogger(ConsumePathMatcher.class);
 
     /**
-     * Does the incoming request match the given consumer path (ignore case)
+     * Does the incoming request match the given consumer path (ignore case).
      *
      * @param requestPath      the incoming request context path
      * @param consumerPath     a consumer path
@@ -145,7 +145,7 @@ public class ConsumePathMatcher {
     }
 
     /**
-     * Matches the given request HTTP method with the configured HTTP method of the consumer
+     * Matches the given request HTTP method with the configured HTTP method of the consumer.
      *
      * @param method   the request HTTP method
      * @param restrict the consumer configured HTTP restrict method
@@ -160,7 +160,7 @@ public class ConsumePathMatcher {
     }
 
     /**
-     * Matches the given request path with the configured consumer path
+     * Matches the given request path with the configured consumer path.
      *
      * @param requestPath  the request path
      * @param consumerPath the consumer path which may use { } tokens
@@ -237,7 +237,7 @@ public class ConsumePathMatcher {
     }
 
     /**
-     * Counts the number of wildcards in the path
+     * Counts the number of wildcards in the path.
      *
      * @param consumerPath the consumer path which may use { } tokens
      * @return number of wildcards, or <tt>0</tt> if no wildcards
