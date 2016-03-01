@@ -4,6 +4,7 @@
 
     <listeners>
         <listener class-name="org.wso2.carbon.gateway.tests.internal.GWTestSuiteListener"/>
+        <listener class-name="org.wso2.carbon.gateway.tests.internal.GWTestListener"/>
     </listeners>
 
     <test name="Basic-Test" preserve-order="true" verbose="2">

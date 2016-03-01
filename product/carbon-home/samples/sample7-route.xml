@@ -15,15 +15,15 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the service chaining use case  -->
-  
+
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-        <route id="service-chaining">
-            <from uri="wso2-gw:/servicechaining"/>
-            <to uri="wso2-gw:http://localhost:9090/gw/news/update"/>
-            <to uri="wso2-gw:http://localhost:8280/news/getNews"/>            
-        </route>
+    <route id="service-chaining">
+        <from uri="wso2-gw:/servicechaining"/>
+        <to uri="wso2-gw:http://localhost:9090/gw/news/update"/>
+        <to uri="wso2-gw:http://localhost:8280/news/getNews"/>
+    </route>
 
-</routes>  
+</routes>

@@ -144,22 +144,23 @@ public class ReportGenerator {
                 }
             }
             throw e;
-        } finally {
-            if (xmlOutputStream != null) {
-                try {
-                    xmlOutputStream.close();
-                } catch (IOException e1) {
-                    log.error("Error while closing xml output stream", e1);
-                }
-            }
-            if (csvOutputStream != null) {
-                try {
-                    csvOutputStream.close();
-                } catch (IOException e1) {
-                    log.error("Error while closing csv output stream", e1);
-                }
-            }
         }
+//        finally {
+//            if (xmlOutputStream != null) {
+//                try {
+//                    xmlOutputStream.close();
+//                } catch (IOException e1) {
+//                    log.error("Error while closing xml output stream", e1);
+//                }
+//            }
+//            if (csvOutputStream != null) {
+//                try {
+//                    csvOutputStream.close();
+//                } catch (IOException e1) {
+//                    log.error("Error while closing csv output stream", e1);
+//                }
+//            }
+//        }
     }
 
     private File getOutputDirectoryFile() {

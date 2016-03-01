@@ -22,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
+import org.wso2.carbon.gateway.test.utils.JacocoReport;
+
+import java.io.File;
 
 public class GWTestSuiteListener implements ISuiteListener {
 
@@ -40,6 +43,11 @@ public class GWTestSuiteListener implements ISuiteListener {
     public void onFinish(ISuite iSuite) {
         try {
             GWClientProvider.getInstance().getGwClient().stopGateway();
+            Thread.sleep(1000);
+            // TODO: Merge is not needed as only file is created. All the results are appended to file.
+            JacocoReport.mergJacocoFiles();
+            JacocoReport.generateCoverageReport(new File(JacocoReport.getCarbonHome(System.getProperty("carbon.zip"))
+                    + File.separator + "osgi" + File.separator + "plugins" + File.separator));
         } catch (Exception e) {
             log.error("Error while stopping the Gateway", e);
         }

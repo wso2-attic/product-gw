@@ -38,14 +38,14 @@ public abstract class GWIntegrationTest {
 
         String responseBody = "Message consumer not found.";
         int count = 1;
-        while (responseBody.equalsIgnoreCase("Message consumer not found.") && count <= 3) {
+        while (responseBody.equalsIgnoreCase("Message consumer not found.") && count <= 7) {
             count++;
             Thread.sleep(1000);
             responseBody = Emulator.getHttpEmulator().client().given(configure().host("127.0.0.1").port(9090))
                     .when(request().withMethod(HttpMethod.GET).withPath(fromUri)).then(response().assertionIgnore())
                     .operation().send().getReceivedResponseContext().getResponseBody();
         }
-        if (count > 3) {
+        if (count > 7) {
             gwRestart();
         }
     }
