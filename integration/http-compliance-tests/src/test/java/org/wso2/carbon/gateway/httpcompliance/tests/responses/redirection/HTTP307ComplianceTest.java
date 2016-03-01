@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -28,7 +28,9 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
+import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
+import org.wso2.gw.emulator.util.FileReaderUtil;
 
 import java.io.File;
 
@@ -36,14 +38,17 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP502ComplianceTest extends GWIntegrationTest {
+public class HTTP307ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String servererror = "502 Bad Gateway";
+    private File responsePayload;
+    private String headerLocation = "http://www.temporary-location.uri";
 
     @BeforeClass
     public void setup() throws Exception {
+        responsePayload = new File(getClass().getClassLoader()
+                .getResource("test-payloads" + File.separator + "307responsepage.html").toURI());
         gwHotDeployArtifacts("artifacts" + File.separator + "http-compliance-test-camel-context.xml",
                 "/new-route");
         emulator = startHttpEmulator();
@@ -53,37 +58,37 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
-                // This particular scenario is problematic on part of GW since it just returns the response it gets
-                // from the emulator directly to the client, without first validating whether it is a valid response
                 .when(request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.valueOf(98674))
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.TEMPORARY_REDIRECT)
+                        .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation))
+                        .withBody(responsePayload))
 
                 .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/user2")
-                        .withBody("Body included"))
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.TEMPORARY_REDIRECT)
+                        .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation)))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user2")
+                        .withBody("name=WSO2&location=Colombo10"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.TEMPORARY_REDIRECT)
+                        .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation))
+                        .withBody(responsePayload))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user2"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
-
-                .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/user1")
-                        .withBody("Body included"))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.TEMPORARY_REDIRECT)
+                        .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation))
+                        .withBody(responsePayload))
 
                 .operation().start();
     }
@@ -95,77 +100,101 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test502GETRequest() throws Exception {
+    public void test307GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r1")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.TEMPORARY_REDIRECT,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertNotNull(response.getReceivedResponseContext().getHeaderParameters().containsKey("Location"));
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Location").get(0),
+                headerLocation, "Expected location URI not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                FileReaderUtil.getFileBody(responsePayload),
+                "Response body does not match the expected response body");
     }
 
     @Test
-    public void test502GETRequestWithPayload() throws Exception {
+    public void test307HEADRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/new-route")
+                        .withMethod(HttpMethod.HEAD)
+                        .withHeader("routeId", "r1")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.TEMPORARY_REDIRECT,
+                "Expected response code not found");
+
+        Assert.assertNotNull(response.getReceivedResponseContext().getHeaderParameters().containsKey("Location"));
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Location").get(0),
+                headerLocation, "Expected location URI not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test307POSTRequestWithPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r2")
-                        .withBody("Body included"))
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.TEMPORARY_REDIRECT,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertNotNull(response.getReceivedResponseContext().getHeaderParameters().containsKey("Location"));
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Location").get(0),
+                headerLocation, "Expected location URI not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                FileReaderUtil.getFileBody(responsePayload),
+                "Response body does not match the expected response body");
     }
 
     @Test
-    public void test502POSTRequestWithPayload() throws Exception {
+    public void test307POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/new-route")
-                        .withBody("Body included")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r2")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.TEMPORARY_REDIRECT,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
-    }
+        Assert.assertNotNull(response.getReceivedResponseContext().getHeaderParameters().containsKey("Location"));
 
-    @Test
-    public void test502POSTRequestWithoutPayload() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Location").get(0),
+                headerLocation, "Expected location URI not found");
 
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
-                "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                FileReaderUtil.getFileBody(responsePayload),
                 "Response body does not match the expected response body");
     }
 }

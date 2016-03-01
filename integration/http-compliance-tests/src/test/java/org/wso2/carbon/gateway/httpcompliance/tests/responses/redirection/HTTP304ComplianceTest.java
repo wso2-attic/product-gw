@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -28,6 +28,7 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
+import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import java.io.File;
@@ -36,11 +37,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP502ComplianceTest extends GWIntegrationTest {
+public class HTTP304ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String servererror = "502 Bad Gateway";
+    private String serverResponse = "304 - Not Modified";
+    private Header condition = new Header("If-Modified-Since", "Mon, 15 Feb 2016 19:43:31 GMT");
 
     @BeforeClass
     public void setup() throws Exception {
@@ -53,37 +55,27 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext startHttpEmulator() {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
-                // This particular scenario is problematic on part of GW since it just returns the response it gets
-                // from the emulator directly to the client, without first validating whether it is a valid response
                 .when(request()
                         .withMethod(HttpMethod.GET)
+                        .withHeader("If-Modified-Since", "Mon, 15 Feb 2016 19:43:31 GMT")
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.valueOf(98674))
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.NOT_MODIFIED))
 
                 .when(request()
                         .withMethod(HttpMethod.GET)
-                        .withPath("/user2")
-                        .withBody("Body included"))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
-
-                .when(request()
-                        .withMethod(HttpMethod.POST)
+                        .withHeader("If-Modified-Since", "Mon, 15 Feb 2016 19:43:31 GMT")
                         .withPath("/user2"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.NOT_MODIFIED)
+                        .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/user1")
-                        .withBody("Body included"))
+                        .withMethod(HttpMethod.HEAD)
+                        .withHeader("If-Modified-Since", "Mon, 15 Feb 2016 19:43:31 GMT")
+                        .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.NOT_MODIFIED))
 
                 .operation().start();
     }
@@ -95,77 +87,59 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test502GETRequest() throws Exception {
+    public void test304GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r1")
+                        .withHeaders(condition))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_MODIFIED,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test502GETRequestWithPayload() throws Exception {
+    public void test304GETRequest2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2")
-                        .withBody("Body included"))
+                        .withHeader("routeId", "r1")
+                        .withHeaders(condition))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_MODIFIED,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test502POSTRequestWithPayload() throws Exception {
+    public void test304HEADRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.POST)
+                        .withMethod(HttpMethod.HEAD)
                         .withPath("/new-route")
-                        .withBody("Body included")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r1")
+                        .withHeaders(condition))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_MODIFIED,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
-    }
-
-    @Test
-    public void test502POSTRequestWithoutPayload() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
-                "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
-                "Response body does not match the expected response body");
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 }

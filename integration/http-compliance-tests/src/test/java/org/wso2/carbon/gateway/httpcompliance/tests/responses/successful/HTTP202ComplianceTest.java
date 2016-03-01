@@ -42,17 +42,16 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withPath("/user1")
-                        .withMethod(HttpMethod.POST)
+                        .withMethod(HttpMethod.PUT)
                         .withBody(clientRequestPayload))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.ACCEPTED)
                         .withBody(RESPONSE_BODY))
 
                 .when(request()
-                        .withPath("/user1")
+                        .withPath("/user2")
                         .withMethod(HttpMethod.POST)
-                        .withBody(clientRequestPayload)
-                        .withBody("Body included"))
+                        .withBody(clientRequestPayload))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.ACCEPTED)
                         .withBody(RESPONSE_BODY))
@@ -67,14 +66,14 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test202POSTRequestWithPayloadWithoutBody() throws Exception {
+    public void test202PUTRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/new-route")
+                        .withMethod(HttpMethod.PUT)
                         .withHeader("routeId", "r1")
+                        .withPath("/new-route")
                         .withBody(clientRequestPayload))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
@@ -92,10 +91,9 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r2")
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1")
-                        .withBody(clientRequestPayload)
-                        .withBody("Body included"))
+                        .withBody(clientRequestPayload))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

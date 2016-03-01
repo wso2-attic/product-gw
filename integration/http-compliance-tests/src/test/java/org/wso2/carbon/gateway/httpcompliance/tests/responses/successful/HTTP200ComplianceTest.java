@@ -40,6 +40,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String serverResponse = "200 - OK";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -57,14 +58,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                         .withPath("/user1"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("User1"))
-
-                .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/user2"))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("User2"))
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
@@ -72,14 +66,14 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                         .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("Trace Expert City"))
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user3").withBody(""))
+                        .withPath("/user2"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.OK)
-                        .withBody("Trace Expert City"))
+                        .withBody(serverResponse))
 
                 .operation().start();
     }
@@ -98,13 +92,14 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User2");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
@@ -114,15 +109,15 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10")
-                        .withHeader("routeId", "r3"))
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City");
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
@@ -132,14 +127,15 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r3"))
+                        .withHeader("routeId", "r2")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.OK,
                 "Expected response code not found");
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City",
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
                 "Response body does not match the expected response body");
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.successful;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -28,6 +28,7 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
+import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import java.io.File;
@@ -36,11 +37,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP203ComplianceTest extends GWIntegrationTest {
+public class HTTP401ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
-    private static final String HOST = "127.0.0.1";
+    private String host = "127.0.0.1";
     private int port = 9090;
-    private String serverResponse = "203 - Non Authorative Information";
+    private String serverResponse = "401 - Unauthorized";
+    private Header authenticate = new Header("WWW-Authenticate", "Authentication key for the requested resource?");
 
     @BeforeClass
     public void setup() throws Exception {
@@ -51,22 +53,14 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host(HOST).port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
-                        .withBody(serverResponse))
-
-                .when(request()
-                        .withMethod(HttpMethod.HEAD)
-                        .withPath("/user1"))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
+                        .withStatusCode(HttpResponseStatus.UNAUTHORIZED)
+                        .withHeaders(authenticate)
                         .withBody(serverResponse))
 
                 .when(request()
@@ -74,16 +68,16 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
                         .withPath("/user2")
                         .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
+                        .withStatusCode(HttpResponseStatus.UNAUTHORIZED)
+                        .withHeaders(authenticate)
                         .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user3"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
+                        .withStatusCode(HttpResponseStatus.UNAUTHORIZED)
+                        .withHeaders(authenticate)
                         .withBody(serverResponse))
 
                 .operation().start();
@@ -96,9 +90,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test203GETRequest() throws Exception {
+    public void test401GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -107,34 +101,16 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.UNAUTHORIZED,
+                "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
-    public void test203HEADRequest() throws Exception {
+    public void test401POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.HEAD)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
-
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
-    }
-
-    @Test
-    public void test203POSTRequestWithPayload() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
@@ -144,26 +120,27 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.UNAUTHORIZED,
+                "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
     }
 
     @Test
-    public void test203POSTRequestWithoutPayload() throws Exception {
+    public void test401POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
                         .withMethod(HttpMethod.POST)
-                        .withHeader("routeId", "r3"))
+                        .withHeader("routeId", "r3")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.UNAUTHORIZED,
+                "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
                 "Response body does not match the expected response body");

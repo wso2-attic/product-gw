@@ -40,7 +40,7 @@ public class HTTP100ComplianceTest {
     public void setup() throws Exception {
         gwClient = new GatewayAdminClientImpl();
         gwClient.startGateway();
-        gwClient.deployArtifact("artifacts/http-compliance-test-camel-context.xml");
+        gwClient.hotDeployArtifact("artifacts/http-compliance-test-camel-context.xml");
         gwClient.restartGateway();
         emulator = startHttpEmulator();
         Thread.sleep(1000);
