@@ -198,7 +198,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
 
         @Override
         public void handleFault(String statusCode, Throwable throwable, CarbonMessage carbonMessage,
-                CarbonCallback carbonCallback) {
+                                CarbonCallback carbonCallback) {
             exchange.setException(throwable);
             DefaultCarbonMessage defaultCarbonMessage = new DefaultCarbonMessage();
             defaultCarbonMessage.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
@@ -206,5 +206,4 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             carbonCallback.done(defaultCarbonMessage);
         }
     }
-
 }
