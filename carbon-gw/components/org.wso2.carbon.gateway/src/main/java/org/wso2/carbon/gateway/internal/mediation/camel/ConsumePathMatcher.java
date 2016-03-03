@@ -81,7 +81,7 @@ public class ConsumePathMatcher {
      */
     public static String matchBestPath(String requestMethod, String requestPath,
                                        Map<String, CamelMediationConsumer> consumerMap,
-                                       Map<String, String> transportHeaders) {
+                                       Map<String, String> transportHeaders , Map<String, String> propertyMap) {
         String answer = null;
 
         List<String> candidates = new ArrayList<>();
@@ -108,7 +108,7 @@ public class ConsumePathMatcher {
             for (Map.Entry entry : consumerMap.entrySet()) {
                 String key = (String) entry.getKey();
                 String decodedPath = URLDecoder.decode(key, "UTF-8");
-                if (wildCardMatch(requestPath, decodedPath, transportHeaders)) {
+                if (wildCardMatch(requestPath, decodedPath, propertyMap)) {
                     return key;
                 }
 
@@ -298,10 +298,8 @@ public class ConsumePathMatcher {
                     String param = consumerPath[i].substring(consumerPath[i].indexOf("{") + 1,
                                                              consumerPath[i].indexOf("}"));
                     if (i == (consumerPath.length - 1)) {
-                        // candidateMap.put(consumerPath[i],requestPath.substring
-                        // (requestPath.indexOf(consumerPath[i])));
-                        String paramValue = requestPath.substring(requestPath.indexOf(requestPaths[i]) +
-                                                                  requestPaths[i].length() + 1);
+
+                        String paramValue = requestPath.substring(requestPath.indexOf(requestPaths[i]));
                         map.put(param, paramValue);
 
                         return true;

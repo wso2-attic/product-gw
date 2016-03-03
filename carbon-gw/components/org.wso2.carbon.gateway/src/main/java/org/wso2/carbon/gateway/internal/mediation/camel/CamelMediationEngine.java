@@ -30,6 +30,7 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
 import org.wso2.carbon.messaging.TransportSender;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,12 +59,19 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             log.debug("Channel: {} received body: {}");
         }
         Map<String, String> transportHeaders = cMsg.getHeaders();
+        Map<String, String> postFix = new HashMap<>();
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
                                                          cMsg.getProperty(Constants.HTTP_METHOD).toString(),
-                                                         transportHeaders);
+                                                         transportHeaders, postFix);
         if (consumer != null) {
 
+
             final Exchange exchange = consumer.getEndpoint().createExchange(transportHeaders, cMsg);
+            // Set uri post fix values
+            for (Map.Entry<String, String> entry : postFix.entrySet()) {
+                exchange.setProperty(entry.getKey(), entry.getValue());
+            }
+
             cMsg.getFaultHandlerStack().push(new CamelMediationEngineFaultHandler(exchange));
             exchange.setPattern(ExchangePattern.InOut);
             //need to close the unit of work finally
@@ -168,9 +176,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
     }
 
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
-                                                  Map<String, String> transportHeaders) {
+                                                  Map<String, String> transportHeaders, Map<String, String> propMap) {
 
-        String matchBestPath = ConsumePathMatcher.matchBestPath(httpMethod, uri, consumers, transportHeaders);
+        String matchBestPath = ConsumePathMatcher.matchBestPath(httpMethod, uri, consumers, transportHeaders, propMap);
         if (matchBestPath != null) {
             return consumers.get(matchBestPath);
         }
