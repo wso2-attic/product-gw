@@ -36,11 +36,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP400ComplianceTest extends GWIntegrationTest {
+public class HTTP417ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String serverResponse = "400 - Bad Request!";
+    private String serverResponse = "417 - Expectation Failed";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -54,32 +54,52 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("GETT"))
+                        .withMethod(HttpMethod.GET)
+                        .withHeader("Expect", "100-continue")
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED)
                         .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("HEADD"))
+                        .withMethod(HttpMethod.GET)
+                        .withHeader("Expect", "Sample Expectation")
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED)
                         .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("POOOST"))
+                        .withMethod(HttpMethod.HEAD)
+                        .withHeader("Expect", "100-continue")
+                        .withPath("/user1"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("Expect", "100-continue")
+                        .withPath("/user3")
+                        .withBody("name=WSO2&location=Colombo10"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED)
+                        .withBody(serverResponse))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("Expect", "Sample Expectation")
                         .withPath("/user2")
                         .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED)
                         .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("POOSST"))
-                        .withPath("/user3"))
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("Expect", "100-continue")
+                        .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.EXPECTATION_FAILED)
                         .withBody(serverResponse))
 
                 .operation().start();
@@ -92,55 +112,77 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test400MalformedGETRequest() throws Exception {
+    public void test417GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("GETT"))
+                        .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r1")
+                        .withHeader("Expect", "100-continue"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
-    public void test400MalformedHEADRequest() throws Exception {
+    public void test417GETRequest2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("HEADD"))
+                        .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r1")
+                        .withHeader("Expect", "Sample Expectation"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
+    }
+
+    @Test
+    public void test417HEADRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Expect", "100-continue"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
                 "Expected response code not found");
 
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test400MalformedPOSTRequestWithPayload() throws Exception {
+    public void test417POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("POOOST"))
+                        .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r2")
+                        .withHeader("Expect", "100-continue")
                         .withPath("/new-route")
                         .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
@@ -148,18 +190,40 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test400MalformedPOSTRequestWithoutPayload() throws Exception {
+    public void test417POSTRequestWithPayload2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("POOSST"))
+                        .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
+                        .withHeader("Expect", "Sample Expectation")
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test417POSTRequestWithoutPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withHeader("Expect", "100-continue")
                         .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.EXPECTATION_FAILED,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,

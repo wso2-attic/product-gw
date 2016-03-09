@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.successful;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -28,6 +28,7 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientConfigBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientRequestBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseBuilderContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
+import org.wso2.gw.emulator.http.params.Header;
 import org.wso2.gw.emulator.http.server.contexts.HttpServerOperationBuilderContext;
 
 import java.io.File;
@@ -36,11 +37,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP203ComplianceTest extends GWIntegrationTest {
+public class HTTP300ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
-    private static final String HOST = "127.0.0.1";
+    private String host = "127.0.0.1";
     private int port = 9090;
-    private String serverResponse = "203 - Non Authorative Information";
+    private String entity = "Multiple choices available";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -51,40 +52,39 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host(HOST).port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
-                        .withBody(serverResponse))
+                        .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
+                        .withHeaders(new Header("Content-Type", "text/plain"))
+                        .withBody(entity))
 
                 .when(request()
                         .withMethod(HttpMethod.HEAD)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
-                        .withBody(serverResponse))
+                        .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
+                        .withHeaders(new Header("Content-Type", "text/plain")))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user2")
                         .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
-                        .withBody(serverResponse))
+                        .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
+                        .withHeaders(new Header("Content-Type", "text/plain"))
+                        .withBody(entity))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user3"))
+                        .withPath("/user2"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
-                        .withHeader("Sample-Header", "3rd party information included")
-                        .withBody(serverResponse))
+                        .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
+                        .withHeaders(new Header("Content-Type", "text/plain"))
+                        .withBody(entity))
 
                 .operation().start();
     }
@@ -96,9 +96,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test203GETRequest() throws Exception {
+    public void test300GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -107,16 +107,16 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
+                "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity);
     }
 
     @Test
-    public void test203HEADRequest() throws Exception {
+    public void test300HEADRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.HEAD)
@@ -125,16 +125,16 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
+                "Expected response code not found");
 
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test203POSTRequestWithPayload() throws Exception {
+    public void test300POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
@@ -144,28 +144,28 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
+                "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity);
     }
 
     @Test
-    public void test203POSTRequestWithoutPayload() throws Exception {
+    public void test300POSTRequestWithoutPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
                         .withMethod(HttpMethod.POST)
-                        .withHeader("routeId", "r3"))
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r2"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(),
-                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
+                "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity,
                 "Response body does not match the expected response body");
     }
 }

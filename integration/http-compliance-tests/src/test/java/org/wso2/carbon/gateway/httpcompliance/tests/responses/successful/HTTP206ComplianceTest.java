@@ -73,10 +73,10 @@ public class HTTP206ComplianceTest extends GWIntegrationTest {
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
                         .withMethod(HttpMethod.GET)
                         .withHeader("routeId", "r1")
-                        .withHeader("Range", "bytes=0-5"))
+                        .withHeader("Range", "bytes=0-5")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
