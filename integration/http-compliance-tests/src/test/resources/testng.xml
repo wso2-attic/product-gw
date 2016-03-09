@@ -18,6 +18,10 @@
 
 <suite name="GWTestSuite-HTTPCompliance" parallel="false">
 
+    <listeners>
+        <listener class-name="org.wso2.carbon.gateway.httpcompliance.tests.internal.GWTestSuiteListener"/>
+    </listeners>
+
     <test name="HTTP2xx-Tests" preserve-order="true" verbose="2">
         <classes>
             <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP200ComplianceTest"/>

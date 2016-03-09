@@ -15,21 +15,18 @@
   ~ * limitations under the License.
   ~ */
   -->
-  
+
 <!-- This sample covers the http load balancing use case -->
-  
+
 <routes xmlns="http://camel.apache.org/schema/spring">
 
-        <route id="load-balanced">
-            <from uri="wso2-gw:/loadbalanced"/>
-            <loadBalance>
+    <route id="load-balanced">
+        <from uri="wso2-gw:/loadbalanced"/>
+        <loadBalance>
             <roundRobin/>
-                <to uri="wso2-gw:http://localhost:8080/services/echo"/>
-                <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
-            </loadBalance>
-        </route>
+            <to uri="wso2-gw:http://localhost:8080/services/echo"/>
+            <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+        </loadBalance>
+    </route>
 
-</routes>        
-            
-    
-
+</routes>

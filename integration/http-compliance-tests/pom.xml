@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>test-automation</artifactId>
-        <groupId>org.wso2.carbon.gateway.test</groupId>
+        <groupId>org.wso2.carbon.gateway</groupId>
+        <artifactId>test-integration</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -17,14 +17,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.gateway.test</groupId>
-            <artifactId>commons</artifactId>
+            <groupId>org.wso2.carbon.gateway</groupId>
+            <artifactId>test-commons</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.esb</groupId>
+            <groupId>org.wso2.carbon.gateway</groupId>
             <artifactId>emulator</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
-            <version>0.7.4.201502262128</version>
+            <!--<version>0.7.4.201502262128</version>-->
         </dependency>
     </dependencies>
 

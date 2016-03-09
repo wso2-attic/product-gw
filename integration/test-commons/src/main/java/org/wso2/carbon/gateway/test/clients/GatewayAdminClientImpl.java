@@ -88,11 +88,11 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         }
         relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
-        File backup=null;
+        File backup = null;
         try {
             File file = new File(fullPath);
             String dstFileName = carbonHome + "/conf/camel/" + FileManipulator.getFileName(file);
-            backup=new File(dstFileName);
+            backup = new File(dstFileName);
             FileManipulator.backupFile(backup);
             FileManipulator.copyFileToDir(file, dstFileName);
             log.info("Successfully Deployed");
@@ -113,11 +113,11 @@ public class GatewayAdminClientImpl implements GatewayAdminClient {
         }
         relativeFilePath = relativeFilePath.replaceAll("[\\\\/]", Matcher.quoteReplacement(File.separator));
         String fullPath = PathUtil.getSystemResourceLocation() + File.separator + relativeFilePath;
-        File backup=null;
+        File backup = null;
         try {
             File file = new File(fullPath);
             String dstFileName = carbonHome + "/conf/transports/" + FileManipulator.getFileName(file);
-            backup=new File(dstFileName);
+            backup = new File(dstFileName);
             FileManipulator.backupFile(backup);
             FileManipulator.copyFileToDir(file, dstFileName);
             log.info("Successfully Deployed");
