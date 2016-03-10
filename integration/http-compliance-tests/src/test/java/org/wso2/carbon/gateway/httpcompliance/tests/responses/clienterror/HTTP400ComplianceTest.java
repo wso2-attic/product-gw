@@ -124,7 +124,7 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
                 "Expected response code not found");
 
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+//        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test

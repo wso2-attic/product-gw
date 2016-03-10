@@ -80,7 +80,16 @@ public class HTTP300ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2"))
+                        .withPath("/user3"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
+                        .withHeaders(new Header("Content-Type", "text/plain"))
+                        .withBody(entity))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.MULTIPLE_CHOICES)
                         .withHeaders(new Header("Content-Type", "text/plain"))
@@ -110,6 +119,9 @@ public class HTTP300ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
                 "Expected response code not found");
 
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Content-Type").get(0),
+                "text/plain");
+
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity);
     }
 
@@ -127,6 +139,9 @@ public class HTTP300ComplianceTest extends GWIntegrationTest {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
                 "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Content-Type").get(0),
+                "text/plain");
 
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
@@ -147,6 +162,9 @@ public class HTTP300ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
                 "Expected response code not found");
 
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Content-Type").get(0),
+                "text/plain");
+
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity);
     }
 
@@ -158,12 +176,38 @@ public class HTTP300ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r3"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
                 "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Content-Type").get(0),
+                "text/plain");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test300POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.MULTIPLE_CHOICES,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Content-Type").get(0),
+                "text/plain");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), entity,
                 "Response body does not match the expected response body");

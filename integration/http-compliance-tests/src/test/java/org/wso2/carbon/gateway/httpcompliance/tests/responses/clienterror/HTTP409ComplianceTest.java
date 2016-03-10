@@ -82,6 +82,14 @@ public class HTTP409ComplianceTest extends GWIntegrationTest {
                         .withBody(serverResponse))
 
                 .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.CONFLICT)
+                        .withBody(serverResponse))
+
+                .when(request()
                         .withMethod(HttpMethod.PUT)
                         .withPath("/user2")
                         .withBody("Resource to be created at the given URI"))
@@ -174,14 +182,34 @@ public class HTTP409ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
+    public void test409POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONFLICT,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
     public void test409PUTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.PUT)
-                        .withHeader("routeId", "r2")
                         .withPath("/new-route")
+                        .withHeader("routeId", "r2")
                         .withBody("Resource to be created at the given URI"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();

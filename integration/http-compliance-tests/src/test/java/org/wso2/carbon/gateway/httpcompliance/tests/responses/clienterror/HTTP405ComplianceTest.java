@@ -85,6 +85,15 @@ public class HTTP405ComplianceTest extends GWIntegrationTest {
                         .withHeader("Allow", "GET, HEAD")
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.METHOD_NOT_ALLOWED)
+                        .withHeader("Allow", "GET, HEAD")
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -167,6 +176,29 @@ public class HTTP405ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.METHOD_NOT_ALLOWED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Allow").get(0),
+                "GET, HEAD");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test405POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json")
                         .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();

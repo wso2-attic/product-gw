@@ -49,9 +49,25 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
                         .withBody(RESPONSE_BODY))
 
                 .when(request()
+                        .withMethod(HttpMethod.PUT)
+                        .withPath("/user2")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.ACCEPTED)
+                        .withBody(RESPONSE_BODY))
+
+                .when(request()
                         .withPath("/user2")
                         .withMethod(HttpMethod.POST)
                         .withBody(clientRequestPayload))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.ACCEPTED)
+                        .withBody(RESPONSE_BODY))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
+                        .withHeader("Content-Type", "application/json"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.ACCEPTED)
                         .withBody(RESPONSE_BODY))
@@ -85,7 +101,26 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test202POSTRequestWithPayloadWithBody() throws Exception {
+    public void test202PUTRequestWithoutPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.PUT)
+                        .withHeader("routeId", "r2")
+                        .withHeader("Content-Type", "application/json")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.ACCEPTED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY);
+    }
+
+    @Test
+    public void test202POSTRequestWithBody() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
@@ -94,6 +129,25 @@ public class HTTP202ComplianceTest extends GWIntegrationTest {
                         .withHeader("routeId", "r2")
                         .withPath("/new-route")
                         .withBody(clientRequestPayload))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.ACCEPTED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY);
+    }
+
+    @Test
+    public void test202POSTRequestWithoutBody() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Type", "application/json")
+                        .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

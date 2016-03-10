@@ -53,6 +53,14 @@ public class HTTP201ComplianceTest extends GWIntegrationTest {
                         .withStatusCode(HttpResponseStatus.CREATED)
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user2")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.CREATED)
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -100,17 +108,23 @@ public class HTTP201ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
-//    @Test
-//    public void test201POSTRequestWithoutPayload() throws Exception {
-//        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-//                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
-//                .when(HttpClientRequestBuilderContext.request().withPath("/new-route").withMethod(HttpMethod.POST)
-//                        .withHeader("routeId", "r3"))
-//                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-//
-//        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CREATED,
-//                "Expected response code not found");
-//        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), RESPONSE_BODY,
-//                "Response body does not match the expected response body");
-//    }
+    @Test
+    public void test201POSTRequestWithoutPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withPath("/new-route")
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r2")
+                        .withHeader("Content-Type", "application/json"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CREATED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
 }

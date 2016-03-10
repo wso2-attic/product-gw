@@ -86,6 +86,15 @@ public class HTTP407ComplianceTest extends GWIntegrationTest {
                         .withBody(serverResponse))
 
                 .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED)
+                        .withHeader("Proxy-Authenticate", "BASIC role=\"admin\"")
+                        .withBody(serverResponse))
+
+                .when(request()
                         .withMethod(HttpMethod.PUT)
                         .withPath("/user2")
                         .withBody("Resource to be created at the given URI"))
@@ -191,6 +200,28 @@ public class HTTP407ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.PUT)
                         .withHeader("routeId", "r2")
                         .withPath("/new-route")
+                        .withBody("Resource to be created at the given URI"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(),
+                HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test407POSTRequestWithPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json")
                         .withBody("Resource to be created at the given URI"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();

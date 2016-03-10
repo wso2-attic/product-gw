@@ -86,6 +86,15 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
                         .withHeader("Sample-Header", "3rd party information included")
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
+                        .withHeader("Sample-Header", "3rd party information included")
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -110,6 +119,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
 
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
@@ -127,6 +139,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
 
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
@@ -147,6 +162,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
 
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
@@ -164,6 +182,32 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test203POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withPath("/new-route")
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(),
+                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
                 "Response body does not match the expected response body");

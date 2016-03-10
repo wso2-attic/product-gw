@@ -60,6 +60,13 @@ public class HTTP501ComplianceTest extends GWIntegrationTest {
                         .withStatusCode(HttpResponseStatus.NOT_IMPLEMENTED)
                         .withBody(servererror))
 
+                .when(request()
+                        .withMethod(HttpMethod.valueOf("Foo"))
+                        .withPath("/user2"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withBody(servererror))
+
                 .operation().start();
     }
 
@@ -69,7 +76,7 @@ public class HTTP501ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test500OPTIONSRequest() throws Exception {
+    public void test501OPTIONSRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
 
@@ -77,6 +84,26 @@ public class HTTP501ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.OPTIONS)
                         .withPath("/new-route")
                         .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
+
+                .operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_IMPLEMENTED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+    }
+
+    @Test
+    public void test501NonStandardRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.valueOf("Foo"))
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r2"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

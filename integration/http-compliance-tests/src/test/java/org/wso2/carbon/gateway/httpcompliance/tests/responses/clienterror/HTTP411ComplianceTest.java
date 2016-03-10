@@ -81,6 +81,14 @@ public class HTTP411ComplianceTest extends GWIntegrationTest {
                         .withStatusCode(HttpResponseStatus.LENGTH_REQUIRED)
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.LENGTH_REQUIRED)
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -155,6 +163,26 @@ public class HTTP411ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
                         .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.LENGTH_REQUIRED,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test411POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

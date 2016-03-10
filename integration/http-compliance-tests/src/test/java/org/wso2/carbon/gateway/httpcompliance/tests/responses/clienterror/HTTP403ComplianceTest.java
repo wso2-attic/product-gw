@@ -164,4 +164,24 @@ public class HTTP403ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
                 "Response body does not match the expected response body");
     }
+
+    @Test
+    public void test403POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Type", "application/json")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.FORBIDDEN,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
 }

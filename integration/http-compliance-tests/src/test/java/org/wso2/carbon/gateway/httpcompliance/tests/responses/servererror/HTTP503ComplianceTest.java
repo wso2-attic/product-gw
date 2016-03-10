@@ -77,7 +77,14 @@ public class HTTP503ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1")
+                        .withPath("/user2"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
+                        .withBody(servererror))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
                         .withBody("Body included"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE)
@@ -138,7 +145,7 @@ public class HTTP503ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
                         .withBody("Body included")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r3"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
@@ -157,6 +164,26 @@ public class HTTP503ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
                         .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SERVICE_UNAVAILABLE,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test503POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r2")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

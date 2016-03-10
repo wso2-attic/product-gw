@@ -81,6 +81,14 @@ public class HTTP414ComplianceTest extends GWIntegrationTest {
                         .withStatusCode(HttpResponseStatus.REQUEST_URI_TOO_LONG)
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.REQUEST_URI_TOO_LONG)
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -155,6 +163,26 @@ public class HTTP414ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
                         .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_URI_TOO_LONG,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test414POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

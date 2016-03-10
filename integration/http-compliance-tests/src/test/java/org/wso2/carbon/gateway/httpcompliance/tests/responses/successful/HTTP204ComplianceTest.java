@@ -88,7 +88,7 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     @Test
     public void test204GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -106,7 +106,7 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     @Test
     public void test204GETRequest2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.GET)
@@ -124,7 +124,7 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     @Test
     public void test204HEADRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.HEAD)
@@ -142,7 +142,7 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     @Test
     public void test204HEADRequest2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.HEAD)

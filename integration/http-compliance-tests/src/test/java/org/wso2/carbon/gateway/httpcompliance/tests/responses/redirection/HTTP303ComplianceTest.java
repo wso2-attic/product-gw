@@ -84,7 +84,16 @@ public class HTTP303ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user2"))
+                        .withPath("/user3"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.SEE_OTHER)
+                        .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation))
+                        .withBody(responsePayload))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.SEE_OTHER)
                         .withHeaders(new Header("Content-Type", "text/html"), new Header("Location", headerLocation))
@@ -181,7 +190,33 @@ public class HTTP303ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withHeader("routeId", "r3"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.SEE_OTHER,
+                "Expected response code not found");
+
+        Assert.assertNotNull(response.getReceivedResponseContext().getHeaderParameters().containsKey("Location"));
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Location").get(0),
+                headerLocation, "Expected location URI not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(),
+                FileReaderUtil.getFileBody(responsePayload),
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test303POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

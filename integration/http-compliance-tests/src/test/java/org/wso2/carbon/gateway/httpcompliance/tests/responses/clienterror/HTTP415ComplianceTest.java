@@ -81,7 +81,7 @@ public class HTTP415ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test413POSTRequestWithPayload() throws Exception {
+    public void test415POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
@@ -102,7 +102,7 @@ public class HTTP415ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test413PUTRequest() throws Exception {
+    public void test415PUTRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
