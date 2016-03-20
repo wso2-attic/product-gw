@@ -111,6 +111,6 @@ By default we are keeping all the route configurations in the `camel-context.xml
 
 ##Write Your Own Custom Engine 
 
-This Product GW has been designed in such a way that any custom engine can be plugged in easily.
+This Product GW has been designed in such a way that any custom engine can be plugged in easily. You may implement your own logic in gateway by this way.
 
 A simple engine can be found here (https://github.com/Venkat2811/MockEngine)
