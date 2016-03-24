@@ -25,6 +25,7 @@ listenerConfigurations:
   bossThreadPoolSize: 4
   workerThreadPoolSize: 8
   execHandlerThreadPoolSize: 60
+  enableDisruptor: "true"
   parameters:
     -
      name: "disruptor.wait.strategy"
