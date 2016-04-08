@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.informational;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -36,11 +36,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP100ComplianceTest extends GWIntegrationTest {
+public class HTTP413ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
-    private String serverResponse = "Response: 100 - Continue";
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String serverResponse = "413 - Request Entity Too Large";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -56,36 +56,44 @@ public class HTTP100ComplianceTest extends GWIntegrationTest {
                 .when(request()
                         .withMethod(HttpMethod.GET)
                         .withPath("/user1")
-                        .withHeader("Expect", "100-continue"))
+                        .withBody("Payload"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.CONTINUE))
-
-                .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/user2")
-                        .withHeader("Expect", "100-continue"))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.CONTINUE)
+                        .withStatusCode(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)
                         .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user3")
-                        .withHeader("Expect", "100-continue"))
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.CONTINUE))
+                        .withStatusCode(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1"))
+                        .withPath("/user1")
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.CONTINUE))
+                        .withStatusCode(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)
+                        .withHeader("Retry-After", "60")
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.PUT)
-                        .withPath("/user2"))
+                        .withPath("/user2")
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.CONTINUE))
+                        .withStatusCode(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)
+                        .withBody(serverResponse))
+
+                .when(request()
+                        .withMethod(HttpMethod.PUT)
+                        .withPath("/user3")
+                        .withBody("name=WSO2&location=Colombo10"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)
+                        .withHeader("Retry-After", "60")
+                        .withBody(serverResponse))
 
                 .operation().start();
     }
@@ -97,7 +105,7 @@ public class HTTP100ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test100GETRequest() throws Exception {
+    public void test413GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
@@ -105,87 +113,99 @@ public class HTTP100ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
                         .withHeader("routeId", "r1")
-                        .withHeader("Expect", "100-continue"))
+                        .withBody("Payload"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONTINUE,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
                 "Expected response code not found");
 
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
-    public void test100GETRequest2() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r2")
-                        .withHeader("Expect", "100-continue"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONTINUE,
-                "Expected response code not found");
-
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
-    }
-
-    @Test
-    public void test100POSTRequestWithoutPayload() throws Exception {
+    public void test413POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
-                        .withHeader("Expect", "100-continue")
-                        .withPath("/new-route"))
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONTINUE,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
                 "Expected response code not found");
 
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
     }
 
     @Test
-    public void test100POSTRequestWithoutPayloadWithoutContinueHeader() throws Exception {
+    public void test413POSTRequestWithPayload2() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r1")
-                        .withPath("/new-route"))
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONTINUE,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
                 "Expected response code not found");
 
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Retry-After").get(0),
+                "60");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
     }
 
     @Test
-    public void test100PUTRequestWithoutContinueHeader() throws Exception {
+    public void test413PUTRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.PUT)
                         .withHeader("routeId", "r2")
-                        .withPath("/new-route"))
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.CONTINUE,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
                 "Expected response code not found");
 
-        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test413PUTRequest2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.PUT)
+                        .withHeader("routeId", "r3")
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Retry-After").get(0),
+                "60");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
     }
 }

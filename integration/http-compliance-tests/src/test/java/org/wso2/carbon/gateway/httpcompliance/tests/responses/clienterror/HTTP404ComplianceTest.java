@@ -36,12 +36,12 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP400ComplianceTest extends GWIntegrationTest {
+public class HTTP404ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String requestBody = "Sample Request Body";
-    private String serverResponse = "400 - Bad Request!";
+    private String serverResponse = "404 - Not Found";
+    private String gw404Message = "Message consumer not found.";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -55,53 +55,39 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("GETT"))
+                        .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.NOT_FOUND)
                         .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("HEADD"))
+                        .withMethod(HttpMethod.HEAD)
                         .withPath("/user1"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
-                        .withBody(serverResponse))
+                        .withStatusCode(HttpResponseStatus.NOT_FOUND))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("POOOST"))
-                        .withPath("/user2")
-                        .withBody(requestBody))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
-                        .withBody(serverResponse))
-
-                .when(request()
-                        .withMethod(HttpMethod.valueOf("POOSST"))
+                        .withMethod(HttpMethod.POST)
                         .withPath("/user3"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.BAD_REQUEST)
+                        .withStatusCode(HttpResponseStatus.NOT_FOUND)
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NOT_FOUND)
+                        .withBody(serverResponse))
+                
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user2")
-                        .withHeader("Content-Length", "" + requestBody.length())
-                        .withHeader("Content-Length", "" + (requestBody.length() + 5))
-                        .withHeader("Content-Length", "" + (requestBody.length() - 3))
-                        .withHeader("Content-Length", "" + (requestBody.length() + 2))
-                        .withBody(requestBody))
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody(serverResponse))
-
-                .when(request()
-                        .withMethod(HttpMethod.POST)
-                        .withPath("/user3")
-                        .withHeader("Content-Length", "19")
-                        .withBody(requestBody))
-                .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
+                        .withStatusCode(HttpResponseStatus.NOT_FOUND)
                         .withBody(serverResponse))
 
                 .operation().start();
@@ -113,123 +99,176 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
         emulator.stop();
     }
 
-//    @Test
-//    public void test400POSTRequestWithPayloadWithInvalidContentLengthHeader() throws Exception {
-//        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-//                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
-//
-//                .when(HttpClientRequestBuilderContext.request()
-//                        .withMethod(HttpMethod.POST)
-//                        .withPath("/new-route")
-//                        .withHeader("routeId", "r2")
-//                        .withHeader("Content-Length", "" + requestBody.length())
-//                        .withHeader("Content-Length", "" + (requestBody.length() + 5))
-//                        .withHeader("Content-Length", "" + (requestBody.length() - 3))
-//                        .withHeader("Content-Length", "" + (requestBody.length() + 2))
-//                        .withBody(requestBody))
-//
-//                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-//
-//        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
-//                "Expected response code not found");
-//
-//        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
-//                "Response body does not match the expected response body");
-//    }
-
     @Test
-    public void test400MalformedGETRequest() throws Exception {
+    public void test404GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("GETT"))
+                        .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
                         .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
-    public void test400MalformedHEADRequest() throws Exception {
+    public void test404GETRequestOnGW() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("HEADD"))
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/wrong-route")
+                        .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+
+        // Added the following assertion only to differentiate it from the 404s returned from the emulator
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), gw404Message);
+    }
+
+    @Test
+    public void test404HEADRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.HEAD)
                         .withPath("/new-route")
                         .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response code not found");
 
-//        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test400MalformedPOSTRequestWithPayload() throws Exception {
+    public void test404HEADRequestOnGW() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("POOOST"))
-                        .withHeader("routeId", "r2")
-                        .withPath("/new-route")
-                        .withBody(requestBody))
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/wrong-route")
+                        .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
-                "Response body does not match the expected response body");
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
-    public void test400MalformedPOSTRequestWithoutPayload() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("POOSST"))
-                        .withHeader("routeId", "r3")
-                        .withPath("/new-route"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
-                "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
-                "Response body does not match the expected response body");
-    }
-
-    @Test
-    public void test400POSTRequestWithPayloadWithInvalidContentLengthHeader2() throws Exception {
+    public void test404POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r2")
                         .withPath("/new-route")
-                        .withHeader("routeId", "r3")
-                        .withHeader("Content-Length", "" + requestBody.length())
-                        .withBody(requestBody))
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
                 "Expected response code not found");
 
         Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test404POSTRequestWithPayloadOnGW() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withPath("/wrong-route")
+                        .withBody("name=WSO2&location=Colombo10"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+
+        // Added the following assertion only to differentiate it from the 404s returned from the emulator
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), gw404Message,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test404POSTRequestWithoutPayload() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test404POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test404POSTRequestWithoutPayloadOnGW() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withPath("/wrong-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_FOUND,
+                "Expected response code not found");
+
+        // Added the following assertion only to differentiate it from the 404s returned from the emulator
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), gw404Message,
                 "Response body does not match the expected response body");
     }
 }

@@ -36,7 +36,7 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP100ComplianceTest extends GWIntegrationTest {
+public class HTTP101ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String serverResponse = "Response: 100 - Continue";
     private String host = "127.0.0.1";

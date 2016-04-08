@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror;
+package org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -36,11 +36,11 @@ import static org.wso2.gw.emulator.http.server.contexts.HttpServerConfigBuilderC
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerRequestBuilderContext.request;
 import static org.wso2.gw.emulator.http.server.contexts.HttpServerResponseBuilderContext.response;
 
-public class HTTP501ComplianceTest extends GWIntegrationTest {
+public class HTTP415ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
-    private String servererror = "Method not implemented";
+    private String serverResponse = "415 - Unsupported Media Type";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -54,62 +54,71 @@ public class HTTP501ComplianceTest extends GWIntegrationTest {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
-                        .withMethod(HttpMethod.OPTIONS)
-                        .withPath("/user1"))
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
+                        .withHeader("Content-Type", "text/custom")
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NOT_IMPLEMENTED)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE)
+                        .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.valueOf("Foo"))
-                        .withPath("/user2"))
+                        .withMethod(HttpMethod.PUT)
+                        .withPath("/user2")
+                        .withHeader("Content-Type", "text/custom")
+                        .withBody("name=WSO2&location=Colombo10"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.OK)
-                        .withBody(servererror))
+                        .withStatusCode(HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE)
+                        .withBody(serverResponse))
 
                 .operation().start();
     }
 
     @AfterClass(alwaysRun = true)
     public void cleanup() throws Exception {
+        gwCleanup();
         emulator.stop();
     }
 
     @Test
-    public void test501OPTIONSRequest() throws Exception {
+    public void test415POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.OPTIONS)
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Type", "text/custom")
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
-
-                .then(HttpClientResponseBuilderContext.response().assertionIgnore())
-
-                .operation().send();
-
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_IMPLEMENTED,
-                "Expected response code not found");
-
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
-    }
-
-    @Test
-    public void test501NonStandardRequest() throws Exception {
-        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
-                .given(HttpClientConfigBuilderContext.configure().host("127.0.0.1").port(9090))
-
-                .when(HttpClientRequestBuilderContext.request()
-                        .withMethod(HttpMethod.valueOf("Foo"))
-                        .withPath("/new-route")
-                        .withHeader("routeId", "r2"))
+                        .withBody("name=WSO2&location=Colombo10"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
-        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NOT_IMPLEMENTED,
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE,
                 "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror);
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test415PUTRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.PUT)
+                        .withHeader("routeId", "r2")
+                        .withHeader("Content-Type", "text/custom")
+                        .withPath("/new-route")
+                        .withBody("name=WSO2&location=Colombo10"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
     }
 }

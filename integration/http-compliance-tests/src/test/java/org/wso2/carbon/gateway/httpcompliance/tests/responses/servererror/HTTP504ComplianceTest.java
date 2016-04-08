@@ -70,7 +70,7 @@ public class HTTP504ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1"))
+                        .withPath("/user2"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
                         .withBody(servererror))
@@ -79,6 +79,13 @@ public class HTTP504ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withPath("/user1")
                         .withBody("Body included"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
+                        .withBody(servererror))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.GATEWAY_TIMEOUT)
                         .withBody(servererror))
@@ -156,7 +163,26 @@ public class HTTP504ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r2"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.GATEWAY_TIMEOUT,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test504POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

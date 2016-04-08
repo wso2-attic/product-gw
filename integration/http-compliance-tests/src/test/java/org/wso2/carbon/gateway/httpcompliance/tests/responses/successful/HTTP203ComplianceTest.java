@@ -40,6 +40,8 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
     private int port = 9090;
+    private String requestBody = "Sample Request Body";
+    private String serverResponse = "203 - Non Authorative Information";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -58,33 +60,41 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
                 .then(response()
                         .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
                         .withHeader("Sample-Header", "3rd party information included")
-                        .withBody("User1"))
+                        .withBody(serverResponse))
 
                 .when(request()
-                        .withMethod(HttpMethod.GET)
-                        .withPath("/user2"))
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/user1"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
                         .withHeader("Sample-Header", "3rd party information included")
-                        .withBody("User2"))
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user3")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withPath("/user2")
+                        .withBody(requestBody))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
                         .withHeader("Sample-Header", "3rd party information included")
-                        .withBody("Trace Expert City"))
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user3"))
-//                        .withBody(""))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
                         .withHeader("Sample-Header", "3rd party information included")
-                        .withBody("Trace Expert City"))
+                        .withBody(serverResponse))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user1")
+                        .withHeader("Content-Type", "application/json"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
+                        .withHeader("Sample-Header", "3rd party information included")
+                        .withBody(serverResponse))
 
                 .operation().start();
     }
@@ -110,7 +120,31 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "User1");
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
+    }
+
+    @Test
+    public void test203HEADRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(9090))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(),
+                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
     @Test
@@ -121,15 +155,18 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10")
-                        .withHeader("routeId", "r3"))
+                        .withHeader("routeId", "r2")
+                        .withBody(requestBody))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City");
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse);
     }
 
     @Test
@@ -147,7 +184,33 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
         Assert.assertEquals(response.getReceivedResponse().getStatus(),
                 HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
 
-        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Trace Expert City",
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test203POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withPath("/new-route")
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withHeader("Content-Type", "application/json"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(),
+                HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION, "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getHeaderParameters().get("Sample-Header").get(0),
+                "3rd party information included");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
                 "Response body does not match the expected response body");
     }
 }

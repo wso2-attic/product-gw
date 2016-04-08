@@ -24,7 +24,7 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
     private int port = 9090;
-    private static final String RESPONSE_BODY = "";
+    private String serverResponse = "204 - No Content";
 
     @BeforeClass
     public void setup() throws Exception {
@@ -38,19 +38,43 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
         return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
 
                 .when(request()
-                        .withMethod(HttpMethod.POST)
+                        .withMethod(HttpMethod.GET)
                         .withPath("/user1"))
                 .then(response()
+                        .withStatusCode(HttpResponseStatus.NO_CONTENT))
+
+                .when(request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/user3"))
+                .then(response()
                         .withStatusCode(HttpResponseStatus.NO_CONTENT)
-                        .withBody(RESPONSE_BODY))
+                        .withBody(serverResponse))
+
+                .when(request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/user1"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NO_CONTENT))
+
+                .when(request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/user3"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NO_CONTENT)
+                        .withBody(serverResponse))
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1")
+                        .withPath("/user1"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.NO_CONTENT))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user2")
                         .withBody("Body included"))
                 .then(response()
-                        .withStatusCode(HttpResponseStatus.NO_CONTENT)
-                        .withBody(RESPONSE_BODY))
+                        .withStatusCode(HttpResponseStatus.NO_CONTENT))
 
                 .operation().start();
     }
@@ -62,19 +86,92 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
-    public void test204POSTRequestWithoutBody() throws Exception {
+    public void test204GETRequest() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.GET)
                         .withPath("/new-route")
-                        .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r1"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
                 "Expected response code not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test204GETRequest2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
+                "Expected response code not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test204HEADRequest() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
+                "Expected response code not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test204HEADRequest2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.HEAD)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
+                "Expected response code not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test204POSTRequestWithoutBody() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withHeader("routeId", "r1")
+                        .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
+                "Expected response code not found");
+
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 
@@ -84,15 +181,16 @@ public class HTTP204ComplianceTest extends GWIntegrationTest {
                 .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
 
                 .when(HttpClientRequestBuilderContext.request()
-                        .withPath("/new-route")
                         .withMethod(HttpMethod.POST)
-                        .withBody("Body included")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r2")
+                        .withPath("/new-route")
+                        .withBody("Body included"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
         Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.NO_CONTENT,
                 "Expected response code not found");
+
         Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
     }
 }

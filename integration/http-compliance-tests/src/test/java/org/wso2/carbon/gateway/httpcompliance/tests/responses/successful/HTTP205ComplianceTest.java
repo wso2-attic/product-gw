@@ -47,8 +47,16 @@ public class HTTP205ComplianceTest extends GWIntegrationTest {
 
                 .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1")
+                        .withPath("/user2")
                         .withBody(REQUEST_BODY))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.RESET_CONTENT)
+                        .withBody(RESPONSE_BODY))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
+                        .withHeader("Content-Type", "application/json"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.RESET_CONTENT)
                         .withBody(RESPONSE_BODY))
@@ -88,8 +96,27 @@ public class HTTP205ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1")
+                        .withHeader("routeId", "r2")
                         .withBody(REQUEST_BODY))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.RESET_CONTENT,
+                "Expected response code not found");
+
+        Assert.assertNull(response.getReceivedResponseContext().getResponseBody());
+    }
+
+    @Test
+    public void test205POSTRequestWithoutBodyWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(HOST).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

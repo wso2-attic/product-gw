@@ -40,6 +40,7 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String requestBody = "Sample Request Body";
     private String servererror = "502 Bad Gateway";
 
     @BeforeClass
@@ -71,8 +72,35 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
                         .withBody(servererror))
 
                 .when(request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/user3"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withHeader("Content-Length", "19, 24")
+                        .withBody("Response Body"))
+
+                .when(request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/user1")
+                        .withHeader("Test-Number", "3"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withHeader("Content-Length", requestBody.length() + "")
+                        .withHeader("Content-Length", (requestBody.length() + 5) + "")
+                        .withHeader("Content-Length", (requestBody.length() - 2) + "")
+                        .withBody("Response Body"))
+
+                .when(request()
                         .withMethod(HttpMethod.POST)
-                        .withPath("/user1"))
+                        .withPath("/user2"))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
+                        .withBody(servererror))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
+                        .withHeader("Content-Type", "application/json"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.BAD_GATEWAY)
                         .withBody(servererror))
@@ -132,6 +160,43 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
     }
 
     @Test
+    public void test502GETRequestWithContentLength() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response Body");
+    }
+
+    @Test
+    public void test502GETRequestWithContentLength2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.GET)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r1")
+                        .withHeader("Test-Number", "3"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), "Response Body");
+    }
+
+    @Test
     public void test502POSTRequestWithPayload() throws Exception {
         HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
                 .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
@@ -158,7 +223,27 @@ public class HTTP502ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/new-route")
-                        .withHeader("routeId", "r1"))
+                        .withHeader("routeId", "r2"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_GATEWAY,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), servererror,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test502POSTRequestWithoutPayloadWithContentType() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Type", "application/json"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
