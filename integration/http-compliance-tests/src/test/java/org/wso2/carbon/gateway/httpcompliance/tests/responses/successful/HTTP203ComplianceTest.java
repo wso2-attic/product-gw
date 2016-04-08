@@ -40,6 +40,7 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private static final String HOST = "127.0.0.1";
     private int port = 9090;
+    private String requestBody = "Sample Request Body";
     private String serverResponse = "203 - Non Authorative Information";
 
     @BeforeClass
@@ -72,7 +73,7 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user2")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withBody(requestBody))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION)
                         .withHeader("Sample-Header", "3rd party information included")
@@ -153,9 +154,9 @@ public class HTTP203ComplianceTest extends GWIntegrationTest {
 
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
-                        .withHeader("routeId", "r2")
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withHeader("routeId", "r2")
+                        .withBody(requestBody))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 

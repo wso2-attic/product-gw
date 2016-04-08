@@ -40,6 +40,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String requestBody = "Sample Request Body";
     private String serverResponse = "200 - OK";
 
     @BeforeClass
@@ -63,7 +64,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user3")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withBody(requestBody))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.OK)
                         .withBody(serverResponse))
@@ -78,7 +79,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                 .when(request()
                         .withMethod(HttpMethod.POST)
                         .withPath("/user1")
-                        .withHeader("Content-Type", "application/json"))
+                        .withHeader("Content-Type", "text/plain"))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.OK)
                         .withBody(serverResponse))
@@ -119,7 +120,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r3")
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withBody(requestBody))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
@@ -155,8 +156,7 @@ public class HTTP200ComplianceTest extends GWIntegrationTest {
                 .when(HttpClientRequestBuilderContext.request()
                         .withMethod(HttpMethod.POST)
                         .withHeader("routeId", "r1")
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("HELLO WORLD")
+                        .withHeader("Content-Type", "text/plain")
                         .withPath("/new-route"))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();

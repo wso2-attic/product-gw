@@ -40,6 +40,7 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
     private HttpServerOperationBuilderContext emulator;
     private String host = "127.0.0.1";
     private int port = 9090;
+    private String requestBody = "Sample Request Body";
     private String serverResponse = "400 - Bad Request!";
 
     @BeforeClass
@@ -70,7 +71,7 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
                 .when(request()
                         .withMethod(HttpMethod.valueOf("POOOST"))
                         .withPath("/user2")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withBody(requestBody))
                 .then(response()
                         .withStatusCode(HttpResponseStatus.BAD_REQUEST)
                         .withBody(serverResponse))
@@ -82,6 +83,27 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
                         .withStatusCode(HttpResponseStatus.BAD_REQUEST)
                         .withBody(serverResponse))
 
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user2")
+                        .withHeader("Content-Length", "" + requestBody.length())
+                        .withHeader("Content-Length", "" + (requestBody.length() + 5))
+                        .withHeader("Content-Length", "" + (requestBody.length() - 3))
+                        .withHeader("Content-Length", "" + (requestBody.length() + 2))
+                        .withBody(requestBody))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withBody(serverResponse))
+
+                .when(request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/user3")
+                        .withHeader("Content-Length", "19")
+                        .withBody(requestBody))
+                .then(response()
+                        .withStatusCode(HttpResponseStatus.OK)
+                        .withBody(serverResponse))
+
                 .operation().start();
     }
 
@@ -90,6 +112,30 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
         gwCleanup();
         emulator.stop();
     }
+
+//    @Test
+//    public void test400POSTRequestWithPayloadWithInvalidContentLengthHeader() throws Exception {
+//        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+//                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+//
+//                .when(HttpClientRequestBuilderContext.request()
+//                        .withMethod(HttpMethod.POST)
+//                        .withPath("/new-route")
+//                        .withHeader("routeId", "r2")
+//                        .withHeader("Content-Length", "" + requestBody.length())
+//                        .withHeader("Content-Length", "" + (requestBody.length() + 5))
+//                        .withHeader("Content-Length", "" + (requestBody.length() - 3))
+//                        .withHeader("Content-Length", "" + (requestBody.length() + 2))
+//                        .withBody(requestBody))
+//
+//                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+//
+//        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+//                "Expected response code not found");
+//
+//        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+//                "Response body does not match the expected response body");
+//    }
 
     @Test
     public void test400MalformedGETRequest() throws Exception {
@@ -136,7 +182,7 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.valueOf("POOOST"))
                         .withHeader("routeId", "r2")
                         .withPath("/new-route")
-                        .withBody("name=WSO2&location=Colombo10"))
+                        .withBody(requestBody))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
@@ -156,6 +202,27 @@ public class HTTP400ComplianceTest extends GWIntegrationTest {
                         .withMethod(HttpMethod.valueOf("POOSST"))
                         .withHeader("routeId", "r3")
                         .withPath("/new-route"))
+
+                .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
+
+        Assert.assertEquals(response.getReceivedResponse().getStatus(), HttpResponseStatus.BAD_REQUEST,
+                "Expected response code not found");
+
+        Assert.assertEquals(response.getReceivedResponseContext().getResponseBody(), serverResponse,
+                "Response body does not match the expected response body");
+    }
+
+    @Test
+    public void test400POSTRequestWithPayloadWithInvalidContentLengthHeader2() throws Exception {
+        HttpClientResponseProcessorContext response = Emulator.getHttpEmulator().client()
+                .given(HttpClientConfigBuilderContext.configure().host(host).port(port))
+
+                .when(HttpClientRequestBuilderContext.request()
+                        .withMethod(HttpMethod.POST)
+                        .withPath("/new-route")
+                        .withHeader("routeId", "r3")
+                        .withHeader("Content-Length", "" + requestBody.length())
+                        .withBody(requestBody))
 
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
 
