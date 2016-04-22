@@ -34,12 +34,14 @@ public class HttpRequestResponseMatchingProcessor extends AbstractServerProcesso
 
     @Override
     public void process(HttpServerProcessorContext processorContext) {
-        Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> requestResponseCorrelation =
-                processorContext.getServerInformationContext().getRequestResponseCorrelation();
+        Map<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> requestResponseCorrelation
+                = processorContext
+                .getServerInformationContext().getRequestResponseCorrelation();
 
         HttpRequestContext httpRequestContext = processorContext.getHttpRequestContext();
-        for (Map.Entry<HttpServerRequestBuilderContext,
-                HttpServerResponseBuilderContext> entry : requestResponseCorrelation.entrySet()) {
+        for (Map.Entry<HttpServerRequestBuilderContext, HttpServerResponseBuilderContext> entry
+                : requestResponseCorrelation
+                .entrySet()) {
             if (entry.getKey().isMatch(httpRequestContext)) {
                 processorContext.setSelectedResponseContext(entry.getValue());
                 break;

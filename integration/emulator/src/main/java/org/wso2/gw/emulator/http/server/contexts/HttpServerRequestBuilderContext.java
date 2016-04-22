@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
  * HttpServerRequestBuilderContext
  */
 public class HttpServerRequestBuilderContext extends AbstractRequestBuilderContext {
+    private static final Logger log = Logger.getLogger(HttpServerRequestBuilderContext.class);
     private static HttpServerRequestBuilderContext serverRequest;
     private HttpMethod method;
     private String path;
@@ -58,8 +59,6 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     private HeaderOperation operation;
     private CookieOperation cookieOperation;
     private QueryParameterOperation queryOperation;
-
-    private static final Logger log = Logger.getLogger(HttpServerRequestBuilderContext.class);
 
     private static HttpServerRequestBuilderContext getInstance() {
         serverRequest = new HttpServerRequestBuilderContext();
@@ -231,6 +230,7 @@ public class HttpServerRequestBuilderContext extends AbstractRequestBuilderConte
     }
 
     private boolean isQueryParameterMatch(HttpRequestContext requestContext) {
+
         if (queryParameters == null) {
             return true;
         }

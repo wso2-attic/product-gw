@@ -38,6 +38,7 @@ import java.util.List;
  * Expected response details
  */
 public class HttpClientResponseBuilderContext extends AbstractResponseBuilderContext {
+    private static final Logger log = Logger.getLogger(HttpClientResponseBuilderContext.class);
     private static HttpClientResponseBuilderContext clientResponseBuilderContext;
     private HttpResponseStatus statusCode;
     private List<Header> headers;
@@ -45,8 +46,6 @@ public class HttpClientResponseBuilderContext extends AbstractResponseBuilderCon
     private String body;
     private boolean isIgnored;
     private HeaderOperation operations;
-
-    private static final Logger log = Logger.getLogger(HttpClientResponseBuilderContext.class);
 
     private static HttpClientResponseBuilderContext getInstance() {
         clientResponseBuilderContext = new HttpClientResponseBuilderContext();

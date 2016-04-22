@@ -109,6 +109,14 @@ public class HttpServerInitializer extends Thread {
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
+            int connectTimeOut = serverInformationContext.getServerConfigBuilderContext().getConnectTimeOut();
+            if (connectTimeOut != 0) {
+                try {
+                    Thread.sleep(connectTimeOut);
+                } catch (InterruptedException e) {
+                    log.error(e);
+                }
+            }
             ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(
                     EmulatorType.HTTP_SERVER, handlers);
             channelPipelineInitializer.setServerInformationContext(serverInformationContext);

@@ -51,6 +51,55 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
     private String certPass;
     private File trustStore;
     private String trustStorePass;
+    private int readTimeOut = 0;
+    private int writeTimeOut = 0;
+    private Boolean readingConnectionDrop = false;
+    private Boolean writingConnectionDrop = false;
+    private int connectionTimeOut = 0;
+    private int connectTimeOut = 0;
+    private boolean connectionFail = false;
+    private boolean wireLog = false;
+
+    private static HttpServerConfigBuilderContext getInstance() {
+        config = new HttpServerConfigBuilderContext();
+        return config;
+    }
+
+    public static HttpServerConfigBuilderContext configure() {
+        return getInstance();
+    }
+
+    public boolean isWireLog() {
+        return wireLog;
+    }
+
+    public boolean isConnectionFail() {
+        return connectionFail;
+    }
+
+    public int getConnectTimeOut() {
+        return connectTimeOut;
+    }
+
+    public int getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    public Boolean getReadingConnectionDrop() {
+        return readingConnectionDrop;
+    }
+
+    public Boolean getWritingConnectionDrop() {
+        return writingConnectionDrop;
+    }
+
+    public int getReadTimeOut() {
+        return readTimeOut;
+    }
+
+    public int getWriteTimeOut() {
+        return writeTimeOut;
+    }
 
     public HttpServerConfigBuilderContext keyStore(File keyStore) {
         this.keyStore = keyStore;
@@ -97,21 +146,12 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
         return this;
     }
 
-    private static HttpServerConfigBuilderContext getInstance() {
-        config = new HttpServerConfigBuilderContext();
-        return config;
-    }
-
     public HttpRequestCustomProcessor getHttpRequestCustomProcessor() {
         return customRequestProcessor;
     }
 
     public HttpResponseCustomProcessor getCustomResponseProcessor() {
         return customResponseProcessor;
-    }
-
-    public static HttpServerConfigBuilderContext configure() {
-        return getInstance();
     }
 
     public HttpServerConfigBuilderContext host(String host) {
@@ -126,6 +166,26 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
 
     public HttpServerConfigBuilderContext context(String context) {
         this.context = context;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withReadTimeOut(int readTimeOut) {
+        this.readTimeOut = readTimeOut;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withWriteTimeOut(int writeTimeOut) {
+        this.writeTimeOut = writeTimeOut;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withEnableReadingConnectionDrop() {
+        this.readingConnectionDrop = true;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withEnableWritingConnectionDrop() {
+        this.writingConnectionDrop = true;
         return this;
     }
 
@@ -172,6 +232,26 @@ public class HttpServerConfigBuilderContext extends AbstractConfigurationBuilder
 
     public HttpServerConfigBuilderContext withProtocol(Protocol protocol) {
         this.protocol = protocol;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withConnectionTimeOut(int connectionTimeOut) {
+        this.connectionTimeOut = connectionTimeOut;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withConnectTimeOut(int connectTimeOut) {
+        this.connectTimeOut = connectTimeOut;
+        return this;
+    }
+
+    public HttpServerConfigBuilderContext withEnableConnectionFail() {
+        this.connectionFail = true;
+        return this;
+    }
+    
+    public HttpServerConfigBuilderContext withEnableWireLog() {
+        wireLog = true;
         return this;
     }
 

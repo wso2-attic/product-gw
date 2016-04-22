@@ -126,6 +126,7 @@ public class EmulatorHeaderValidationTestCase {
                 .when(HttpClientRequestBuilderContext.request().withPath("/users/user5").withMethod(HttpMethod.GET)
                         .withHeaders(new Header("Header-req2", "value-req2"), new Header("Header-req3", "value-req3"),
                                 new Header("Header-req4", "value-req4")))
+
                 .then(HttpClientResponseBuilderContext.response().assertionIgnore()).operation().send();
         Assert.assertEquals(response.getReceivedResponseContext().getResponseStatus(), HttpResponseStatus.OK,
                 "Expected response status code not found");
@@ -183,10 +184,13 @@ public class EmulatorHeaderValidationTestCase {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server()
+                .given(configure().host("127.0.0.1").port(6065).context("/users").withEnableWireLog())
+
                 .when(request().withMethod(HttpMethod.GET).withPath("user1/"))
                 .then(response().withBody("User1").withStatusCode(HttpResponseStatus.OK)
-                        .withHeader("Header1", "value1")).when(request().withMethod(HttpMethod.GET).withPath("user2/"))
+                        .withHeader("Header1", "value1"))
+                .when(request().withMethod(HttpMethod.GET).withPath("user2/"))
                 .then(response().withBody("User2").withStatusCode(HttpResponseStatus.OK)
                         .withHeaders(new Header("Header2", "value2")))
                 .when(request().withMethod(HttpMethod.GET).withPath("user3/"))

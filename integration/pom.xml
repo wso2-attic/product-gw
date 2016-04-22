@@ -42,6 +42,6 @@
         <module>emulator</module>
         <module>http-compliance-tests</module>
         <module>test-commons</module>
-        <module>functional-tests</module>
+        <!--<module>functional-tests</module>-->
     </modules>
 </project>

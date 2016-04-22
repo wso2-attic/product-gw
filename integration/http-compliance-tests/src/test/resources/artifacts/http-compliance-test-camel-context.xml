@@ -21,13 +21,22 @@
         <choice>
             <when>
                 <simple>${header.routeId} regex 'r1'</simple>
+                <setHeader headerName="connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:6065/users/user1"/>
             </when>
             <when>
                 <simple>${header.routeId} regex 'r2'</simple>
+                <setHeader headerName="connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:6065/users/user2"/>
             </when>
             <otherwise>
+                <setHeader headerName="connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:6065/users/user3"/>
             </otherwise>
         </choice>

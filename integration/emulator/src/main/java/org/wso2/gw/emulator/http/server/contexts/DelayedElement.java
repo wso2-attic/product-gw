@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit;
  * Delay element of the fast backend
  */
 public class DelayedElement implements Delayed {
+    protected long timestamp;
     private long delay;
     private ChannelHandlerContext ctx;
     private HttpServerProcessorContext context;
-    protected long timestamp;
 
     public DelayedElement(ChannelHandlerContext ctx, HttpServerProcessorContext context, long receivedTime, int delay) {
         this.delay = delay;

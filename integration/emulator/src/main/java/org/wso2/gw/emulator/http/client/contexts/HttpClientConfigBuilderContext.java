@@ -40,6 +40,15 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
     private File trustStore;
     private String trustStorePass;
 
+    private static HttpClientConfigBuilderContext getInstance() {
+        clientConfigBuilderContext = new HttpClientConfigBuilderContext();
+        return clientConfigBuilderContext;
+    }
+
+    public static HttpClientConfigBuilderContext configure() {
+        return getInstance();
+    }
+
     public HttpClientConfigBuilderContext keyStore(File keyStore) {
         this.keyStore = keyStore;
         return this;
@@ -84,15 +93,6 @@ public class HttpClientConfigBuilderContext extends AbstractConfigurationBuilder
 
     public String getTrustStorePass() {
         return trustStorePass;
-    }
-
-    private static HttpClientConfigBuilderContext getInstance() {
-        clientConfigBuilderContext = new HttpClientConfigBuilderContext();
-        return clientConfigBuilderContext;
-    }
-
-    public static HttpClientConfigBuilderContext configure() {
-        return getInstance();
     }
 
     @Override

@@ -38,6 +38,9 @@ listenerConfigurations:
     -
      name: "disruptor.eventhandler.count"
      value: 1
+    -
+     name: "server.bootstrap.keepalive"
+     value: false
 # -
 #   id: "netty-gw-https"
 #   host: "0.0.0.0"

@@ -31,6 +31,7 @@ import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientResponseProcessorContext;
 import org.wso2.gw.emulator.http.client.processors.HttpResponseAssertProcessor;
 import org.wso2.gw.emulator.http.client.processors.HttpResponseInformationProcessor;
+import org.wso2.gw.emulator.util.WireLogHandler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,6 +55,9 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+
+        WireLogHandler.responseWireLog(msg);
+
         if (msg instanceof HttpResponse) {
             this.processorContext = new HttpClientResponseProcessorContext();
             this.processorContext.setClientInformationContext(clientInformationContext);
@@ -78,11 +82,16 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
                 this.responseAssertProcessor.process(processorContext);
                 this.clientInformationContext.setReceivedResponseProcessContext(processorContext);
             }
+            String responseBody = processorContext.getReceivedResponseContext().getResponseBody();
+            if (responseBody != null) {
+                WireLogHandler.logResponseBody(responseBody);
+            }
+
             ctx.close();
         }
     }
 
-    @Override
+        @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error(cause);
         ctx.close();

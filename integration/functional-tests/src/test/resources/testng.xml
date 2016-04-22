@@ -9,6 +9,7 @@
 
     <test name="Basic-Test" preserve-order="true" verbose="2">
         <classes>
+            <class name="org.wso2.carbon.gateway.tests.ConnectionTest"/>
             <class name="org.wso2.carbon.gateway.tests.ErrorHandling"/>
             <class name="org.wso2.carbon.gateway.tests.HeaderBasedRoutingTest"/>
             <class name="org.wso2.carbon.gateway.tests.PassingHeadersInRoutingTest"/>

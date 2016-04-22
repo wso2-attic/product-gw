@@ -21,21 +21,36 @@
         <choice>
             <when>
                 <simple>${header.routeId} regex 'ep1'</simple>
+                <setHeader headerName="Connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:9773/services/headerservice1"/>
             </when>
             <when>
                 <simple>${header.routeId} regex 'ep2'</simple>
+                <setHeader headerName="Connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:9773/services/headerservice2"/>
             </when>
             <when>
                 <simple>${header.routeId} == 'ep3'</simple>
+                <setHeader headerName="Connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:9773/services/headerservice4"/>
             </when>
             <when>
                 <simple>${header.routeId} regex 'ep4\d' &amp;&amp; ${header.routeId} != 'ep45'</simple>
+                <setHeader headerName="Connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:9773/services/headerservice5"/>
             </when>
             <otherwise>
+                <setHeader headerName="Connection">
+                    <simple>close</simple>
+                </setHeader>
                 <to uri="wso2-gw:http://localhost:9773/services/headerservice3"/>
             </otherwise>
         </choice>

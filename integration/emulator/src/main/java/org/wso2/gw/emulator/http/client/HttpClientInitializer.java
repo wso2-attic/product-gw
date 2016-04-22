@@ -53,13 +53,14 @@ public class HttpClientInitializer {
     public void initialize() throws Exception {
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(
-                EmulatorType.HTTP_CLIENT, null);
+        ChannelPipelineInitializer channelPipelineInitializer = new ChannelPipelineInitializer(EmulatorType.HTTP_CLIENT,
+                null);
         channelPipelineInitializer.setClientInformationContext(clientInformationContext);
         bootstrap.group(group).channel(NioSocketChannel.class).handler(channelPipelineInitializer);
 
-        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry :
-                clientInformationContext.getRequestResponseCorrelation().entrySet()) {
+        for (Map.Entry<HttpClientRequestBuilderContext, HttpClientResponseBuilderContext> entry
+                : clientInformationContext
+                .getRequestResponseCorrelation().entrySet()) {
             clientInformationContext.setExpectedResponse(entry.getValue());
             HttpClientRequestProcessorContext processorContext = new HttpClientRequestProcessorContext();
             processorContext.setRequestBuilderContext(entry.getKey());

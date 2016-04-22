@@ -80,11 +80,11 @@ public class HttpClientInformationContext {
         this.expectedResponse = expectedResponse;
     }
 
-    public void setReceivedResponseProcessContext(HttpClientResponseProcessorContext receivedProcessContext) {
-        this.receivedProcessContext = receivedProcessContext;
-    }
-
     public HttpClientResponseProcessorContext getReceivedResponseProcessContext() {
         return receivedProcessContext;
+    }
+
+    public void setReceivedResponseProcessContext(HttpClientResponseProcessorContext receivedProcessContext) {
+        this.receivedProcessContext = receivedProcessContext;
     }
 }

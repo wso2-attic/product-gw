@@ -18,6 +18,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
     private static final Logger log = Logger.getLogger(HttpChunkedWriteHandler.class);
+    static Callable callable = new Callable() {
+        public Object call() throws Exception {
+            return "Writing";
+        }
+    };
     private final HttpServerInformationContext serverInformationContext;
     private final ScheduledExecutorService scheduledWritingExecutorService;
     private final int corePoolSize = 10;
@@ -29,15 +34,49 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        super.write(ctx, msg, promise);
-        waitingDelay(serverInformationContext.getServerConfigBuilderContext().getWritingDelay());
+
+        Boolean writingConnectionDrop = serverInformationContext.getServerConfigBuilderContext()
+                .getWritingConnectionDrop();
+        if (writingConnectionDrop != null && writingConnectionDrop == true) {
+            ctx.channel().close();
+            log.info("101505--Connection dropped/closed while writing data to channel");
+        }
+
+        int writeTimeOut = serverInformationContext.getServerConfigBuilderContext().getWriteTimeOut();
+
+        if (writeTimeOut == 0) {
+            writeTimeOut = Integer.MAX_VALUE;
+        }
+
+        Thread thread = new Thread(() -> {
+            try {
+                if (ctx.channel().isWritable()) {
+                    HttpChunkedWriteHandler.super.write(ctx, msg, promise);
+                } else {
+                    log.info("101000--Receiver input/output error sending");
+                }
+
+            } catch (Exception e) {
+                log.error(e);
+            }
+            waitingDelay(serverInformationContext.getServerConfigBuilderContext().getWritingDelay());
+        });
+        thread.start();
+        long endTimeMillis = System.currentTimeMillis() + writeTimeOut;
+        while (thread.isAlive()) {
+            if (System.currentTimeMillis() > endTimeMillis) {
+                ctx.channel().close();
+                log.info("101504--Connection timeout occurred while writing data to the Channel");
+                break;
+            }
+        }
     }
 
     private void waitingDelay(int delay) {
         if (delay != 0) {
 
-            ScheduledFuture scheduledWaitingFuture = scheduledWritingExecutorService.schedule(callable, delay,
-                    TimeUnit.MILLISECONDS);
+            ScheduledFuture scheduledWaitingFuture = scheduledWritingExecutorService
+                    .schedule(callable, delay, TimeUnit.MILLISECONDS);
             try {
                 scheduledWaitingFuture.get();
             } catch (InterruptedException e) {
@@ -48,10 +87,4 @@ public class HttpChunkedWriteHandler extends ChunkedWriteHandler {
             //scheduledWritingExecutorService.shutdown();
         }
     }
-
-    static Callable callable = new Callable() {
-        public Object call() throws Exception {
-            return "Writing";
-        }
-    };
 }

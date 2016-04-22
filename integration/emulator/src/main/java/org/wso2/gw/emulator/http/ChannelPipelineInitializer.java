@@ -27,6 +27,7 @@ import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.apache.log4j.Logger;
 import org.wso2.gw.emulator.dsl.EmulatorType;
 import org.wso2.gw.emulator.http.client.contexts.HttpClientInformationContext;
 import org.wso2.gw.emulator.http.client.handler.HttpClientHandler;
@@ -43,6 +44,7 @@ public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel
     private HttpServerInformationContext serverInformationContext;
     private HttpClientInformationContext clientInformationContext;
     private MockServerThread[] handlers;
+    private static final Logger log = Logger.getLogger(ChannelPipelineInitializer.class);
 
     public ChannelPipelineInitializer(EmulatorType emulatorType, MockServerThread[] handlers) {
         this.emulatorType = emulatorType;
@@ -55,6 +57,7 @@ public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel
     @Override
     public void initChannel(SocketChannel ch) {
         if (EmulatorType.HTTP_SERVER.equals(emulatorType)) {
+
             initializeHttpServerChannel(ch);
         } else if (EmulatorType.HTTP_CLIENT.equals(emulatorType)) {
             initializeHttpClientChannel(ch);
@@ -62,14 +65,15 @@ public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel
     }
 
     private void initializeHttpServerChannel(SocketChannel ch) {
-        ChannelPipeline pipeline = ch.pipeline();
 
+        ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpChunkedWriteHandler(serverInformationContext));
         HttpServerHandler httpServerHandler = new HttpServerHandler(serverInformationContext);
         httpServerHandler.setHandlers(handlers);
         pipeline.addLast("httpResponseHandler", httpServerHandler);
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+
     }
 
     private void initializeHttpClientChannel(SocketChannel ch) {
@@ -77,6 +81,7 @@ public class ChannelPipelineInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new HttpClientCodec());
         pipeline.addLast(new HttpClientHandler(clientInformationContext));
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+
     }
 
     public void setServerInformationContext(HttpServerInformationContext serverInformationContext) {

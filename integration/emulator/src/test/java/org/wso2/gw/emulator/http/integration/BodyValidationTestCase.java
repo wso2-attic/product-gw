@@ -193,7 +193,8 @@ public class BodyValidationTestCase {
     }
 
     private HttpServerOperationBuilderContext startHttpEmulator() {
-        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users"))
+        return Emulator.getHttpEmulator().server().given(configure().host("127.0.0.1").port(6065).context("/users").
+        withEnableWireLog())
 
                 .when(request().withMethod(HttpMethod.POST).withPath("/user20"))
                 .then(response().withStatusCode(HttpResponseStatus.OK).withHeaders(new Header("Header2", "value2")))
