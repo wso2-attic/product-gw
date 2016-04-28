@@ -17,6 +17,42 @@ transportProperties:
  -
   name: "latency.metrics.enabled"
   value: true
+ -
+  name: "request.size.validation"
+  value: false
+ -
+  name: "request.size.validation.maximum.value" #in bytes
+  value: 2048
+ -
+  name: "request.size.validation.reject.status.code"
+  value: 401
+ -
+  name: "request.size.validation.reject.message"
+  value: "Message is too big, hence cannot proceed"
+ -
+  name: "request.size.validation.reject.message.content.type"
+  value: "plain/text"
+ -
+  name: "header.size.validation"
+  value: false
+ -
+  name: "header.validation.maximum.request.line" #in bytes
+  value: 2048
+ -
+  name: "header.validation.maximum.size" #in bytes
+  value: 2048
+ -
+  name: "header.validation.maximum.chunk.size" #in bytes, refere http://netty.io/4.0/api/io/netty/handler/codec/http/HttpRequestDecoder.html
+  value: 2048
+ -
+  name: "header.validation.reject.status.code"
+  value: 401
+ -
+  name: "header.validation.reject.message"
+  value: "Message's header size is too big, hence cannot proceed"
+ -
+  name: "header.validation.reject.message.content.type"
+  value: "plain/text"
 listenerConfigurations:
  -
   id: "netty-gw"
@@ -63,6 +99,9 @@ listenerConfigurations:
     -
      name: "server.bootstrap.socket.backlog"
      value: 100
+    -
+     name: "executor.workerpool.size" #This is used only when the disruptor is disabled
+     value: 20
 # -
 #   id: "netty-gw-https"
 #   host: "0.0.0.0"
