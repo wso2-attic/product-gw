@@ -80,7 +80,8 @@ public class ConsumePathMatcher {
      * @return the best matched consumer, or <tt>null</tt> if none could be determined.
      */
     public static String matchBestPath(String requestMethod, String requestPath,
-            Map<String, CamelMediationConsumer> consumerMap, Map<String, String> transportHeaders) {
+                                       Map<String, CamelMediationConsumer> consumerMap,
+                                       Map<String, String> transportHeaders , Map<String, String> propertyMap) {
         String answer = null;
 
         List<String> candidates = new ArrayList<>();
@@ -101,6 +102,22 @@ public class ConsumePathMatcher {
                 break;
             }
         }
+
+        try {
+
+            for (Map.Entry entry : consumerMap.entrySet()) {
+                String key = (String) entry.getKey();
+                String decodedPath = URLDecoder.decode(key, "UTF-8");
+                if (wildCardMatch(requestPath, decodedPath, propertyMap)) {
+                    return key;
+                }
+
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.error("Exception occured while processing request headers", e);
+            return null;
+        }
+
 
         // then match by wildcard path
         if (answer == null) {
@@ -167,7 +184,7 @@ public class ConsumePathMatcher {
      * @return <tt>true</tt> if matched, <tt>false</tt> otherwise
      */
     private static boolean matchRestPath(String requestPath, String consumerPath, boolean wildcard, String httpMethod,
-            Map<String, String> transportHeaders) {
+                                         Map<String, String> transportHeaders) {
 
         if (consumerPath.contains("?httpMethodRestrict=")) {
             Map<String, String> variables = new HashMap<>();
@@ -222,7 +239,7 @@ public class ConsumePathMatcher {
             String p1 = requestPaths[i];
             String p2 = consumerPaths[i];
 
-            if (wildcard && p2.startsWith("{") && p2.endsWith("}")) {
+            if (wildcard && (p2.startsWith("{") || p2.startsWith("%7B")) && (p2.endsWith("}") || p2.endsWith("%7D"))) {
                 // always matches
                 continue;
             }
@@ -261,5 +278,42 @@ public class ConsumePathMatcher {
         }
 
         return wildcards;
+    }
+
+
+    private static boolean wildCardMatch(String requestPath, String decodedPath, Map<String, String> map)
+               throws UnsupportedEncodingException {
+        String[] requestPaths = requestPath.trim().split("/");
+        //   Map<String, String> candidateMap = new HashMap<>();
+
+
+        if (decodedPath.contains("{") && decodedPath.contains("}")) {
+            String[] consumerPath = decodedPath.split("/");
+            for (int i = 1; i < consumerPath.length; i++) {
+                if (!consumerPath[i].startsWith("{")) {
+                    if (!consumerPath[i].equals(requestPaths[i])) {
+                        return false;
+                    }
+                } else {
+                    String param = consumerPath[i].substring(consumerPath[i].indexOf("{") + 1,
+                                                             consumerPath[i].indexOf("}"));
+                    if (i == (consumerPath.length - 1)) {
+
+                        String paramValue = requestPath.substring(requestPath.indexOf(requestPaths[i]));
+                        map.put(param, paramValue);
+
+                        return true;
+                    } else {
+
+                        map.put(param, requestPaths[i]);
+                        String val = requestPath.substring(requestPath.indexOf(requestPaths[i]));
+                        return wildCardMatch(val, decodedPath.substring(decodedPath.indexOf(consumerPath[i])), map);
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 }

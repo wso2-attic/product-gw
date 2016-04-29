@@ -113,8 +113,10 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                     CarbonMessage request = exchange.getIn().getBody(CarbonMessage.class);
                     responseCmsg.setProperty(Constants.SRC_HNDLR,
                                              request.getProperty(Constants.SRC_HNDLR));
-                    responseCmsg.setProperty(Constants.DISRUPTOR,
-                                             request.getProperty(Constants.DISRUPTOR));
+                    Object disruptor = request.getProperty(Constants.DISRUPTOR);
+                    if (disruptor != null) {
+                        responseCmsg.setProperty(Constants.DISRUPTOR, disruptor);
+                    }
                     responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
                                              request.getProperty(Constants.CHNL_HNDLR_CTX));
                     responseCmsg.setFaultHandlerStack(request.getFaultHandlerStack());
