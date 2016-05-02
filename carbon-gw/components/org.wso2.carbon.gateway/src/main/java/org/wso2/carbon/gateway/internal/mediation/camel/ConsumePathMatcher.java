@@ -85,6 +85,12 @@ public class ConsumePathMatcher {
 
         List<String> candidates = new ArrayList<>();
 
+        //removing the query parameters before matching the consumer.
+        // query parameters are handled at CarbonCamelMessageUtil#setCamelHeadersToClientRequest
+        if (requestPath.contains("?")) {
+            requestPath = requestPath.substring(0, requestPath.indexOf("?"));
+        }
+
         //first match by http method
         for (Map.Entry<String, CamelMediationConsumer> consumer : consumerMap.entrySet()) {
             if (matchRestMethod(requestMethod, consumer.getValue().getEndpoint().getHttpMethodRestrict())) {
