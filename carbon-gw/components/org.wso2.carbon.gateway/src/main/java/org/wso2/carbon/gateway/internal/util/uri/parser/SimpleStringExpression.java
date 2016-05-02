@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 public class SimpleStringExpression extends Expression {
 
     private static final char[] reserved = new char[] {
-            ':', '/', '?', '#', '[', ']', '@', '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '='
+            ':', '?', '#', '[', ']', '@', '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '='
     };
 
     public SimpleStringExpression(String token) throws URITemplateException {

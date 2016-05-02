@@ -61,8 +61,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         Map<String, String> transportHeaders = cMsg.getHeaders();
         Map<String, String> postFix = new HashMap<>();
         CamelMediationConsumer consumer = decideConsumer((String) cMsg.getProperty(Constants.TO),
-                                                         cMsg.getProperty(Constants.HTTP_METHOD).toString(),
-                                                         transportHeaders, postFix);
+                                                         cMsg.getProperty(Constants.HTTP_METHOD).toString(), postFix);
         if (consumer != null) {
 
 
@@ -175,10 +174,9 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
         });
     }
 
-    private CamelMediationConsumer decideConsumer(String uri, String httpMethod,
-                                                  Map<String, String> transportHeaders, Map<String, String> propMap) {
+    private CamelMediationConsumer decideConsumer(String uri, String httpMethod, Map<String, String> propMap) {
 
-        String matchBestPath = ConsumePathMatcher.matchBestPath(httpMethod, uri, consumers, transportHeaders, propMap);
+        String matchBestPath = ConsumePathMatcher.matchBestPath(httpMethod, uri, consumers, propMap);
         if (matchBestPath != null) {
             return consumers.get(matchBestPath);
         }

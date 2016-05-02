@@ -76,12 +76,11 @@ public class ConsumePathMatcher {
      * @param requestMethod    the incoming request HTTP method
      * @param requestPath      the incoming request context path
      * @param consumerMap      the map of consumers
-     * @param transportHeaders transport header map
+     * @param  propertyMap     url post fix map
      * @return the best matched consumer, or <tt>null</tt> if none could be determined.
      */
     public static String matchBestPath(String requestMethod, String requestPath,
-                                       Map<String, CamelMediationConsumer> consumerMap,
-                                       Map<String, String> transportHeaders , Map<String, String> propertyMap) {
+            Map<String, CamelMediationConsumer> consumerMap, Map<String, String> propertyMap) {
         String answer = null;
 
         List<String> candidates = new ArrayList<>();
@@ -97,7 +96,7 @@ public class ConsumePathMatcher {
         Iterator<String> it = candidates.iterator();
         while (it.hasNext()) {
             String consumer = it.next();
-            if (matchRestPath(requestPath, consumer, false, requestMethod, transportHeaders)) {
+            if (matchRestPath(requestPath, consumer, false, requestMethod, propertyMap)) {
                 answer = consumer;
                 break;
             }
@@ -125,7 +124,7 @@ public class ConsumePathMatcher {
             while (it.hasNext()) {
                 String consumer = it.next();
                 // filter non matching paths
-                if (!matchRestPath(requestPath, consumer, true, requestMethod, transportHeaders)) {
+                if (!matchRestPath(requestPath, consumer, true, requestMethod, propertyMap)) {
                     it.remove();
                 }
             }
@@ -184,7 +183,7 @@ public class ConsumePathMatcher {
      * @return <tt>true</tt> if matched, <tt>false</tt> otherwise
      */
     private static boolean matchRestPath(String requestPath, String consumerPath, boolean wildcard, String httpMethod,
-                                         Map<String, String> transportHeaders) {
+                                         Map<String, String> propertyMap) {
 
         if (consumerPath.contains("?httpMethodRestrict=")) {
             Map<String, String> variables = new HashMap<>();
@@ -199,7 +198,7 @@ public class ConsumePathMatcher {
                     boolean isMatch = uriTemplate.matches(requestPath + "?httpMethodRestrict=" + httpMethod, variables);
                     if (variables.size() != 0) {
                         for (Map.Entry<String, String> entry : variables.entrySet()) {
-                            transportHeaders.put(entry.getKey(), entry.getValue());
+                            propertyMap.put(entry.getKey(), entry.getValue());
                         }
                     }
                     return isMatch;
