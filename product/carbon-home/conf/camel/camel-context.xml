@@ -26,9 +26,9 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
     <bean id="wso2-gw"
           class="org.wso2.carbon.gateway.internal.mediation.camel.CamelMediationComponent"/>
     <bean id="failureResponse" class="org.wso2.carbon.gateway.internal.mediation.camel.CustomErrorHandlingProcessor">
-        <property name="errorMessage" value="Back-end server did not response withing the configured timeout"/>
+        <property name="errorMessage" value="{&quot;error&quot;:&quot;Back-end server did not response withing the configured timeout&quot;}"/>
         <property name="statusCode" value="500"/>
-        <property name="contentType" value="application/xml"/>
+        <property name="contentType" value="application/json"/>
     </bean>
     <camelContext id="wso2-cc" xmlns="http://camel.apache.org/schema/spring">
         <jmxAgent id="agent" disabled="true"/>

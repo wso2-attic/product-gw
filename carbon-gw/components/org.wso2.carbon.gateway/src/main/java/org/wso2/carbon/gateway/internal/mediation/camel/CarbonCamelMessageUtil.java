@@ -234,14 +234,9 @@ public class CarbonCamelMessageUtil {
     public static CarbonMessage createHttpCarbonResponse(String errorMessage, int code, String contentType) {
 
         DefaultCarbonMessage response = new DefaultCarbonMessage();
-        String payload = errorMessage;
 
-        if ((contentType != null && (contentType.equals(Constants.TEXT_XML) || contentType.equals
-                   (Constants.APPLICATION_XML)))) {
-            payload = "<errorMessage>" + errorMessage + "</errorMessage>";
-        }
-        response.setStringMessageBody(payload);
-        byte[] errorMessageBytes = payload.getBytes(Charset.defaultCharset());
+        response.setStringMessageBody(errorMessage);
+        byte[] errorMessageBytes = errorMessage.getBytes(Charset.defaultCharset());
 
         Map<String, String> transportHeaders = new HashMap<>();
         transportHeaders.put(Constants.HTTP_CONNECTION, Constants.KEEP_ALIVE);
