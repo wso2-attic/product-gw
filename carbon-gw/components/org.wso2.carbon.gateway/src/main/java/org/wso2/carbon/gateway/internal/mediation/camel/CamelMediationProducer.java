@@ -90,6 +90,9 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
     }
 
     private class NettyHttpBackEndCallback implements CarbonCallback {
+        private static final String ENABLE_DISRUPTOR = "enable.disruptor";
+        private static final String EXECUTOR_WORKERPOOL = "executor.workerpool";
+        private static final String EXECUTOR_WORKERPOOL_SIZE = "executor.workerpool.size";
         private Exchange exchange;
         private final AsyncCallback callback;
 
@@ -116,6 +119,16 @@ public class CamelMediationProducer extends DefaultAsyncProducer {
                     Object disruptor = request.getProperty(Constants.DISRUPTOR);
                     if (disruptor != null) {
                         responseCmsg.setProperty(Constants.DISRUPTOR, disruptor);
+                    }
+                    responseCmsg.setProperty(ENABLE_DISRUPTOR, request.getProperty(ENABLE_DISRUPTOR));
+
+                    if (request.getProperty(EXECUTOR_WORKERPOOL) != null) {
+                        responseCmsg.setProperty(EXECUTOR_WORKERPOOL, request.getProperty(EXECUTOR_WORKERPOOL));
+                    }
+
+                    if (request.getProperty(EXECUTOR_WORKERPOOL_SIZE) != null) {
+                        responseCmsg
+                                .setProperty(EXECUTOR_WORKERPOOL_SIZE, request.getProperty(EXECUTOR_WORKERPOOL_SIZE));
                     }
                     responseCmsg.setProperty(Constants.CHNL_HNDLR_CTX,
                                              request.getProperty(Constants.CHNL_HNDLR_CTX));
