@@ -24,8 +24,8 @@
         <from uri="wso2-gw:/loadbalanced"/>
         <loadBalance>
             <roundRobin/>
-            <to uri="wso2-gw:http://localhost:8080/services/echo"/>
             <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
+            <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
         </loadBalance>
     </route>
 

@@ -32,7 +32,12 @@
                 <to uri="wso2-gw:http://localhost:9000/services/SimpleStockQuoteService"/>
             </when>
             <otherwise>
-                <to uri="wso2-gw:http://localhost:9001/SimpleStockQuoteService"/>
+                <setHeader headerName="CamelHttpResponseCode">
+                    <constant>404</constant>
+                </setHeader>
+                <setBody>
+                    <constant>Invalid routeId header</constant>
+                </setBody>
             </otherwise>
         </choice>
     </route>

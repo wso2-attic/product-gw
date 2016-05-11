@@ -30,6 +30,7 @@ import org.wso2.carbon.messaging.DefaultCarbonMessage;
 import org.wso2.carbon.messaging.FaultHandler;
 import org.wso2.carbon.messaging.TransportSender;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,7 +116,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
             CarbonMessage mediatedResponse = null;
 
             if (null == exchange.getException()) {
-                Map<String, Object> mediatedHeaders = null;
+                Map<String, Object> mediatedHeaders = Collections.EMPTY_MAP;
                 if (null != exchange.getOut().getBody()) {
                     mediatedResponse = exchange.getOut().getBody(CarbonMessage.class);
                     mediatedHeaders = exchange.getOut().getHeaders();
@@ -126,14 +127,7 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                     log.error("Error while reading the response carbon message...");
                 }
                 if (!mediatedHeaders.isEmpty() && mediatedResponse != null) {
-                    try {
-                        int statusCode = Integer.parseInt((String) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
-                        mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
-                        mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
-                    } catch (ClassCastException classCastException) {
-                        log.info("Response Http Status code is invalid. response code : " +
-                                 mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
-                    }
+                    setResponseCode(mediatedResponse, mediatedHeaders);
                     mediatedHeaders.remove(Exchange.HTTP_RESPONSE_CODE);
                     mediatedResponse.removeHeader(Exchange.HTTP_RESPONSE_CODE);
 
@@ -141,7 +135,13 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                         mediatedResponse.setHeader(entry.getKey(), (String) entry.getValue());
                     }
                 }
-
+                // this is to handle message body set from the camel context via <setBody>
+                if (mediatedResponse == null) {
+                    mediatedResponse = new DefaultCarbonMessage();
+                    ((DefaultCarbonMessage) mediatedResponse)
+                            .setStringMessageBody(exchange.getIn().getBody(String.class));
+                    setResponseCode(mediatedResponse, mediatedHeaders);
+                }
             } else {
                 int code = 500;
                 String contentType = Constants.TEXT_PLAIN;
@@ -172,6 +172,16 @@ public class CamelMediationEngine implements CarbonMessageProcessor {
                 consumer.doneUoW(exchange);
             }
         });
+    }
+
+    private void setResponseCode(CarbonMessage mediatedResponse, Map<String, Object> mediatedHeaders) {
+        try {
+            int statusCode = Integer.parseInt((String) mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+            mediatedResponse.setProperty(Constants.HTTP_STATUS_CODE, statusCode);
+        } catch (ClassCastException classCastException) {
+            log.info("Response Http Status code is invalid. response code : " +
+                     mediatedHeaders.get(Exchange.HTTP_RESPONSE_CODE));
+        }
     }
 
     private CamelMediationConsumer decideConsumer(String uri, String httpMethod, Map<String, String> propMap) {
