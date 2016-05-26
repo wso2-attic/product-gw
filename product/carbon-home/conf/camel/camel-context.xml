@@ -76,7 +76,12 @@ classpath:org/wso2/carbon/gateway/xml/camel-spring.xsd">
                     <to uri="wso2-gw:http://localhost:9001/services/SimpleStockQuoteService"/>
                 </when>
                 <otherwise>
-                    <to uri="wso2-gw:http://localhost:9004/services/SimpleStockQuoteService"/>
+                    <setHeader headerName="CamelHttpResponseCode">
+                        <constant>404</constant>
+                    </setHeader>
+                    <setBody>
+                        <constant>routeId header not found / invalid</constant>
+                    </setBody>
                 </otherwise>
             </choice>
         </route>
