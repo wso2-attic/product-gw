@@ -34,6 +34,8 @@
                 <exclude>**/*.ipr</exclude>
                 <exclude>**/*.iwr</exclude>
                 <exclude>**/*.eclipse</exclude>
+                <!--excluding netty-transport copied from transport feature since product has its own config-->
+                <exclude>**/transports/netty-transports.yml</exclude>
             </excludes>
         </fileSet>
 
