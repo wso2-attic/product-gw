@@ -107,3 +107,10 @@ By default we are keeping all the route configurations in the `camel-context.xml
 * You may have custom route configuration files already in the `$CARBON_HOME/deployment/camel` directory, before the server starts. These custom routes will be loaded to the context when the server starts
 * If you add a custom route and it is an existing one, the latter one will override the former one
 * Do not add two routes with same id in the same configuration file
+ 
+
+##Write Your Own Custom Engine 
+
+This Product GW has been designed in such a way that any custom engine can be plugged in easily. You may implement your own logic in gateway by this way.
+
+A simple engine can be found here (https://github.com/Venkat2811/MockEngine)
