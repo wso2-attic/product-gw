@@ -376,4 +376,30 @@
         </import.package>
     </properties>
 
+    <properties>
+        <bundle.activator>org.wso2.carbon.gateway.internal.GatewayActivator</bundle.activator>
+        <private.package>org.wso2.carbon.gateway.internal</private.package>
+        <export.package>
+            !org.wso2.carbon.gateway.internal,
+            org.wso2.carbon.gateway.*
+        </export.package>
+        <import.package>
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.osgi.util.tracker; version="${osgi.service.tracker.import.version.range}",
+            io.netty.*,
+            org.wso2.carbon.kernel.transports.*,
+            org.wso2.carbon.transport.http.netty.*,
+            org.apache.log4j.*,
+            org.apache.commons.logging.*,
+            org.apache.camel.*,
+            org.apache.commons.pool.*,
+            com.lmax.disruptor.*,
+            org.springframework.context.*,
+            org.w3c.dom.*,
+            org.xml.sax.*,
+            javax.xml.*,
+            org.slf4j.*
+        </import.package>
+    </properties>
+
 </project>
