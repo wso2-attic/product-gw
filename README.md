@@ -1,11 +1,14 @@
-#WSO2 Gateway (WSO2 GW)
+# Note
+Since [Ballerina](https://github.com/ballerinalang/ballerina) will be used for medation, WSO2 Product Gateway has been discontiuned and this repository has been moved to attic.
+
+# WSO2 Gateway (WSO2 GW)
 WSO2 Gateway (WSO2 GW) is an ultra high performance, lightweight and configuration-driven message gateway based on
 standard gateway pattern. It aims to encapsulate messaging between source and target systems that are built with
 disparate technologies, protocols, and standards. While it includes messaging between two systems, message mediation
 can be controlled by configuring WSO2 GW’s mediation logic.
 
 
-##Key Features
+## Key Features
 
 * Ultra high performance and low latency  HTTP/S messaging.
 
@@ -21,12 +24,12 @@ can be controlled by configuring WSO2 GW’s mediation logic.
 
 * Error handling support. 
 
-##Getting Started
+## Getting Started
 
 By configuring the [camel-context.xml](https://github.com/wso2/product-gw/blob/master/product/carbon-home/conf/camel/camel-context.xml) (which can be found in `$CARBON_HOME/conf/camel/camel-context.xml`)
 we can achieve camel routing.
 
-####Sample camel configuration for Header-based routing
+#### Sample camel configuration for Header-based routing
 ```
     <route id="http-routes">
         <from uri="wso2-gw:/default"/>
@@ -51,7 +54,7 @@ we can achieve camel routing.
 
  If we don't have any routeId header the request will be routed to the localhost:9004 (i.e to otherwise)
 
-####Sampel REST configuration
+#### Sampel REST configuration
 
 Following is a sample rest interface definition
 ```
@@ -82,7 +85,7 @@ it will be routed to `http://jsonplaceholder.typicode.com/posts`
 
 similarly `http://localhost:9090/gw/news/24` will be routed to `http://jsonplaceholder.typicode.com/posts/24`
 
-####Route Hot Deployment
+#### Route Hot Deployment
 By default we are keeping all the route configurations in the `camel-context.xml`. If we want, we can hot deploy the routes (i.e we can add routes without restarting the server) by adding custom routes configuration files. Custom routes can be added by following the below steps.
 
 * Multiple custom route configuration files can be placed with the following structure.
