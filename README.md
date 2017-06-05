@@ -1,5 +1,5 @@
 # Note
-Since [Ballerina](https://github.com/ballerinalang/ballerina) will be used for medation, WSO2 Product Gateway has been discontiuned and this repository has been moved to attic.
+Since [Ballerina](https://github.com/ballerinalang/ballerina) will be used for mediation, WSO2 Product Gateway has been discontiuned and this repository has been moved to attic.
 
 # WSO2 Gateway (WSO2 GW)
 WSO2 Gateway (WSO2 GW) is an ultra high performance, lightweight and configuration-driven message gateway based on
