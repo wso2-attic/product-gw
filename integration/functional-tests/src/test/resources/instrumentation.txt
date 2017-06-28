@@ -1,0 +1,3 @@
+org.wso2.carbon.gateway_
+org.wso2.carbon.transport_
+org.wso2.carbon.messaging_

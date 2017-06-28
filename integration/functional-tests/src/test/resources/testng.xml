@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="GWTestSuite" parallel="false">
+
+    <listeners>
+        <listener class-name="org.wso2.carbon.gateway.tests.internal.GWTestSuiteListener"/>
+        <listener class-name="org.wso2.carbon.gateway.tests.internal.GWTestListener"/>
+    </listeners>
+
+    <test name="Basic-Test" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.tests.ConnectionTest"/>
+            <class name="org.wso2.carbon.gateway.tests.ErrorHandling"/>
+            <class name="org.wso2.carbon.gateway.tests.HeaderBasedRoutingTest"/>
+            <class name="org.wso2.carbon.gateway.tests.PassingHeadersInRoutingTest"/>
+            <class name="org.wso2.carbon.gateway.tests.RoutingToFailoverEndPointsTest"/>
+            <class name="org.wso2.carbon.gateway.tests.RoutingToLoadBalancedEndpointsTest"/>
+            <class name="org.wso2.carbon.gateway.tests.ServiceChainingSoapTest"/>
+            <class name="org.wso2.carbon.gateway.tests.SimplePassThroughTest"/>
+            <class name="org.wso2.carbon.gateway.tests.PathMatching"/>
+            <class name="org.wso2.carbon.gateway.tests.TimoutConfigurationTest"/>
+            <class name="org.wso2.carbon.gateway.tests.HotDeploymentSpecificTest"/>
+            <class name="org.wso2.carbon.gateway.tests.RestEndPointTest"/>
+            <class name="org.wso2.carbon.gateway.tests.ServiceChainingRestTest"/>
+            <class name="org.wso2.carbon.gateway.tests.CustomErrorMessageTest"/>
+            <class name="org.wso2.carbon.gateway.tests.TimoutConfigurationTest"/>
+        </classes>
+    </test>
+</suite>
+
+

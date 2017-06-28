@@ -1,0 +1,90 @@
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="GWTestSuite-HTTPCompliance" parallel="false">
+
+    <listeners>
+        <listener class-name="org.wso2.carbon.gateway.httpcompliance.tests.internal.GWTestSuiteListener"/>
+    </listeners>
+
+    <test name="HTTP1xx-Tests" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.informational.HTTP100ComplianceTest"/>
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.informational.HTTP101ComplianceTest"/>-->
+        </classes>
+    </test>
+
+    <test name="HTTP2xx-Tests" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP200ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP201ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP202ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP203ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP204ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP205ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.successful.HTTP206ComplianceTest"/>
+        </classes>
+    </test>
+
+    <test name="HTTP3xx-Tests" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP300ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP301ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP302ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP303ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP304ComplianceTest"/>
+            <!--<class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP305ComplianceTest"/>-->
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.redirection.HTTP307ComplianceTest"/>
+        </classes>
+    </test>
+
+    <test name="HTTP4xx-Tests" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP400ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP401ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP403ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP404ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP405ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP406ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP407ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP408ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP409ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP410ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP411ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP412ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP413ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP414ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP415ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP416ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.clienterror.HTTP417ComplianceTest"/>
+        </classes>
+    </test>
+
+    <test name="HTTP5xx-Tests" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP500ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP501ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP502ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP503ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP504ComplianceTest"/>
+            <class name="org.wso2.carbon.gateway.httpcompliance.tests.responses.servererror.HTTP505ComplianceTest"/>
+        </classes>
+    </test>
+</suite>
+
+
